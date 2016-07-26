@@ -3,7 +3,7 @@ package dto;
 import java.io.Serializable;
 
 /**
- * ラベル用Dtoです.
+ *  ラベル用Dtoです.
  *
  * @author yasuo-k
  *
