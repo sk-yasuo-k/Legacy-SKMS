@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	>
+	<!-- Logicクラスの設定 -->
+	<logic:WorkingHoursImportLogic id="logic" />
+    
+    <mx:Canvas top="10" bottom="10" left="10" right="10">
+        <mx:Panel width="700" height="500" layout="absolute" id="panUpload" title="勤務管理表インポート">
+            <mx:VBox left="10" bottom="10" top="10" right="10">
+            	<mx:Label text="インポートする勤務管理表ファイルの一覧" fontWeight="bold"/>
+	            <mx:DataGrid  id="grdFiles" width="100%" height="100%"
+	            	allowMultipleSelection="true"
+	            	sortableColumns="false"
+	            	wordWrap="true"
+	            	variableRowHeight="true"
+				>
+	                <mx:columns>
+	                    <mx:DataGridColumn headerText="ファイル名" dataField="fileName" width="150"/>
+	                    <mx:DataGridColumn headerText="インポート状態" dataField="status">
+	                 		<mx:itemRenderer>
+							<mx:Component>
+							<mx:Text text="{data.status}" color="{data.color}" />
+							</mx:Component>
+							</mx:itemRenderer>
+	                    </mx:DataGridColumn>
+	                </mx:columns>
+	            </mx:DataGrid>
+                <mx:HBox width="100%" horizontalAlign="left">
+                    <mx:Button label="ファイルの追加..." id="btnAdd" click="logic.onClick_btnAdd()"/>
+                    <mx:Button label="ファイルの削除" id="btnRemove" click="logic.onClick_btnRemove()"/>
+                    <mx:Button label="一覧のクリア" id="btnRemoveAll" click="logic.onClick_btnRemoveAll()"/>
+                </mx:HBox>
+            </mx:VBox>
+            <mx:ControlBar horizontalAlign="left">
+	            <mx:VBox>
+	                <mx:CheckBox label="勤務管理表の上書き時に確認ダイアログを表示する。" id="chkOverwriteConfirmation" selected="true"/>
+	                <mx:CheckBox label="総務承認済みとして登録する。" id="chkApproval" selected="false" visible="false"/>
+	            </mx:VBox>
+	            <mx:Spacer width="100%" />
+                <mx:Button label="インポート" id="btnUpload" click="logic.onClick_btnUpload(true, chkOverwriteConfirmation.selected)" enabled="false"/>
+            </mx:ControlBar>
+        </mx:Panel>
+    </mx:Canvas>
+</mx:Module>

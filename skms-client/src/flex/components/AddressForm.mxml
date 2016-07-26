@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	creationComplete="onCreationComplete(event)"
+	>
+
+	<!-- Logicクラスの設定 -->
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="staffEntryService" destination="staffEntryService">
+		<!-- 都道府県名の取得する -->
+		<mx:method name="getContinentList"
+					result="onResult_showContinentList(event)" 
+					fault="onFault_remoteObject(event)" />															
+	</mx:RemoteObject>
+	
+	<!-- 郵便番号の自動取得 -->
+	<mx:HTTPService id="zip_service"
+	    url="http://api.aoikujira.com/zip/zip.php"
+	    method="GET" 
+	    resultFormat="e4x"
+	    result="zip_service_onResult(event)"
+	    fault="zip_service_onFault(event)">
+	    <mx:request>
+	        <zn>{newPostalCode1.text + newPostalCode2.text}</zn>
+	     </mx:request>
+	 </mx:HTTPService>
+	 
+	<mx:FormItem label="引越日" required="true" direction="horizontal">
+		<mx:DateField id="Moveday" valueCommit="onValidateCheck(event);" editable="{this.authorisation}"/>
+	</mx:FormItem>
+	<mx:FormItem label="郵便番号" required="true" direction="horizontal">
+		<mx:TextInput  id="newPostalCode1" valueCommit="onValidateCheck(event);" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="3" editable="{this.authorisation}"/>
+		<mx:FormItem label="-">
+			<mx:TextInput  id="newPostalCode2" valueCommit="onValidateCheck(event);" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4" editable="{this.authorisation}"/>
+		</mx:FormItem>
+		<mx:Button label="検索" id="search" click="onClick_linkPostalCode(event)" valueCommit="onValidateCheck(event);"/>
+	</mx:FormItem>
+	<mx:FormItem label="都道府県" required="true" direction="horizontal">
+		<mx:ComboBox id="AdministrativeDivisions" valueCommit="onValidateCheck(event);" prompt="選択してください"/>
+	</mx:FormItem>
+	<mx:FormItem label="市区町村" required="true" direction="horizontal">
+		<mx:TextInput id="Municipality" valueCommit="onValidateCheck(event);" editable="{this.authorisation}" width="260" imeMode="JAPANESE_HIRAGANA"/>
+	</mx:FormItem>
+	<mx:FormItem label="市区町村(フリガナ)" required="true" direction="horizontal">
+		<mx:TextInput id="MunicipalityKana" valueCommit="onValidateCheck(event);" editable="{this.authorisation}" width="260" imeMode="JAPANESE_KATAKANA_HALF"/>
+	</mx:FormItem>
+	<mx:FormItem label="番地・ビル" direction="horizontal">
+		<mx:TextInput id="newHouseNumber" width="260" imeMode="JAPANESE_HIRAGANA"/>
+	</mx:FormItem>
+	<mx:FormItem label="番地・ビル(フリガナ)" direction="horizontal">
+		<mx:TextInput id="newHouseNumberKana" width="260" imeMode="JAPANESE_KATAKANA_HALF"/>
+	</mx:FormItem>
+	<mx:FormItem label="自宅電話番号" direction="horizontal">
+		<mx:TextInput id="CarryContact1" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+		<mx:FormItem label="-">
+		<mx:TextInput id="CarryContact2" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+		</mx:FormItem>
+		<mx:FormItem label="-">
+		<mx:TextInput id="CarryContact3" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+		</mx:FormItem>
+	</mx:FormItem>
+	<mx:FormItem label="世帯主">
+		<mx:CheckBox id="HouseholdCheck" label=""/>
+	</mx:FormItem>
+	
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<!-- 引越日はチェックする -->
+		<mx:StringValidator id="validatorMoveday" source="{this.Moveday}"  required="true" property="selectedDate" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 郵便番号1はチェックする -->
+		<mx:StringValidator id="validatorZipCode1" source="{this.newPostalCode1}" required="true" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 郵便番号2はチェックする -->
+		<mx:StringValidator id="validatorZipCode2" source="{this.newPostalCode2}"    required="true" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 都道府県はチェックする -->		
+		<mx:StringValidator id="validatorAdministrativeDivisions" source="{this.AdministrativeDivisions}" required="true"  property="selectedItem" triggerEvent="" enabled="{this.authorisation}"/>		
+		<!-- 市区町村はチェックする -->
+		<mx:StringValidator id="validatorMunicipality" source="{this.Municipality}" required="true" property="text" triggerEvent="text" enabled="{this.authorisation}"/>
+		<!-- 市区町村(フリガナ)はチェックする -->
+		<mx:StringValidator id="validatorMunicipalityKana" source="{this.MunicipalityKana}" required="true" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+	</mx:Array>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.PropertyChangeEvent;
+			import subApplications.generalAffair.logic.StaffEntryLogic;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import subApplications.generalAffair.dto.MPrefectureListDto;
+			import mx.collections.ArrayCollection;
+			import utils.LabelUtil;
+		    import mx.validators.Validator;
+		    import mx.controls.Alert;
+		    import mx.rpc.events.FaultEvent;
+    		import mx.rpc.events.ResultEvent;
+    		import mx.binding.utils.BindingUtils;
+    		
+    		/** 入力必須フラグ 
+			 */
+			[Bindable]
+			public var btnOkFlag:Boolean;
+
+			/** 都道府県名のリスト 
+			 */
+			[Bindable]
+			public var _mPrefectureList:ArrayCollection;
+			
+			[Bindable]
+			public var  MunicipalityText:String = "test";
+			
+			protected function onCreationComplete(e:FlexEvent):void
+	    	{
+	    		// 都道府県名の取得
+	    		staffEntryService.getOperation("getContinentList").send();
+	    		
+	    		/** 必要な変数をバインド */ 
+	    		// 「都道府県名」にバインドする
+	    		BindingUtils.bindProperty(AdministrativeDivisions, "dataProvider", this, "_mPrefectureList");
+	    		
+	    		addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, propertyChangeHandler);
+	    	}
+			
+		    public function propertyChangeHandler(e:PropertyChangeEvent):void
+			{
+				trace("children:" + e.property);
+			}
+			
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = true;
+			
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+				if (authorisation) 
+				{
+					this.currentState = "stsAuthorize"
+				}
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+								
+			/**
+			 * 検索ボタン押下処理 
+			 */	
+			public function  onClick_linkPostalCode(e:MouseEvent):void
+			{		
+				zip_service.send();	
+				
+			}
+			
+			/**
+			 * 郵便番号の自動取得の結果受信
+			 */
+			public function zip_service_onResult(event:ResultEvent):void
+			{
+			    var zipResult:XML = zip_service.lastResult as XML;
+			    
+				for(var i:int = 0; i < _mPrefectureList.length; i ++)
+				{
+					if(_mPrefectureList[i].label == zipResult.ADDRESS_value.value.@state)
+					{
+						AdministrativeDivisions.selectedIndex = i;
+					}
+				}
+			    
+			    Municipality.text = zipResult.ADDRESS_value.value.@city +
+			      					zipResult.ADDRESS_value.value.@address;
+			    
+			    MunicipalityKana.text = zipResult.ADDRESS_value.value.@city_kana[1] + 
+			                            zipResult.ADDRESS_value.value.@address_kana;
+					            
+			    this.MunicipalityText = MunicipalityKana.text;
+			    
+			    // 取得住所が存在しない場合
+			    if(Municipality.text == "")
+			    {
+			    	AdministrativeDivisions.text="選択してください"
+			    }
+			}
+			
+			/**
+			 * 郵便番号の自動取得の結果受信失敗
+			 */
+			public function zip_service_onFault(event:FaultEvent):void
+			{
+				trace("zip_service_onFault...");
+				
+				// エラーダイアログ表示
+				Alert.show("住所検索に失敗しました。", "Error",
+							Alert.OK, null,
+							null, null, Alert.OK);			
+			}
+			
+			/**
+			 * 都道府県をDBから取得成功
+			 * 都道府県を表示
+			 * */
+			public function onResult_showContinentList(e: ResultEvent):void
+			{
+				trace("onResult_showContinentList...");
+			
+				var mPrefectureListDto:MPrefectureListDto = new MPrefectureListDto(e.result);
+				_mPrefectureList = mPrefectureListDto.MPrefectureList;			
+			}
+			
+			/**
+			 * DB接続エラー・不正なパラメータなどで発生
+			 * */
+			 public function onFault_remoteObject(e: FaultEvent):void
+			{
+			 	trace("DB Error");
+			 	trace(e.message);
+			 	Alert.show("DB接続失敗","",Alert.OK | Alert.CANCEL,null,null,null,Alert.CANCEL);
+			}
+			
+			/**
+			 * 初期化処理
+			 */
+			public function onClick_addressFormat():void
+			{	
+				Moveday.text = "";
+				newPostalCode1.text = "";
+				newPostalCode2.text = "";
+				AdministrativeDivisions.prompt="選択してください"
+				Municipality.text = "";
+				MunicipalityKana.text = "";
+				newHouseNumber.text = "";
+				newHouseNumberKana.text = "";
+				CarryContact1.text = "";
+				CarryContact2.text = "";
+				CarryContact3.text = "";
+				HouseholdCheck.selected = false;
+				
+				// バインドデータ初期化
+				onCreationComplete(null);
+			}
+			
+			/**
+			 * 必須入力確認処理
+			 */
+			public function onValidateCheck(e:Event):void
+			{		
+				// mxml定義のvalidateチェックを行なう.
+				var results:Array = Validator.validateAll(validateItems);
+				if (results.length == 0)
+					btnOkFlag = true;
+				else
+					btnOkFlag = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:Form>

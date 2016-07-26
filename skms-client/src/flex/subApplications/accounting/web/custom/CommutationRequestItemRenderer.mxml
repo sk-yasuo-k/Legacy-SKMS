@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+		
+		   	import flash.display.Graphics;
+   			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+   			import mx.controls.Label;
+   			import mx.controls.dataGridClasses.*;
+   			
+   			private const COLOR_WARNING:Number = 0xFF9696;
+   			private var _isColor:Boolean;
+			
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+
+			var grid:DataGrid = DataGrid(DataGridListData(listData).owner);
+			var	gridData:DataGridListData = listData as DataGridListData;
+			var g:Graphics = graphics;
+			g.clear();
+
+			switch (gridData.dataField) {
+				// 通勤先等
+				case "destination":
+					if (data.checkEntry()) {
+						if (!data.checkApply_destination()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+					break;
+
+				// 交通手段
+				case "facilityName":
+					if (data.checkEntry()) {
+						if (!data.checkApply_facilityName()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+					break;
+					
+				// 交通機関名
+				case "facilityCmpName":
+					if (data.checkEntry()) {
+						if (!data.checkApply_facilityCmpName()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+				
+					break;
+					
+				// 出発地
+				case "departure":
+					if (data.checkEntry()) {
+						if (!data.checkApply_departure()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+
+					break;
+					
+				// 到着地
+				case "arrival":
+					if (data.checkEntry()) {
+						if (!data.checkApply_arrival()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+					break;
+					
+				// 経由
+				case "via":
+					if (!data.checkApply_via()) {
+						setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+					}
+					break;
+
+				// 金額
+				case "expense":
+					if (data.checkEntry()) {
+						if (!data.checkApply_expense()) {
+							setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+						}
+					}
+					break;			}
+		}			
+			
+		private function setColorPattern(g:Graphics, unscaledWidth:Number, unscaledHeight:Number, color:Number):void
+		{
+			g.beginFill(color);
+			g.drawRect(0, 0, unscaledWidth, unscaledHeight);
+			g.endFill();
+		}
+		
+		
+		public function set isColor(flg:Boolean):void
+		{
+			_isColor = flg;
+		} 
+			
+			
+
+		]]>
+	</mx:Script>
+</mx:Label>
+
+
+
+

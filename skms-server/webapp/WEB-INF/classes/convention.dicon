@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN"
+	"http://www.seasar.org/dtd/components24.dtd">
+<components>
+	<component class="org.seasar.framework.convention.impl.NamingConventionImpl">
+		<initMethod name="addRootPackageName">
+			<arg>"services.login"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.accounting"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.project"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.generalAffair"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.personnelAffair"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.customer"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.system"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.mail"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.generalAffair.address"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.personnelAffair.skill"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.personnelAffair.profile"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.generalAffair.workingConditions"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.personnelAffair.authority"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.lunch"</arg>
+		</initMethod>
+		<initMethod name="addRootPackageName">
+			<arg>"services.personnelAffair.license"</arg>
+		</initMethod>	
+		<initMethod name="addRootPackageName">
+			<arg>"services.generalAffair.paidVacationMaintenance"</arg>
+		</initMethod>						
+	</component>
+	<component class="org.seasar.framework.convention.impl.PersistenceConventionImpl"/>
+</components>

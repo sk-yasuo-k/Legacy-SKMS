@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:cmp="components.*"
+	>
+    
+	<!-- Logicクラスの設定 -->
+	<logic:StaffEntryLogic id="logic" />
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import mx.collections.ArrayCollection;
+			
+			public var viewMode:int = 0;
+			[ArrayElementType("String")]
+			private var capacityArray:Array = [{lank:"20",staffName:"山田 太郎",lank2:""},
+											{lank:"19",lank3:"山田 太郎",lank2:""},
+											{lank:"18",lank3:"山田 太郎",lank2:""}
+											];
+			[ArrayElementType("String")]
+			private var staffArray:Array = [{staffName:"山田 太郎", period:"2009/04/01～", positionPeriod:"委員長：2009/04/01～"},
+											{staffName:"鈴木 花子", period:"2009/04/01～", positionPeriod:"副委員長：2009/04/01～"},
+											{staffName:"中村 一男", period:"2009/04/01～", positionPeriod:""},
+											{staffName:"高田 洋子", period:"2007/04/01～2009/03/31", positionPeriod:"委員長：2008/04/01～2009/03/31\n副委員長：2007/04/01～2008/03/31"},
+											];
+			[Bindable]
+			public var capacityList:ArrayCollection = new ArrayCollection(capacityArray);	
+			[Bindable]
+			public var staffList:ArrayCollection = new ArrayCollection(staffArray);	
+		]]>
+	</mx:Script>
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Label id="lblCommitteeName" text="資格評定" styleName="LargeBoldText"/>
+		<mx:RichTextEditor width="100%">
+			<mx:htmlText>
+				<![CDATA[
+					<a href='http://www.adobe.com' target='_blank'>Go Home</a>
+				]]>
+			</mx:htmlText>
+		</mx:RichTextEditor>
+		<mx:HBox width="100%">
+		</mx:HBox>
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:DataGrid dataProvider="{staffList}" dragEnabled="true" width="30%" height="100%">
+				<mx:columns>
+					<mx:DataGridColumn headerText="社員名" dataField="staffName"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:Grid width="100%" height="100%" autoLayout="true">
+				<mx:GridRow width="100%" autoLayout="true">
+					<mx:GridItem autoLayout="true">
+						<mx:List dropEnabled="true" />
+					</mx:GridItem>
+					<mx:GridItem>
+						<mx:TileList dropEnabled="true" >
+						</mx:TileList>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+		</mx:HDividedBox>
+	</mx:VBox>
+</mx:Module>

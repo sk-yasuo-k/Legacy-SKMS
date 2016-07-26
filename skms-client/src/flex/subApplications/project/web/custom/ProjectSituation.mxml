@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	xmlns:custom="subApplications.project.logic.custom.*">
+
+	<custom:ProjectSituationLogic id="aslogic" />
+
+
+	<!-- metaデータ設定 -->
+	<mx:Metadata>
+		[Event(name="newSituation" ,type="flash.events.Event")]
+	</mx:Metadata>
+
+
+	<!-- 画面表示(条件により変更) -->
+	<mx:HBox id="posTitle">
+		<mx:Label text="報告 ：" />
+		<mx:Label id="lblRegistrationTime"  />
+		<mx:Label id="lblRegistrationName"  />
+	</mx:HBox>
+
+	<mx:TextArea id="txtSituation" wordWrap="true" width="100%" height="100%" />
+	<mx:Validator id="valSituation" source="{this.txtSituation}" required="false"  property="text"
+		triggerEvent="change"
+		invalid="onValidator(event);"
+		valid="onValidator(event);"/>
+
+
+	<!-- 条件表示 -->
+	<mx:states>
+		<!-- プロジェクト未選択 -->
+		<mx:State name="stsNoProject">
+			<mx:AddChild relativeTo="{this}" position="firstChild" creationPolicy="all">
+				<mx:target>
+					<mx:Label text="プロジェクトが選択されていません。" visible="false" />
+				</mx:target>
+			</mx:AddChild>
+			<mx:RemoveChild target="{this.posTitle}"      />
+			<mx:RemoveChild target="{this.txtSituation}"  />
+		</mx:State>
+
+		<!-- プロジェクト状況なし -->
+		<mx:State name="stsNoSituation">
+			<mx:AddChild relativeTo="{this}" position="firstChild" creationPolicy="all">
+				<mx:target>
+					<mx:Label text="未報告です。" />
+				</mx:target>
+			</mx:AddChild>
+			<mx:RemoveChild target="{this.posTitle}"      />
+			<mx:RemoveChild target="{this.txtSituation}"  />
+		</mx:State>
+
+		<!-- プロジェクト状況あり -->
+		<mx:State name="stsSomeSituations">
+			<mx:AddChild relativeTo="{this}" position="firstChild" creationPolicy="all">
+				<mx:HBox>
+					<mx:LinkButton id="linkPrevious" toolTip="前の状況" enabled="false" icon="@Embed('images/arrow_previous_d.gif')"
+						click="aslogic.onClick_linkPrevious(event);" />
+					<mx:Label id="lblCurrentNo" />
+					<mx:Label text="/" />
+					<mx:Label id="lblAllCount"  />
+					<mx:LinkButton id="linkNext"     toolTip="次の状況" enabled="false" icon="@Embed('images/arrow_next_d.gif')"
+						click="aslogic.onClick_linkNext(event);" />
+				</mx:HBox>
+			</mx:AddChild>
+			<mx:SetProperty target="{this.txtSituation}" name="editable" value="false" />
+		</mx:State>
+
+		<!-- プロジェクト状況更新 -->
+		<mx:State name="stsUpdateSituation" >
+			<mx:SetProperty target="{this.txtSituation}" name="editable" value="true" />
+			<mx:SetProperty target="{this.posTitle}" name="width" value="100%" />
+			<mx:AddChild relativeTo="{this.posTitle}" position="lastChild" creationPolicy="all">
+				<mx:target>
+					<mx:Spacer width="100%"/>
+				</mx:target>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{this.posTitle}" position="lastChild" creationPolicy="all">
+				<mx:target>
+					<mx:LinkButton id="linkNew" toolTip="状況報告を追加する" icon="@Embed('images/fileplus.gif')"
+						click="onClick_linkNew(event);" />
+				</mx:target>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- プロジェクト状況新規 -->
+		<mx:State name="stsNewSituation" >
+			<mx:SetProperty target="{this.txtSituation}" name="editable" value="true" />
+			<mx:RemoveChild target="{this.lblRegistrationTime}" />
+		</mx:State>
+	</mx:states>
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.events.FlexEvent;
+			import subApplications.project.dto.ProjectDto;
+			import subApplications.project.dto.ProjectSituationDto;
+			import mx.collections.ArrayCollection;
+			import mx.utils.ObjectUtil;
+			import utils.LabelUtil;
+
+			/** プロジェクト状況リスト設定 */
+			public function set referenceSituations(value:ArrayCollection):void
+			{
+				// リスト null.
+				if (!value) {
+					this.currentState = "stsNoProject";
+					return;
+				}
+
+				// リスト あり.
+				if (value.length > 0) {
+					this.currentState = "stsSomeSituations";
+					aslogic.referenceSituations = value;
+				}
+				// リスト なし.
+				else {
+					this.currentState = "stsNoSituation";
+				}
+			}
+
+			/** プロジェクト状況の更新設定 */
+			public function set updateSituation(value:ProjectSituationDto):void
+			{
+				this.currentState = "stsUpdateSituation";
+				aslogic.updateSituation = value;
+			}
+
+			/** プロジェクト状況の新規作成設定 */
+			public function set newSituation(value:ProjectSituationDto):void
+			{
+				this.currentState = "stsNewSituation";
+				aslogic.newSituation = value;
+			}
+
+			/** 登録するプロジェクト状況 */
+			public function get entrySituation():ProjectSituationDto
+			{
+				return aslogic.entrySituation;
+			}
+
+
+			/** 最新状況報告 */
+			private function onClick_linkNew(event:MouseEvent):void
+			{
+				dispatchEvent(new Event("newSituation"));
+			}
+
+
+			/** 検証結果 */
+			public function onValidator(event:ValidationResultEvent):void
+			{
+				var e:FlexEvent = new FlexEvent(event.type);
+				dispatchEvent(e);
+			}
+
+			/** 検証 */
+			public function validate():void
+			{
+				if (!this.valSituation.required)
+					this.valSituation.required = true;
+
+				this.valSituation.validate();
+			}
+		]]>
+	</mx:Script>
+
+</mx:Box>

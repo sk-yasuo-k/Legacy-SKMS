@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.logic.*"
+	xmlns:cmp="components.*"
+	currentState="initialize"
+	>
+	 
+	<!-- Logicクラスの設定 -->
+	<logic:LicenceLogic id="licenceLogic"/>
+	
+	<mx:Script>
+		<![CDATA[ import utils.LabelUtil; ]]>
+	</mx:Script>
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="authorizedLicenceService" destination="authorizedLicenceService">
+		<!-- 社員一覧の取得する -->
+		<mx:method name="getMStaffList"
+					result="licenceLogic.onResult_showMStaffList(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<!-- 認定資格一覧の取得する -->
+		<mx:method name="getAuthorizedLicenceList"
+					result="licenceLogic.onResult_showAuthorizedLicenceList(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<!-- その他資格一覧の取得する -->
+		<mx:method name="getOtherLicenceList"
+					result="licenceLogic.onResult_showotherLicenceList(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<!-- 認定資格マスタの取得する -->
+		<mx:method name="getMAuthorizedLicence"
+					result="licenceLogic.onResult_showMAuthorizedLicence(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<!-- 認定資格カテゴリーマスタの取得する -->
+		<mx:method name="getMAuthorizedLicenceCategory"
+					result="licenceLogic.onResult_showMAuthorizedLicenceCategory(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<!-- 検索結果一覧の取得する -->
+		<mx:method name="getSearchLicenceList"
+					result="licenceLogic.onResult_showSearchLicenceList(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />
+		<mx:method name="getSearchOtherLicenceList"
+					result="licenceLogic.onResult_showSearchOtherLicenceList(event)" 
+					fault="licenceLogic.onFault_remoteObject(event)" />											
+		<!-- 認定資格情報を削除する -->
+		<mx:method name="deleteAuthorizedLicence"
+					result="licenceLogic.onResult_JoinLicense(event)" 
+					fault="licenceLogic.onFault_failureSave(event)" />
+		<!-- その他資格情報を削除する -->
+		<mx:method name="deleteOtherLocence"
+					result="licenceLogic.onResult_JoinLicense(event)" 
+					fault="licenceLogic.onFault_failureSave(event)" />																			
+	</mx:RemoteObject>
+	
+	<!--画面の切り替え-->
+	<mx:states>
+		<!--初期表示-->
+		<mx:State name="initialize">
+			<mx:AddChild relativeTo="{vbxShowSearchCondition}">
+			<mx:VBox width="100%" height="35">
+				<mx:Button id="linkShowSearchCondition" label="条件を指定して検索"
+					click="licenceLogic.onClick_linkShowSearchCondition(event);" width="150" height="22"/>
+			</mx:VBox>			
+			</mx:AddChild>
+		</mx:State>
+		<!--検索ボックス表示時-->
+		<mx:State name="search">
+			<mx:AddChild relativeTo="{vbxShowSearchCondition}">
+				<mx:Grid backgroundColor="0xECE3EE" width="100%">
+					<mx:GridRow/>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:CheckBox id="checkStaff" label="社員名" selected="false" valueCommit="licenceLogic.onClick_checkBox(event)"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput id="textSearchStaff" imeMode="JAPANESE_HIRAGANA" enabled="false"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:CheckBox id="checkCategory" label="認定資格カテゴリ名" selected="true" valueCommit="licenceLogic.onClick_checkBox(event)"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="cmbSearchCategory" dataField="categoryId" labelField="categoryName" change="licenceLogic.onChange_category(event)" editable="false" enabled="true"/>
+						</mx:GridItem>
+						<mx:GridItem/>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:CheckBox id="checkLicence" label="認定資格名" selected="true" valueCommit="licenceLogic.onClick_checkBox(event)"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="cmbSearchLicence" dataField="licenceId" labelField="licenceName" editable="false" enabled="true"/>
+						</mx:GridItem>
+						<mx:GridItem/>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:CheckBox id="checkOther" label="その他資格名" selected="false" valueCommit="licenceLogic.onClick_checkBox(event)"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput id="textSearchOther" enabled="false"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Button id="btnSearch" label="検索" click="licenceLogic.onClick_btnSearch(event)"/>
+							<mx:Button id="linkHideSearchCondition" label="閉じる" click="licenceLogic.onClick_linkHideSearchCondition(event);"/>						
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow/>				
+				</mx:Grid>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:VBox x="5" width="100%" height="100%">
+		<mx:Label id="lblCommitteeName" text="資格取得状況" styleName="LargeBoldText"/>
+		<mx:Canvas id="vbxShowSearchCondition"/>
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:VBox width="150" height="100%">
+				<mx:DataGrid id="mStaffList" dragEnabled="true" width="150" height="100%" itemClick="licenceLogic.onClick_staffSelect(event)"
+					wordWrap="true" variableRowHeight="true">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" dataField="fullName"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VDividedBox width="100%" height="100%">
+				<mx:VBox  width="100%" height="50%">
+					<mx:Label text="認定資格" styleName="LargeBoldText"/>
+					<mx:HBox width="100%">
+						<mx:LinkButton id="linkAddAuthorizedLicence" label="追加" click="licenceLogic.onClick_linkAddAuthorizedLicence(event)" enabled="false" visible="true"/>
+						<mx:LinkButton id="linkUpdateAuthorizedLicence" label="変更" click="licenceLogic.onClick_linkUpdateAuthorizedLicence(event)" enabled="false" visible="true"/>
+						<mx:LinkButton id="linkDeleteAuthorizedLicence" label="削除" click="licenceLogic.onClick_linkDeleteAuthorizedLicence(event)" enabled="false" visible="true"/>
+					</mx:HBox>
+					<mx:DataGrid id="authorizedLicenceList" dragEnabled="true" width="90%" height="100%" itemClick="licenceLogic.onClick_authorizedLicenceSelect(event)"
+						wordWrap="true" variableRowHeight="true">
+						<mx:columns>
+							<mx:DataGridColumn headerText="取得日" dataField="acquisitionDate" width="60" labelFunction="{LabelUtil.dateLabel}"/>
+							<mx:DataGridColumn headerText="カテゴリ" dataField="categoryName" width="100"/>
+							<mx:DataGridColumn headerText="資格名" dataField="licenceName" width="150"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+				<mx:VBox  width="100%" height="50%">
+					<mx:Label text = "その他資格" styleName="LargeBoldText" />
+					<mx:HBox width="100%">
+						<mx:LinkButton id="linkAddOtherLicence" label="追加" click="licenceLogic.onClick_linkAddOtherLicence(event)" enabled="false" visible="true"/>
+						<mx:LinkButton id="linkUpdateOtherLicence" label="変更" click="licenceLogic.onClick_linkUpdateOtherLicence(event)" enabled="false" visible="true"/>
+						<mx:LinkButton id="linkDeleteOtherLicence" label="削除" click="licenceLogic.onClick_linkDeleteOtherLicence(event)" enabled="false" visible="true"/>
+					</mx:HBox>
+					<mx:DataGrid id="otherLicenceList" dragEnabled="true" width="90%" height="100%" itemClick="licenceLogic.onClick_otherLicenceSelect(event)"
+						wordWrap="true" variableRowHeight="true">
+						<mx:columns>
+							<mx:DataGridColumn headerText="取得日" dataField="acquisitionDate" width="60" labelFunction="{LabelUtil.dateLabel}"/>
+							<mx:DataGridColumn headerText="資格名" dataField="licenceName" width="250"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:VDividedBox>
+		</mx:HDividedBox>
+	<mx:Spacer width="20" />
+	</mx:VBox>
+</mx:Module>

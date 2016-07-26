@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" editable="true">
+	<mx:Script>
+		<![CDATA[
+			public function set maxChars(value:int):void
+			{
+				this.textInput.maxChars = value;
+			}
+		]]>
+	</mx:Script>
+</mx:ComboBox>

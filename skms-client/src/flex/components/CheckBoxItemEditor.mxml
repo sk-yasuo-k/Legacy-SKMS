@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml" change="onSelectionChange(event);">
+
+	<mx:Metadata>
+		[Event(name="itemEditUpdate" ,type="flash.events.Event")]
+	</mx:Metadata>
+
+    <mx:Script>
+        <![CDATA[
+            import mx.controls.dataGridClasses.DataGridListData;
+            import mx.controls.listClasses.BaseListData;
+            import mx.core.IFlexDisplayObject;
+
+
+            override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+            {
+                super.updateDisplayList(unscaledWidth, unscaledHeight);
+
+                var icon:IFlexDisplayObject = mx_internal::currentIcon;
+                if(icon){
+                    var iconWidth:int = icon.width;
+                    var indent:int = (width - iconWidth)/2;
+                    icon.x = indent;
+                }
+            }
+
+            protected function onSelectionChange(e:Event):void
+            {
+           		// dataプロパティを設定しなくても すでに設定済みのため設定しない.
+                //var colData:DataGridListData = listData as DataGridListData;
+                //data[colData.dataField] = selected;
+                dispatchEvent(new Event("itemEditUpdate"));
+            }
+
+        ]]>
+    </mx:Script>
+</mx:CheckBox>

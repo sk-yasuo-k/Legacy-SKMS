@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<!-- metaデータの設定 -->
+	<mx:Metadata>
+		[Event(name="detailShow", type="flash.events.Event")]
+	</mx:Metadata>
+
+
+	<!-- スクリプト -->
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			import mx.core.UITextField;
+			import mx.controls.dataGridClasses.DataGridListData;
+			import mx.controls.DataGrid;
+
+//			/**
+//			 * マウスオン.
+//			 * →InteractiveObject インスタンスにポインティングデバイスを合わせたときに送出される.
+//			 */
+//			protected function onMouseOver(event:MouseEvent):void
+//			{
+//				var enable:Boolean = event.target.text.length > 0 ? true : false;
+//				setColorMouseOver(enable);
+//			}
+//
+//			/**
+//			 * マウスアウト.
+//			 * →InteractiveObject インスタンスからポインティングデバイスを離したときに送出される.
+//			 */
+//			protected function onMouseOut(event:MouseEvent):void
+//			{
+//				setColorMouseOver(false);
+//			}
+//
+//			/**
+//			 * マウスオン色設定.
+//			 */
+//			protected function setColorColorMouseOver(enable:Boolean):void
+//			{
+//				graphics.clear();
+//				if (enable) {
+//					graphics.beginFill(_colorMouseOver);
+//					graphics.drawRect(0, 0, unscaledWidth, unscaledHeight);
+//					graphics.endFill();
+//				}
+//			}
+//
+//			/** マウスオン色定義 */
+//			protected var _colorMouseOver:Number = 0xFDE4DD;
+//			public function set colorMouseOver(value:Number):void
+//			{
+//				_colorMouseOver = value;
+//			}
+
+
+
+			/**
+			 * ダブルクリック.
+			 */
+			protected function onDoubleClick(event:MouseEvent):void
+			{
+				var e:Event = new Event("detailShow");
+				dispatchEvent(e);
+			}
+
+
+
+
+			/** セル選択色定義 */
+			protected var _colorSelected:Number = 0xFDE4DD;
+			public function set colorSelected(value:Number):void
+			{
+				_colorSelected = value;
+			}
+
+			/** セル選択 */
+			public function set selected(value:Boolean):void
+			{
+				setSelectedColor(value);
+			}
+
+			/** セル色設定 */
+			protected function setSelectedColor(enable:Boolean):void
+			{
+				graphics.clear();
+				if (enable) {
+					graphics.beginFill(_colorSelected);
+					graphics.drawRect(0, 0, unscaledWidth, unscaledHeight);
+					graphics.endFill();
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:Label>

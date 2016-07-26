@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="onCreationComplete(event);">
+
+	<!-- 画面表示 -->
+	<mx:Button label="検索" id="btnSearch" click="onClick_btnSearch(event);"/>
+	<mx:HBox   id="searchOpt">
+		<mx:Button id="swSearch" toggle="true" change="onChange_swSearch(event);" skin="{null}" color="#4169E1"  styleName="LargeText"/>
+
+		<mx:Grid   id="searchGrid" width="0" height="0">
+			<mx:GridRow />
+			<!-- Define Row 1. -->
+			<mx:GridRow id="rowProject">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="プロジェクト" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:CheckBox id="chkProject" selected="true" click="onClick_chkProject(event);"/>
+					<mx:ComboBox id="cmbProject" width="350"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 2. -->
+			<mx:GridRow id="rowProject2">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="全社業務" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:CheckBox id="chkAllBusiness" selected="true" click="onClick_chkAllBusiness(event);"/>
+					<mx:ComboBox id="cmbAllBusiness" width="350"/>
+					<mx:CheckBox id="chkSubordinateOnly" label="部下のみ" selected="false" visible="false"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 3. -->
+			<mx:GridRow id="rowStatus">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="状態" />
+				</mx:GridItem>
+				<mx:GridItem >
+					<mx:Repeater id="rpStatusList" dataProvider="" repeatEnd="onRepeatEnd_rpStatusList(event);">
+						<mx:CheckBox id="chkStatus" label="{rpStatusList.currentItem.label}" selected="{rpStatusList.currentItem.selected}"
+							selectedField="{rpStatusList.currentItem.data}" enabled="{rpStatusList.currentItem.enabled}"/>
+					</mx:Repeater>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+
+		<mx:Spacer width="10" />
+	</mx:HBox>
+
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true" fault="onFault(event);">
+		<mx:method name="getApprovalTransportationStatusList"
+			result="onResult_getApprovalTransportationStatusList(event)"
+		/>
+		<mx:method name="getApprovalProjectList"
+			result="onResult_getApprovalProjectList(event)"
+		/>
+		<mx:method name="getApprovalTransportations"
+			result="onResult_getApprovalTransportations(event)"
+		/>
+		<mx:method name="getApprovalTransportationStatusList_AF"
+			result="onResult_getApprovalTransportationStatusList_AF(event)"
+		/>
+		<mx:method name="getApprovalProjectList_AF"
+			result="onResult_getApprovalProjectList_AF(event)"
+		/>
+		<mx:method name="getApprovalTransportations_AF"
+			result="onResult_getApprovalTransportations_AF(event)"
+		/>
+		<mx:method name="getRequestTransportationStatusList"
+			result="onResult_getRequestTransportationStatusList(event)"
+		/>
+		<mx:method name="getRequestProjectList"
+			result="onResult_getRequestProjectList(event)"
+		/>
+		<mx:method name="getRequestTransportations"
+			result="onResult_getRequestTransportations(event)"
+		/>
+	</mx:RemoteObject>
+	<mx:RemoteObject id="srv2" destination="wholeBusinessService" showBusyCursor="true" fault="onFault(event);">
+		<mx:method name="getWholeBusinessList"
+			result="onResult_getWholeBusinessList(event)"
+			/>
+	</mx:RemoteObject>
+
+
+	<!-- metaデータの設定 -->
+	<mx:Metadata>
+		[Event(name="result", type="mx.rpc.events.ResultEvent")]
+		[Event(name="fault",  type="mx.rpc.events.FaultEvent")]
+	</mx:Metadata>
+
+
+	<!-- スクリプト -->
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.Fault;
+			import subApplications.accounting.logic.AccountingLogic;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.controls.CheckBox;
+			import mx.utils.ObjectUtil;
+			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEventKind;
+			import mx.events.CollectionEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+
+			/** データリスト */
+			private var _transportationList:ArrayCollection;
+
+			/** 状態リスト */
+			private var _statusList:ArrayCollection;
+
+			/** プロジェクトリスト */
+			private var _projectList:ArrayCollection;
+
+			/** 業務リスト */
+			private var _businessList:ArrayCollection;
+
+			/** Viewモード */
+			private var _actionViewItem:Object;
+			private const ACTION_VIEW_ITEMS:Array = new Array({mode   :AccountingLogic.ACTION_VIEW_APPROVAL,
+															   project:"getApprovalProjectList",
+															   status :"getApprovalTransportationStatusList",
+															   rpc    :"getApprovalTransportations"},
+															  {mode   :AccountingLogic.ACTION_VIEW_APPROVAL_AF,
+															   project:"getApprovalProjectList_AF",
+															   status :"getApprovalTransportationStatusList_AF",
+															   rpc    :"getApprovalTransportations_AF"},
+															  {mode   :AccountingLogic.ACTION_VIEW_REQUEST,
+															   project:"getRequestProjectList",
+															   status :"getRequestTransportationStatusList",
+															   rpc    :"getRequestTransportations"}
+															 );
+
+			/** 検索要求フラグ */
+			private var _bSearchRequest:Boolean;
+
+
+			/**
+			 * 検索ボタン押下.
+			 */
+			private function onClick_btnSearch(event:Event):void
+			{
+				// 検索実行の可否を確認する.
+				if (!onClick_btnSearch_check(event))	return;
+
+				// 検索条件 状態 を取得する.
+				var chkStatusItems:Array = this.chkStatus as Array;
+				var statusItems:Array = new Array();
+				var index:int = 0;
+				for each (var chkStatusItem:CheckBox in chkStatusItems) {
+					if (chkStatusItem.selected) {
+						statusItems.push(chkStatusItem.selectedField);
+					}
+					index++;
+				}
+				// allCheckOFFにすると全検索されてしまうためダミー値を設定する.
+				statusItems.push(-99);
+
+
+				// 検索条件 プロジェクト を取得する.
+				var projectItems:Array = new Array();
+				// 業務プロジェクトの検索条件を取得する.
+				if (this.cmbProject.enabled && this.cmbProject.selectedItem) {
+					var cmbProjectItem:Object  = this.cmbProject.selectedItem;
+					if (cmbProjectItem.data > 0) {
+						projectItems.push(cmbProjectItem.data);
+					}
+					else {
+						var prjlist:ArrayCollection = this.cmbProject.dataProvider as ArrayCollection;
+						for (var i:int = 0; i < prjlist.length; i++) {
+							projectItems.push(prjlist.getItemAt(i).data);
+						}
+					}
+				}
+				// 全社業務の検索条件を取得する.
+				if (this.cmbAllBusiness.enabled && this.cmbAllBusiness.selectedItem) {
+					var cmbBusinessItem:Object = this.cmbAllBusiness.selectedItem;
+					if (cmbBusinessItem.data > 0) {
+						projectItems.push(cmbBusinessItem.data);
+					}
+					else {
+						var bizlist:ArrayCollection = this.cmbAllBusiness.dataProvider as ArrayCollection;
+						for (var j:int = 0; j < bizlist.length; j++) {
+							projectItems.push(bizlist.getItemAt(j).data);
+						}
+					}
+				}
+				// allCheckOFFにすると全検索されてしまうためダミー値を設定する.
+				projectItems.push(-99);
+
+				// 「部下のみ」検索条件を設定する.
+				var subordinateOnly:Boolean = false;
+				if (chkSubordinateOnly.visible && chkSubordinateOnly.enabled && chkSubordinateOnly.selected) {
+					subordinateOnly = true;
+				}
+				// 交通費リストを取得する.
+				this.srv.getOperation(_actionViewItem.rpc).send(Application.application.indexLogic.loginStaff, projectItems, statusItems, subordinateOnly);
+			}
+			/**
+			 * 検索実行の確認.
+			 */
+			private function onClick_btnSearch_check(event:Event):Boolean
+			{
+				// trace (event.toString());
+				if (!setSearchOption(event)) {
+					// 初期データ表示のとき 検索要求フラグONとする.
+					if (ObjectUtil.compare(event.type, "initTransportations") == 0) {
+						_bSearchRequest = true;
+					}
+					return false;
+				}
+
+				// 検索要求フラグONなら 検索を実行する.
+				if (_bSearchRequest) {
+					_bSearchRequest = false;
+					return true;
+				}
+
+				// 検索要求を受けたとき 検索を実行する.
+				if (ObjectUtil.compare(event.type, "initTransportations") == 0 ||
+					ObjectUtil.compare(event.type, MouseEvent.CLICK) == 0	   ){
+					return true;
+				}
+				return false;
+			}
+			/**
+			 * 検索条件の設定完了.
+			 */
+			private function setSearchOption(event:Event):Boolean
+			{
+				// 検索条件が設定されているかどうか確認する.
+				if (_projectList && _statusList && _businessList) {
+					var cmbProjectItem:Object = this.cmbProject.selectedItem;
+					var chkStatusItems:Array = this.chkStatus as Array;
+					var cmbBusinessItem:Object = this.cmbAllBusiness.selectedItem;
+					if (cmbProjectItem && ObjectUtil.compare(chkStatusItems.length, _statusList.length) == 0 && cmbBusinessItem) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+
+			/**
+			 * getStatusListの結果取得.
+			 * 状態チェックボックスの設定.
+			 */
+			private function onResult_getRequestTransportationStatusList(event:ResultEvent):void
+			{
+				setStatusList(event);
+			}
+			private function onResult_getApprovalTransportationStatusList(event:ResultEvent):void
+			{
+				setStatusList(event);
+			}
+			private function onResult_getApprovalTransportationStatusList_AF(event:ResultEvent):void
+			{
+				setStatusList(event);
+			}
+			private function setStatusList(event:ResultEvent):void
+			{
+				_statusList = event.result as ArrayCollection;
+				var list:ArrayCollection = new ArrayCollection();
+				for each (var status:Object in _statusList) {
+					list.addItem(status);
+				}
+				this.rpStatusList.dataProvider = list;
+			}
+			/**
+			 * 状態チェックボックス設定終了.
+			 */
+			private function onRepeatEnd_rpStatusList(event:Event):void
+			{
+				// 初期表示データを取得する.
+				onClick_btnSearch(event);
+			}
+
+
+			/**
+			 * getProjectListの結果取得.
+			 * プロジェクトコンボボックスの設定.
+			 */
+			private function onResult_getRequestProjectList(event:ResultEvent):void
+			{
+				setProjectList(event);
+			}
+			private function onResult_getApprovalProjectList(event:ResultEvent):void
+			{
+				setProjectList(event);
+			}
+			private function onResult_getApprovalProjectList_AF(event:ResultEvent):void
+			{
+				setProjectList(event);
+			}
+			private function setProjectList(event:ResultEvent):void
+			{
+				_projectList = event.result as ArrayCollection;
+				var list:ArrayCollection = new ArrayCollection();
+				list.addItem({label:"全てのプロジェクト", data:-1, selected:true});
+				for each (var project:Object in _projectList) {
+					list.addItem(project);
+				}
+				this.cmbProject.dataProvider = list;
+
+				// 初期表示データを取得する.
+				onClick_btnSearch(event);
+			}
+
+			/**
+			 * getWholeBusinessListの結果取得.
+			 * 全社業務コンボボックスの設定.
+			 */
+			private function onResult_getWholeBusinessList(event:ResultEvent):void
+			{
+				setWholeBusinessList(event);
+			}
+			private function setWholeBusinessList(event:ResultEvent):void
+			{
+				_businessList = event.result as ArrayCollection;
+				var list:ArrayCollection = new ArrayCollection();
+				list.addItem({label:"全ての全社業務", data:-1, selected:true});
+				for each (var business:Object in _businessList) {
+					list.addItem({label:business.projectCode + " " + business.projectName, data:business.projectId});
+				}
+				this.cmbAllBusiness.dataProvider = list;
+
+				// 初期表示データを取得する.
+				onClick_btnSearch(event);
+			}
+
+
+			/**
+			 * getTransportationsの結果取得.
+			 * データ取得通知.
+			 */
+			private function onResult_getRequestTransportations(event:ResultEvent):void
+			{
+				getTransportations(event);
+			}
+			private function onResult_getApprovalTransportations(event:ResultEvent):void
+			{
+				getTransportations(event);
+			}
+			private function onResult_getApprovalTransportations_AF(event:ResultEvent):void
+			{
+				getTransportations(event);
+			}
+			private function getTransportations(event:ResultEvent):void
+			{
+				if (!this.btnSearch.enabled)	{
+					this.btnSearch.enabled = true;
+					this.searchOpt.enabled = true;
+				}
+				_transportationList = event.result as ArrayCollection;
+				// ResultEventを通知する.
+				var resultEvent:ResultEvent = event.clone() as ResultEvent;
+				dispatchEvent(resultEvent);
+			}
+
+
+			/**
+			 * RemoteObjectの呼び出し失敗.
+			 */
+			private function onFault(event:FaultEvent):void
+			{
+				// FaultEventを通知する.
+				var faultEvent:FaultEvent = event.clone() as FaultEvent;
+				dispatchEvent(faultEvent);
+			}
+
+
+			/**
+			 * 業務プロジェクトCheckBox選択.
+			 */
+			private function onClick_chkProject(event:MouseEvent):void
+			{
+				if (this.chkProject.selected) {
+					this.cmbProject.enabled = true;
+				}
+				else {
+					this.cmbProject.enabled = false;
+				}
+			}
+
+			/**
+			 * 全社業務CheckBox選択.
+			 */
+			private function onClick_chkAllBusiness(event:MouseEvent):void
+			{
+				if (this.chkAllBusiness.selected) {
+					this.cmbAllBusiness.enabled = true;
+					this.chkSubordinateOnly.enabled = true;
+				}
+				else {
+					this.cmbAllBusiness.enabled = false;
+					this.chkSubordinateOnly.enabled = false;
+				}
+			}
+
+
+			/**
+			 * 検索条件の初期設定.
+			 */
+			private function onCreateComplete():void
+			{
+				// trace (" onCreateComplete");
+				for each (var actionItem:Object in ACTION_VIEW_ITEMS) {
+					if (ObjectUtil.compare(_actionMode, actionItem.mode) == 0) {
+						_actionViewItem = actionItem;
+					}
+				}
+
+				if (_actionViewItem) {
+					// PM承認時は「部下のみ」チェックボックスを表示して選択状態とする
+					if (_actionViewItem.mode == AccountingLogic.ACTION_VIEW_APPROVAL) {
+						chkSubordinateOnly.visible = true;
+						chkSubordinateOnly.enabled = true;
+						chkSubordinateOnly.selected = true;
+					}
+					// 検索条件を取得する.
+					this.srv.getOperation(_actionViewItem.project).send(Application.application.indexLogic.loginStaff);
+					this.srv.getOperation(_actionViewItem.status).send();
+					this.srv2.getOperation("getWholeBusinessList").send();
+				}
+				else {
+					var faultEvent:FaultEvent = FaultEvent.createEvent(new Fault("", "動作モードの設定が不正です。"));
+					dispatchEvent(faultEvent);
+				}
+			}
+
+
+			/**
+			 * 初期表示データの取得.
+			 */
+			public function initTransportations():void
+			{
+				// trace (" initTransportations");
+				if (_actionViewItem) {
+					onClick_btnSearch(new Event("initTransportations"));
+				}
+			}
+
+
+			/**
+			 * 検索表示ボタンの押下.
+			 */
+			private function onChange_swSearch(event:Event):void
+			{
+				changeSwSearch();
+			}
+			/**
+			 * 検索表示ボタンの表示設定.
+			 */
+			private function changeSwSearch():void
+			{
+				if (this.swSearch.selected) {
+//					this.searchOpt.setStyle("borderStyle",     "outset");
+					this.searchOpt.setStyle("backgroundColor", 0xECE3EE);
+					this.swSearch.setStyle("icon", this.iconMinus);
+					this.swSearch.label = "検索条件を隠す";
+					this.searchGrid.percentWidth = 100;
+					this.searchGrid.percentHeight= 100;
+				}
+				else {
+//					this.searchOpt.setStyle("borderStyle",     "none");
+					this.searchOpt.setStyle("backgroundColor", 0xF8F4F9);
+					this.swSearch.setStyle("icon", this.iconPlus);
+					this.swSearch.label = "検索条件を開く";
+					this.searchGrid.width = 0;
+					this.searchGrid.height= 0;
+				}
+			}
+
+
+			/**
+			 * creationComplete処理.
+			 */
+			private function onCreationComplete(event:Event):void
+			{
+				// 検索表示ボタンを初期設定する.
+				changeSwSearch();
+
+				// 検索ボタンを初期設定する.
+				this.btnSearch.enabled = false;
+		 		this.searchOpt.enabled = false;
+			}
+
+
+			/** 動作モード */
+			private var _actionMode:String;
+			/**
+			 * 動作モードの設定.
+			 * 検索条件取得に動作モードが必要なためここで検索条件を取得する.
+			 */
+			public function set actionMode(mode:String):void
+			{
+				if (ObjectUtil.compare(_actionMode, mode) != 0) {
+					_actionMode = mode;
+					onCreateComplete();
+				}
+			}
+			/**
+			 * 動作モードの取得.
+			 */
+			public function get actionMode():String
+			{
+				return _actionMode;
+			}
+
+
+			/** + アイコン */
+//			[Embed(source="images/icon_plus.png")]
+			[Bindable]
+			public var iconPlus:Class;
+
+			/** － アイコン */
+//			[Embed(source="images/edit_no.png")]
+			[Bindable]
+			public var iconMinus:Class;
+
+		]]>
+	</mx:Script>
+
+</mx:HBox>

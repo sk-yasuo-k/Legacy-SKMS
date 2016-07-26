@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-beanutils-1.7.0.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-beanutils-1.7.0-src.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-collections-3.1.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-collections-3.1-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-el-1.0.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-el-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-fileupload-1.2.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-fileupload-1.2-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-io-1.3.2.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-io-1.3.2-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-validator-1.2.0.jar" sourcepath="webapp/WEB-INF/lib/sources/commons-validator-1.2.0-src.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/flex-messaging-common-3-0-0-544.jar" sourcepath="webapp/WEB-INF/lib/sources/flex-messaging-common-3-0-0-544-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/flex-messaging-core-3-0-0-544.jar" sourcepath="webapp/WEB-INF/lib/sources/flex-messaging-core-3-0-0-544-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/flex-messaging-opt-3-0-0-544.jar" sourcepath="webapp/WEB-INF/lib/sources/flex-messaging-opt-3-0-0-544-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/flex-messaging-proxy-3-0-0-544.jar" sourcepath="webapp/WEB-INF/lib/sources/flex-messaging-proxy-3-0-0-544-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/flex-messaging-remoting-3-0-0-544.jar" sourcepath="webapp/WEB-INF/lib/sources/flex-messaging-remoting-3-0-0-544-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jakarta-oro-2.0.8.jar" sourcepath="webapp/WEB-INF/lib/sources/jakarta-oro-2.0.8-sources.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/standard.jar" sourcepath="webapp/WEB-INF/lib/sources/jakarta-taglibs-standard-1.1.2-src.zip"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/log4j-1.2.13.jar" sourcepath="webapp/WEB-INF/lib/sources/log4j-1.2.13-sources.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-annotation_1.0_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-ejb_3.0_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-interceptor_3.0_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-jpa_3.0_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-jta_1.1_spec-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/geronimo-jta_1.1_spec-1.0-tsr.jar"/>
+	<classpathentry kind="lib" path="lib/geronimo-servlet_2.4_spec-1.0.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/postgresql-8.3-603.jdbc4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/mail-1.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ozacc-mail-1.2.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2mai-0.9.6.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2mai-tiger-0.9.6.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/velocity-1.5.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/velocity-tools-generic-1.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/iText-2.1.7.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/iTextAsian.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2blazeds-1.0.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2-extension-2.4.42.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2-framework-2.4.42.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/s2-tiger-2.4.42.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/antlr.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/backport-util-concurrent.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-digester-1.6.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/hsqldb-1.8.0.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/javassist-3.4.ga.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/jstl-1.1.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/junit-3.8.2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/junit-addons-1.4.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/ognl-2.6.9-patch-20090427.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/poi-3.10-FINAL-20140208.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/poi-examples-3.10-FINAL-20140208.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/poi-ooxml-3.10-FINAL-20140208.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/poi-ooxml-schemas-3.10-FINAL-20140208.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/poi-scratchpad-3.10-FINAL-20140208.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/portlet-api-1.0.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/sa-struts-1.0.2-rc2.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/struts-1.2.9.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/uow_api-6.jar"/>
+	<classpathentry kind="lib" path="webapp/WEB-INF/lib/xmlbeans-2.3.0.jar"/>
+	<classpathentry kind="output" path="webapp/WEB-INF/classes"/>
+</classpath>

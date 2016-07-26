@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:logic="subApplications.generalAffair.workingConditions.logic.*"
+	layout="absolute" width="100%" height="100%"
+	currentState="basic">
+	<logic:WorkingConditionsLogic id="workingConditionsLogic"/>
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="workingConditionsService" destination="workingConditionsService" showBusyCursor="true">
+		<mx:method name="getStaffNameList"
+			result="workingConditionsLogic.onResult_getStaffNameList(event)"
+			fault="workingConditionsLogic.onFault_getStaffNameList(event)"
+			/>
+		<mx:method name="getStaffWorkingHoursMonthlyList"
+			result="workingConditionsLogic.onResult_getStaffWorkingHoursMonthlyList(event)"
+			fault="workingConditionsLogic.onFault_getStaffWorkingHoursMonthlyList(event)"
+			/>
+	</mx:RemoteObject>
+	
+	<!--画面の切り替え-->
+	<mx:states>
+		<!--初期表示-->
+		<mx:State name="basic">
+			<mx:AddChild relativeTo="{linkButton}">
+				<mx:HBox>
+					<mx:LinkButton label="表示者選択" click="workingConditionsLogic.onClick_selectedEmp(event)"/>
+					<mx:LinkButton label="csvファイル出力" click="workingConditionsLogic.onClick_getCsv(event)"/>				
+					<!--<mx:LinkButton label="xmlファイル出力"/>-->
+				</mx:HBox>
+			</mx:AddChild>
+		</mx:State>
+		<!--社員選択決定時-->
+		<mx:State name="selectEmp">
+			<mx:AddChild relativeTo="{linkButton}">
+				<mx:HBox>
+					<mx:LinkButton label="表示者決定" click="workingConditionsLogic.onClick_ConfirmedEmp(event)"/>	
+				</mx:HBox>				
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:HBox height="100%" width="100%">
+		<mx:Spacer width="10"/>
+		<mx:VBox height="100%" width="100%">
+			<mx:Spacer height="10"/>			
+			<mx:HBox>
+				<mx:Label text="勤務状況集計" styleName="LargeBoldText" fontSize="12" fontWeight="bold"/>
+				<mx:VBox>					
+					<mx:Grid>
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" height="100%">
+								<mx:Text text="集計対象"/>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="勤務時間"
+										id="workingHoursCheckBox"/>
+									<mx:CheckBox label="実働時間"
+										id="realWorkingHoursCheckBox"/>
+									<mx:CheckBox label="控除"
+										id="deductionCountCheckBox"/>																
+								</mx:VBox>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="深夜勤務"
+										id="nightWorkCountCheckBox"/>
+									<mx:CheckBox label="休日出勤"
+										id="holidayWorkCountCheckBox" />
+								</mx:VBox>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="欠勤"
+										id="absenceCountCheckBox"/>								
+									<mx:CheckBox label="無断欠勤" 
+										id="absenceWithoutLeaveCountCheckBox"/>									
+								</mx:VBox>						
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="使用有給休暇数"
+										id="takenPaidVacationCountCheckBox"/>
+									<mx:CheckBox label="残有給休暇数"
+										id="currentPaidVacationCountCheckBox"/>
+								</mx:VBox>						
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="使用代休数"
+										id="takenCompensatoryDayOffCountCheckBox"/>
+									<mx:CheckBox label="残代休数"
+										id="currentCompensatoryDayOffCountCheckBox"/>																																		
+								</mx:VBox>
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:VBox>
+									<mx:CheckBox label="使用特別休暇数"
+										id="takenSpecialVacationCountCheckBox"/>
+									<mx:CheckBox label="残特別休暇数"
+										id="currentSpecialVacationCountCheckBox"/>
+										    
+								</mx:VBox>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+					<mx:Grid>
+						<mx:GridRow width="100%" height="100%">
+							<mx:GridItem width="100%" height="100%">
+								<mx:Text text="集計期間" />
+							</mx:GridItem>
+							<mx:GridItem width="100%" height="100%">
+								<mx:DateField id="startDateField" labelFunction="workingConditionsLogic.mydateformatter" />
+							</mx:GridItem>
+							<mx:GridItem autoLayout="true" >
+								<mx:Text text="～" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:DateField id="finishDateField" enabled="false"/>							
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:Button label="集計" click="workingConditionsLogic.onClick_AggregateButton(event)"/>
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+					<mx:CheckBox label="1ヶ月集計を行う" id="onlyOneMonthCheckBox" enabled="false" />
+				</mx:VBox>	
+			</mx:HBox>
+			<mx:Canvas id="linkButton"/>
+			<mx:DataGrid id="list" height="100%" click="workingConditionsLogic.onClick_DataGrid(event)">
+				<mx:columns>
+					<mx:DataGridColumn textAlign="center"
+						itemRenderer="subApplications.generalAffair.workingConditions.web.components.CheckBoxDataGridItemRenderer"
+						sortable="false"
+						width="40"
+						visible="false"
+						id="showColumn"
+						dataField="show"/>
+					<mx:DataGridColumn headerText="社員氏名" textAlign="left" width="80" 
+						id="staffFullNameColumn" dataField="staffFullName" />
+					<mx:DataGridColumn headerText="総勤務時間" textAlign="right" width="80"
+						id="workingHoursColumn" dataField="workingHours" labelFunction="workingConditionsLogic.numberFormat" />
+					<mx:DataGridColumn headerText="実勤務時間" textAlign="right" width="80"
+						id="realWorkingHoursColumn" dataField="realWorkingHours" labelFunction="workingConditionsLogic.numberFormat" />
+					<mx:DataGridColumn headerText="控除" textAlign="right" width="80"
+						id="deductionCountColumn" dataField="DeductionCount" labelFunction="workingConditionsLogic.numberFormat" />
+					<mx:DataGridColumn headerText="深夜勤務" textAlign="right" width="80"
+						id="nightWorkCountColumn" dataField="nightWorkCount" />
+					<mx:DataGridColumn headerText="休日出勤" textAlign="right" width="80"
+						id="holidayWorkCountColumn" dataField="holidayWorkCount" />
+					<mx:DataGridColumn headerText="欠勤" textAlign="right" width="80"
+						id="absenceCountColumn" dataField="absenceCount" />
+					<mx:DataGridColumn headerText="無断欠勤" textAlign="right" width="80"
+						id="absenceWithoutLeaveCountColumn" dataField="absenceWithoutLeaveCount" />					
+					<mx:DataGridColumn headerText="使用有給休暇数" textAlign="right" width="80"
+						id="takenPaidVacationCountColumn" dataField="takenPaidVacationCount" />
+					<mx:DataGridColumn headerText="残有給休暇数" textAlign="right" width="80"
+						id="currentPaidVacationCountColumn" dataField="currentPaidVacationCount" />						
+					<mx:DataGridColumn headerText="使用代休数" textAlign="right" width="80"
+						id="takenCompensatoryDayOffCountColumn" dataField="takenCompensatoryDayOffCount" />
+					<mx:DataGridColumn headerText="残代休数" textAlign="right" width="80"
+						id="currentCompensatoryDayOffCountColumn" dataField="currentCompensatoryDayOffCount" />
+					<mx:DataGridColumn headerText="使用特別休暇数" textAlign="right" width="80"
+						id="takenSpecialVacationCountColumn" dataField="takenSpecialVacationCount" />
+					<mx:DataGridColumn headerText="残特別休暇数" textAlign="right" width="80"
+						id="currentSpecialVacationCountColumn" dataField="currentSpecialVacationCount" /> 
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Module>

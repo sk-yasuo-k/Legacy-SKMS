@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:header="subApplications.personnelAffair.skill.web.*"
+	xmlns:logic="subApplications.personnelAffair.skill.logic.*">
+	
+	<!--Logicクラスの設定-->
+	<logic:SkillSheetViewLogic id="skillSheetViewLogic"/>
+
+	<!--RemoteObjectの設定 -->
+	<mx:RemoteObject id="skillSheetService" destination="skillSheetService">
+		<mx:method name="getStaffList"
+					result="skillSheetViewLogic.onResult_getStaffList(event)"
+					fault="skillSheetViewLogic.onFault_getInformation(event)" />
+		<mx:method name="getStaffSkillList"
+					result="skillSheetViewLogic.onResult_getStaffSkillList(event)"
+					fault="skillSheetViewLogic.onFault_getInformation(event)" />
+	</mx:RemoteObject>
+
+	<!--画面の設定-->
+	<mx:HDividedBox height="95%">
+
+		<!--社員リスト-->
+		<mx:VBox width="150" height="100%">
+			<mx:VBox width="100%">
+				<mx:Label text="社員名検索" width="100%" height="50%" fontSize="12" fontWeight="bold"/>
+				<mx:HBox width="100%" height="50%">
+					<mx:TextInput id="serachName" width="100%" imeMode="JAPANESE_HIRAGANA" enter="skillSheetViewLogic.onEnter_shaarchName()"/>
+					<mx:Button id="btnSearch" label="検索" fontSize="12" fontWeight="bold" click="skillSheetViewLogic.onClick_searchButton(event)"
+						enabled="false"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="100%" height="100%">
+				<mx:DataGrid id="staffList" height="100%" width="100%" fontSize="12" itemClick="skillSheetViewLogic.onClick_staffList(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" dataField="fullName"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:VBox>
+
+		<!--社員詳細-->
+		<mx:VDividedBox liveDragging="true" height="100%">
+			<mx:VBox width="100%" height="240">
+				<header:SkillSheetHeader id="skillSheetHeader"/>
+			</mx:VBox>
+			<mx:VBox width="100%" height="100%">
+				<mx:VBox width="100%" height="20">
+					<mx:HBox>
+						<mx:Spacer width="10"/>
+						<mx:LinkButton label="Excel形式にて出力" fontSize="12" fontWeight="bold" click="skillSheetViewLogic.onClick_linkList_export(event)"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VBox width="100%" height="100%">
+					<header:SkillSheetFooter id="skillSheetFooter" width="100%" height="100%"/>
+				</mx:VBox>
+			</mx:VBox>
+		</mx:VDividedBox>
+
+	</mx:HDividedBox>
+
+</mx:Module>

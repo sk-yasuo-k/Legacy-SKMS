@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	creationComplete="indexLogic.onCreationComplete_App(event);" xmlns:logic="logic.*">
+
+	<!-- CSSファイルの設定 -->
+	<mx:Style source="/css/common.css"/>
+
+	<!-- Logicクラスの設定 -->
+	<logic:IndexLogic id="indexLogic" />
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="loginService">
+		<mx:method name="getLoginUserInfo"
+			result="indexLogic.onGetLoginUserInfoResult(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+	</mx:RemoteObject>
+	<mx:RemoteObject id="srv2" destination="workingHoursService">
+		<mx:method name="getRecessHoursList"
+			result="indexLogic.onResult_getRecessHoursList(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+		<mx:method name="getLateDeductionList"
+			result="indexLogic.onResult_getLateDeductionList(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+	</mx:RemoteObject>
+	<mx:RemoteObject id="srv3" destination="systemService" showBusyCursor="true">
+		<mx:method name="getMenuList"
+			result="indexLogic.onResult_getMenuList(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+		<mx:method name="getMyMenuList"
+			result="indexLogic.onResult_getMyMenuList(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+		<mx:method name="entryMyMenuList"
+			result="indexLogic.onResult_entryMyMenuList(event)"
+			fault="indexLogic.onFault(event)"
+		/>
+	</mx:RemoteObject>
+
+    <mx:Script>
+        <![CDATA[
+//            [Bindable]
+//            public var _treeMenuItems:XML =
+//	            <root>
+//	                <node id="nodeHome" label="HOME" url="./subApplications/home/web/HomePage.swf">
+//	                </node>
+//	                <node id="nodeProject" label="プロジェクト" url="./subApplications/project/web/ProjectList.swf">
+//	                </node>
+//	                <node label="経理" url="">
+//	                    <node label="通勤費" url="">
+//	                        <node id="nodeCommutationRequest" label="作成・申請" url="./subApplications/accounting/web/CommutationRequest.swf">
+//	                        </node>
+//	                        <node id="nodeCommutationApproval" label="承認" url="./subApplications/accounting/web/CommutationApproval.swf">
+//	                        </node>
+//	                    </node>
+//	                    <node label="交通費" url="">
+//	                        <node id="nodeTransportRequest" label="作成・申請・受領" url="./subApplications/accounting/web/TransportRequest.swf">
+//	                        </node>
+//	                        <node id="nodeTransportApproval" label="承認・支払" url="./subApplications/accounting/web/TransportApproval.swf">
+//	                        </node>
+//	                        <node id="nodeTransportTotal" label="集計" url="./subApplications/accounting/web/TransportMonthly.swf">
+//	                        </node>
+//	                    </node>
+//	                    <node label="諸経費" url="">
+//	                        <node id="nodeOverheadRequest" label="作成・申請・受領" url="./subApplications/accounting/web/OverheadRequest.swf">
+//	                        </node>
+//	                        <node id="nodeOverheadApproval" label="承認・支払" url="./subApplications/accounting/web/OverheadApproval.swf">
+//	                        </node>
+//	                        <!--
+//	                        <node id="nodeOverheadTotal" label="集計" url="./subApplications/accounting/web/OverheadMonthly.swf">
+//	                        </node>
+//	                        -->
+//	                    </node>
+//	                </node>
+//	                <node label="総務" url="">
+//	                    <node label="勤務管理表" url="">
+//	                        <node id="nodeWorkingHoursApply" label="作成・提出" url="./subApplications/generalAffair/web/WorkingHoursEntry.swf">
+//	                        </node>
+//	                        <node id="nodeWorkingHoursApproval" label="承認" url="./subApplications/generalAffair/web/WorkingHoursApproval.swf">
+//	                        </node>
+//	                        <node id="nodeWorkingHoursTotal" label="集計" url="./subApplications/generalAffair/web/WorkingHoursMonthly.swf">
+//	                        </node>
+//	                        <node id="nodeWorkingHoursUpload" label="インポート" url="./subApplications/generalAffair/web/WorkingHoursImport.swf">
+//	                        </node>
+//	                        <node id="nodeWorkingConditions" label="勤務状況集計" url="./subApplications/generalAffair/workingConditions/web/WorkingConditions.swf">
+//	                        </node>
+//	                        <node id="nodePaidVacationMaintenance" label="有給・代休メンテ" url="./subApplications/generalAffair/paidVacationMaintenance/web/PaidVacationMaintenance.swf">
+//	                        </node>	                        
+//	                    </node>
+//	                    <node label="住所変更" url="">
+//		                    <node id="nodeChangeAddressApply" label="作成・提出" url="./subApplications/generalAffair/web/ChangeAddressApply.swf">
+//		                    </node>
+//		                    <node id="nodeChangeAddressApproval" label="承認" url="./subApplications/generalAffair/web/ChangeAddressApproval.swf">
+//		                    </node>
+//	                    </node>
+//	                    <node label="委員会" url="">
+//	                        <node id="nodeCommittee" label="委員長会議" url="./subApplications/generalAffair/web/Conference.swf">
+//	                        </node>
+//	                        <node id="{CommitteeId.ENVIRONMENT}" label="環境美化" url="./subApplications/generalAffair/web/Committee.swf">
+//	                        </node>
+//	                        <node id="{CommitteeId.TRAINING}" label="研修" url="./subApplications/generalAffair/web/Committee.swf">
+//	                        </node>
+//	                        <node id="{CommitteeId.PUBLICITY}" label="広報" url="./subApplications/generalAffair/web/Committee.swf">
+//	                        </node>
+//	                        <node id="{CommitteeId.FACILITIES}" label="設備" url="./subApplications/generalAffair/web/Committee.swf">
+//	                        </node>
+//	                        <node id="{CommitteeId.WELFARE}" label="福利厚生" url="./subApplications/generalAffair/web/Committee.swf">
+//	                        </node>
+//	                    </node>
+//	                    <node id="nodeLunch" label="お弁当" url="./subApplications/generalAffair/web/Lunch.swf">
+//	                    </node>
+//	                  	<node label="お弁当">
+//	                    	<node label="注文" url="./subApplications/lunch/web/Lunch.swf" />
+//	                    </node>
+//	                    <node label="セミナー" url="" id="nodeSeminer">
+//	                        <node id="" label="登録" url=".">
+//	                        </node>
+//	                        <node id="" label="参加申請" url="">
+//	                        </node>
+//	                    </node>
+//	                </node>	                
+//	                <node label="人事" url="">
+//                        <node id="nodeStaffProfileList" label="社員名簿(一覧)" url="./subApplications/personnelAffair/profile/web/ProfileList.swf">
+//                        </node>
+//	                   	<node label="業務履歴" url="./subApplications/personnelAffair/skill/web/SkillSheet.swf">
+//	                    </node>
+//	                    <node label="業務履歴一覧" url="./subApplications/personnelAffair/skill/web/SkillSheetView.swf">
+//	                    </node>
+//	                    <node label="資格取得状況" url="./subApplications/personnelAffair/web/Licence.swf">
+//	                    </node>
+//                        <node id="nodeStaffWorkStatus" label="新入社員登録" url="./subApplications/generalAffair/web/StaffEntry.swf">
+//                        </node>	                    
+//	                    <node label="資格評定" url="" id="nodeQualificationsAssessment" >
+//	                        <node id="nodeCompanyLicenseList" label="一覧" url="./subApplications/personnelAffair/license/web/CompanyLicense.swf">
+//	                        </node>
+//	                        <node id="nodeQualificationEntry" label="評定" url="./subApplications/personnelAffair/web/QualificationEntry.swf">
+//	                        </node>
+//	                    </node>                   
+//	                    <node id="nodeWorkStatus" label="就労状況" url="./subApplications/personnelAffair/web/WorkStatus.swf">
+//	                    </node>
+//	                    <node id="nodeBelonging" label="部署・勤務地" url="./subApplications/personnelAffair/web/Belonging.swf">
+//	                    </node>
+//	                </node>
+//	                <node label="メンテナンス" id="nodeMaintenance" url="">
+//	                	<node label="社員名簿(一覧)" >
+//							<node id="nodeAuthorityProfileItemSelect" label="一覧項目表示設定" url="./subApplications/personnelAffair/authority/web/AuthorityProfileItemSelect.swf">
+//                        	</node>                        	                		
+//	                	</node>
+//	                	<node label="お弁当" >
+//                    		<node id="nodeRegisterShopMenu" label="ショップメニュー登録" url="./subApplications/lunch/web/RegisterShopMenu.swf" />	                    		
+//                    		<node id="nodeRegisterMenu" label="メニュー登録" url="./subApplications/lunch/web/RegisterMenu.swf" />
+//                    		<node id="nodeRegisterCategory" label="カテゴリー登録" url="./subApplications/lunch/web/RegisterCategory.swf" />
+//                    		<node id="nodeRegisterOptionSet" label="オプションセット登録" url="./subApplications/lunch/web/RegisterOptionSet.swf" />
+//                    		<node id="nodeRegisterOptionKind" label="オプション種類登録" url="./subApplications/lunch/web/RegisterOptionKind.swf" />
+//                    		<node id="nodeRegisterOption" label="オプション登録" url="./subApplications/lunch/web/RegisterOption.swf" />
+//                    		<node id="nodeRegisterShop" label="店舗登録" url="./subApplications/lunch/web/RegisterShop.swf" />
+//                    		<node id="nodeRegisterShopAdmin" label="担当者登録" url="./subApplications/lunch/web/RegisterShopAdmin.swf" />	                	
+//	                	</node>
+//	                </node>
+//	                <node id="nodeCustomer" label="取引先" url="./subApplications/customer/web/CustomerList.swf">
+//	                </node>
+//	                <node id="nodeSetting" label="環境設定" url="./subApplications/system/web/StaffSetting.swf">
+//	                </node>
+//	                <node id="nodeSchedule" label="La!Coodaに戻る" url="https://www.sfk-carp.jp/wiz/">
+//	                </node>
+//	            </root>;
+
+			// 選択されたメニュー
+			public function get selectedMenu():Object
+			{
+				return indexLogic.selectedMenuItem;
+			}
+			
+        ]]>
+
+    </mx:Script>
+
+	<mx:HBox id="allContents" x="0" y="0" width="100%" height="100%" visible="true">
+		<mx:VBox height="100%" width="150" backgroundColor="#FFFFFF">
+			<mx:Image source="./images/rogo.gif"  scaleContent="true" autoLoad="true" />
+			<mx:VDividedBox id="menuArea" height="100%" width="100%" liveDragging="true" visible="false">
+				<mx:VBox id="myMenuArea" height="40%" width="100%">
+					<!-- itemClick追加 @auther okamoto -->
+					<mx:Tree id="myMenu" width="100%" height="100%" 
+						 showRoot="false" labelField="alias"
+						 initialize="indexLogic.onInitialize_myTreeMenu(event);"
+						 change="indexLogic.onChange_myMenu(event);"
+						 
+						 itemClick="indexLogic.itemClickHandler(event);"
+						 
+						 borderStyle="none" styleName="LargeText"
+						 dragStart="indexLogic.onDragStart_myMenu(event);"
+						 dragDrop="indexLogic.onDragDrop_myMenu(event);"
+						 dragComplete="indexLogic.onDragComplete_myMenu(event);"
+						 />
+					<mx:Canvas>
+						<mx:Button id="btnEdit" toggle="true" x="15"
+							label="マイメニュー登録" styleName="SmallText"
+							click="indexLogic.onClick_btnEdit(event);" />
+					</mx:Canvas>
+					<mx:HRule width="100%" />
+				</mx:VBox>
+				<mx:VBox height="60%" width="100%">	
+					<!-- itemClick追加 @auther okamoto -->			
+					<mx:Tree id="treeMenu" width="100%" height="100%" 
+						 showRoot="false" 
+						 initialize="indexLogic.onInitialize_treeMenu(event);"
+						 change="indexLogic.onChange_treeMenu(event);"
+						 
+						 itemClick="indexLogic.itemClickHandler(event);"
+						 
+					 	 borderStyle="none" styleName="LargeText"
+						 dragStart="indexLogic.onDragStart_treeMenu(event);"
+						 dragEnter="indexLogic.onDragEnter_treeMenu(event);"
+					 	 />
+					 
+					 	 
+				</mx:VBox>			
+			</mx:VDividedBox>
+		</mx:VBox>
+		<mx:VBox height="100%" width="90%" id="rightContent" >
+			<mx:Canvas id="header" width="100%"  backgroundColor="#DBFCFC" backgroundAlpha="1.0" alpha="1.0">
+				<mx:Label id="todayDate" x="10" y="2" text="2008年11月10日(月) " width="142" styleName="LargeText"/>
+				<mx:Label id="loginUser" x="149" y="2" width="246" styleName="LargeText"/>
+				<mx:LinkButton id="contentsHelp" label="ヘルプ" icon="@Embed(source='images/icon_help.gif')"  x="{header.width - contentsHelp.width}" y="2" click="indexLogic.onClick_contentsHelp(event);" />
+			</mx:Canvas>
+			<mx:ModuleLoader id="body" width="100%" height="100%" backgroundColor="#F8F4F9">
+			</mx:ModuleLoader>
+			<mx:Canvas id="footer" width="100%" >
+				<mx:Label text="Copyright (C) 2009 Softkaihatsu.co.jp All Rights Reserved. "
+					 horizontalCenter="0" verticalCenter="0"/>
+			</mx:Canvas>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Application>

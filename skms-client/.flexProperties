@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexProperties flexServerType="2" serverContextRoot="/skms-server" serverRoot="${DOCUMENTS}/skms-server/webapp" serverRootURL="http://localhost:8400/skms-server" toolCompile="true" useServerFlexSDK="false" version="1"/>

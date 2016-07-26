@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.license.logic.*"
+	xmlns:cmp="components.*"
+	>
+	
+	<!-- Logicクラスの設定 -->
+	<logic:CompanyLicenseLogic id="companyLicenseLogic"/>
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="companyLicenseService" destination="companyLicenseService">
+		<!-- 資格手当取得リストの取得する -->
+		<mx:method name="getMPayLicenceList"
+					result="companyLicenseLogic.onResult_showMPayLicenceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteMPayLicenceList(event)" />
+		<!-- 資格手当取得リストの取得する【初期状態】 -->
+		<mx:method name="getSeveMPayLicenceList"
+					result="companyLicenseLogic.onResult_showSeveMPayLicenceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteSaveMPayLicenceList(event)" />
+		<!-- 資格手当取得リストの取得する【前期確認】 -->
+		<mx:method name="getCopyMPayLicenceList"
+					result="companyLicenseLogic.onResult_showCopyMPayLicenceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteCopyMPayLicenceList(event)" />
+		<!-- 期マスタの取得する -->
+		<mx:method name="getPeriodList"
+					result="companyLicenseLogic.onResult_showPeriodList(event)" 
+					fault="companyLicenseLogic.onFault_remotePeriodList(event)" />	
+		<!-- 等級マスタの取得する -->
+		<mx:method name="getBasicClassPayList"
+					result="companyLicenseLogic.onResult_showBasicClassPayList(event)" 
+					fault="companyLicenseLogic.onFault_remoteBasicClassPayList(event)" />	
+		<!-- 基本給マスタの取得する -->
+		<mx:method name="getBasicPayList"
+					result="companyLicenseLogic.onResult_showBasicRankPayList(event)" 
+					fault="companyLicenseLogic.onFault_remoteBasicRankPayList(event)" />
+		<!-- 職務手当マスタの取得する -->
+		<mx:method name="getManagerialAllowanceList"
+					result="companyLicenseLogic.onResult_showManagerialAllowanceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteManagerialAllowanceList(event)" />
+		<!-- 主務手当マスタの取得する -->
+		<mx:method name="getCompetentAllowanceList"
+					result="companyLicenseLogic.onResult_showCompetentAllowanceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteCompetentAllowanceList(event)" />
+		<!-- 技能手当マスタの取得する -->
+		<mx:method name="getMTechnicalSkillAllowanceList"
+					result="companyLicenseLogic.onResult_showMTechnicalSkillAllowanceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteMTechnicalSkillAllowanceList(event)" />
+		<!-- 認定資格手当マスタの取得する -->
+		<mx:method name="getMInformationAllowanceList"
+					result="companyLicenseLogic.onResult_showMInformationAllowanceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteMInformationAllowanceList(event)" />
+		<!-- 住宅手当マスタの取得する -->
+		<mx:method name="getMHousingAllowanceList"
+					result="companyLicenseLogic.onResult_showMHousingAllowanceList(event)" 
+					fault="companyLicenseLogic.onFault_remoteMHousingAllowanceList(event)" />
+		<!-- 資格手当取得履歴を追加する -->
+		<mx:method name="insertMPayLicenceList"
+					result="companyLicenseLogic.onResult_insertMPayLicenceList(event)" 
+					fault="companyLicenseLogic.onFault_failureSave(event)" />																	
+	</mx:RemoteObject>
+	
+	<mx:Script>
+		<![CDATA[
+			import components.ComboBoxEx;
+			import components.TimeComboBox;
+			import utils.LabelUtil;	
+			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.controls.ComboBox;
+			import mx.events.DataGridEvent;
+			import logic.Logic;
+			
+			/**
+			 * DataGrid 用 のitemEditor
+			 * 
+			 * @param e	DataGridEvent
+			 */
+			private function myItemFocusIn(e:DataGridEvent):void {
+				var dg:DataGrid = e.currentTarget as DataGrid;
+				
+				if (dg.itemEditorInstance && dg.itemEditorInstance is ComboBox) {
+					var column:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+					var combo:ComboBox = dg.itemEditorInstance as ComboBox;
+					var cell:Object = dg.selectedItem.hasOwnProperty(column.dataField) ? dg.selectedItem[column.dataField] : "";
+						
+					// 選択した項目が資格【等級】の場合
+					if(column.dataField == "basicPayClassNoName")
+					{
+						trace("資格【等級】");
+						combo.dataProvider = companyLicenseLogic.basicClassList;
+					}
+					// 選択した項目が資格【号】の場合
+					else if(column.dataField == "basicPayRankNo")
+					{
+						trace("資格【号】");
+						combo.dataProvider = companyLicenseLogic.basicRankList;
+					}				
+					// 選択した項目が職務手当【等級】の場合
+					else if(column.dataField == "managerialClassNo")
+					{
+						trace("職務手当【等級】");
+						combo.dataProvider = companyLicenseLogic._mManagerialAllowanceLabel;
+					}
+					// 選択した項目が主務手当【等級】の場合
+					else if(column.dataField == "competentClassNo")
+					{
+						trace("主務手当【等級】");
+						combo.dataProvider = companyLicenseLogic._mCompetentAllowanceLabel;
+					}				
+					// 選択した項目が技能手当【等級】の場合
+					else if(column.dataField == "technicalSkillClassNo")
+					{
+						trace("技能手当【等級】");
+						combo.dataProvider = companyLicenseLogic._mTechnicalSkillAllowanceLabel;
+					}									
+					// 選択した項目が資格手当名の場合
+					else if(column.dataField == "informationPayName")
+					{
+						trace("資格手当名");
+						combo.dataProvider = companyLicenseLogic._mInformationAllowanceLabel;
+					}
+					// 選択した項目が住宅手当名の場合
+					else if(column.dataField == "housingName")
+					{
+						trace("住宅手当名");
+						combo.dataProvider = companyLicenseLogic._mHousingAllowanceLabel;
+					}
+					
+					// コンボボックス表示に初期値を設定する
+					if (cell) 
+					{	var ac:Object = combo.dataProvider;
+						for(var cnt:int = 0; cnt < ac.length; ++cnt){
+							if(ac[cnt].label == cell.toString()){
+								combo.selectedIndex = cnt;
+								break;
+							}							
+						}
+					}
+					
+					// コンボボックスOpen判定処理
+					if(companyLicenseLogic.closeColumnIndex == true)
+					{combo.open();}
+				}
+			}
+						trace("終了");
+		]]>
+	</mx:Script>
+	
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Spacer width="20" />
+		<mx:HBox width="100%">
+			<mx:Spacer width="5" />
+			<mx:Label id="linkPeriod" text="00期" width="10%" height="10%" styleName="LargeBoldText"/>
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前年度" icon="@Embed('images/arrow_previous.gif')" click="companyLicenseLogic.onClick_linkPreviousMonth(event)"/>
+			<mx:Label id="lblWorkingMonth" text="0000年00月～0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月度" icon="@Embed('images/arrow_next.gif')" click="companyLicenseLogic.onClick_linkNextMonth(event)"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:Label text="社内資格" styleName="LargeBoldText"/>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Spacer width="20" />
+			<mx:VBox width="5%">
+			<mx:Button id="btnUpdate" label="更新" click="companyLicenseLogic.onClick_updateMPayLicenceHistory(event)" enabled="false"/>
+			</mx:VBox>
+			<mx:Button id="copyList" label="前期の社内資格一覧を複製" click="companyLicenseLogic.onClick_copyList(event)" width="180" enabled="false"/>
+		</mx:HBox>
+			<mx:DataGrid id="licencePayList" width="1100" editable="true" itemClick="companyLicenseLogic.onClick_staffSelect(event)" height="390" itemFocusIn="myItemFocusIn(event)" headerHeight="37">
+				<mx:columns>
+			  	<mx:DataGridColumn id="columnFullName" headerText="社員名" dataField="fullName" width="50" textAlign="center" editable="false" draggable="false">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn id="columnBasicClassNo" headerText="資格{'\n'}【等級】" dataField="basicPayClassNoName" width="40" textAlign="center" itemEditor="mx.controls.ComboBox" editable="true"/>					
+			    <mx:DataGridColumn id="columnBasicRankNo" headerText="資格{'\n'}【号】" dataField="basicPayRankNo" width="35" textAlign="center" itemEditor="mx.controls.ComboBox"  editable="true"/>					
+				<mx:DataGridColumn headerText="基本給" dataField="BasicPayMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn id="columnManagerialClassNo" headerText="職務手当{'\n'}【等級】" dataField="managerialClassNo" width="50" textAlign="center" itemEditor="mx.controls.ComboBox"/>			
+				<mx:DataGridColumn headerText="職務手当" headerWordWrap="true" dataField="ManagerialMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>											
+				<mx:DataGridColumn id="columnCompetentClassNo" headerText="主務手当{'\n'}【等級】" dataField="competentClassNo" width="50" textAlign="center" itemEditor="mx.controls.ComboBox"/>					
+				<mx:DataGridColumn headerText="主務手当" dataField="CompetentMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>										
+				<mx:DataGridColumn id="columnTechnicalSkillClassNo" headerText="技能手当{'\n'}【等級】" dataField="technicalSkillClassNo" width="50" textAlign="center" itemEditor="mx.controls.ComboBox"/>		
+				<mx:DataGridColumn headerText="技能手当" dataField="TechnicalSkillMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>										
+				<mx:DataGridColumn id="columnInformationPayName" headerText="資格手当名" dataField="informationPayName" width="70" textAlign="center" itemEditor="mx.controls.ComboBox"/>				
+				<mx:DataGridColumn headerText="資格手当" dataField="InformationPayMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn id="columnHousingName" headerText="住宅手当名" dataField="housingName" width="75" textAlign="center" itemEditor="mx.controls.ComboBox">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn headerText="住宅手当" dataField="HousingPayMonthlySum" width="50" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn headerText="超過勤務手当" dataField="ExceedServiceSalary" width="80" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn headerText="給与総額" dataField="TotalAllowance" width="60" textAlign="right" labelFunction="{LabelUtil.currencyLabel}" editable="false">
+					<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				</mx:columns>
+			</mx:DataGrid>
+	</mx:VBox>
+</mx:Module>

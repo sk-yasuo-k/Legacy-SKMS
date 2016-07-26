@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:logic="subApplications.project.logic.*"
+	xmlns:logicC="subApplications.project.logic.custom.*"
+	xmlns:comp="components.*"
+	>
+
+	<!-- Logicの設定 -->
+	<logic:ProjectLogic        id="projectLogic" />
+	<logicC:ProjectSearchLogic id="projectSearchLogic" />
+
+	<!-- 画面表示 -->
+	<mx:Button label="検索" id="btnSearch" click="projectSearchLogic.onClick_btnSearch(event);"/>
+	<mx:HBox id="searchOpt">
+		<mx:Button id="swSearch" toggle="true" change="projectSearchLogic.onChange_swSearch(event);" skin="{null}" color="#4169E1" styleName="LargeText"/>
+
+		<mx:Grid   id="searchGrid" width="0" height="0">
+			<mx:GridRow />
+			<!-- Define Row 1. -->
+			<mx:GridRow id="rowProjectCode">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="プロジェクトコード" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:TextInput id="projectCode" maxChars="12" restrict="[0-9,A-Z,\-]" />
+					<mx:CheckBox  id="chkBelongProject" label="あなたが所属しているプロジェクトのみ" selected="true"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 2. -->
+			<mx:GridRow id="rowProjectName" >
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="プロジェクト名" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:TextInput id="projectName" maxChars="128" />
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 3. -->
+			<mx:GridRow id="rowProjectManager" >
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="PM" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:ComboBox id="cmbProjectManager" />
+					<mx:Label text="プロジェクトメンバー名" />
+					<mx:TextInput id="txtProjectMemberName" />
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 4. -->
+			<mx:GridRow id="rowActualStartDate" >
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="開始実績日" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<comp:EditDateField id="actualStartDateFrom" selectableRange="{this.actualStartDateTo.selectedDate   ? {rangeEnd:this.actualStartDateTo.selectedDate}     : null}"/>
+					<mx:Text text="～" />
+					<comp:EditDateField id="actualStartDateTo"   selectableRange="{this.actualStartDateFrom.selectedDate ? {rangeStart:this.actualStartDateFrom.selectedDate} : null}"/>
+					<mx:Spacer width="10" />
+					<mx:CheckBox id="actualStartDateNone" label="未設定も含める" selected="true" />
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 5. -->
+			<mx:GridRow id="rowActualFinishDate" >
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="完了実績日" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<comp:EditDateField id="actualFinishDateFrom" selectableRange="{this.actualFinishDateTo.selectedDate   ? {rangeEnd:this.actualFinishDateTo.selectedDate}     : null}"/>
+					<mx:Text text="～" />
+					<comp:EditDateField id="actualFinishDateTo"   selectableRange="{this.actualFinishDateFrom.selectedDate ? {rangeStart:this.actualFinishDateFrom.selectedDate} : null}"/>
+					<mx:Spacer width="10" />
+					<mx:CheckBox id="actualFinishDateNone" label="未設定も含める" selected="true" />
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow />
+		</mx:Grid>
+
+		<mx:Spacer width="10" />
+	</mx:HBox>
+
+
+	<!-- metaデータの設定 -->
+	<mx:Metadata>
+		[Event(name="result", type="mx.rpc.events.ResultEvent")]
+		[Event(name="fault",  type="mx.rpc.events.FaultEvent")]
+	</mx:Metadata>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="projectService" showBusyCursor="true" fault="projectSearchLogic.onFault(event);">
+		<mx:method name="getProjectList"
+			result="projectSearchLogic.onResult_getProjectList(event)"
+			/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import mx.collections.ArrayCollection;
+
+			/**
+			 * プロジェクトマネージャリストの登録.
+			 */
+			public function set entryProjectManagerList(value:ArrayCollection):void
+			{
+				projectSearchLogic.displayProjectManager(value);
+			}
+
+			/**
+			 * プロジェクトリストの取得.
+			 */
+			public function getProjectList():void
+			{
+				projectSearchLogic.getProjectList();
+			}
+
+			/** + アイコン */
+//			[Embed(source="images/icon_plus.png")]
+			[Bindable]
+			public var iconPlus:Class;
+
+			/** － アイコン */
+//			[Embed(source="images/edit_no.png")]
+			[Bindable]
+			public var iconMinus:Class;
+		]]>
+	</mx:Script>
+</mx:HBox>

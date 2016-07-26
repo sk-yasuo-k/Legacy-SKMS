@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*">
+	
+	<!-- Logicクラスの設定 -->
+	<logic:CommutationRequestLogic id="commutationRequestLogic" />
+
+	<!-- 通勤費申請画面 -->
+	<mx:VBox x="5" y="0" width="99%" height="99%" >
+		<mx:Label text="通勤費申請" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前月" icon="@Embed('images/arrow_previous.gif')"
+				click="commutationRequestLogic.onClick_linkPreviousMonth(event);"/>
+			<mx:Label id="lblCommuMonth" text="0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月" icon="@Embed('images/arrow_next.gif')"
+				click="commutationRequestLogic.onClick_linkNextMonth(event);"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:LinkButton id="linkShowDateSetting" label="指定月にジャンプ..."
+					click="commutationRequestLogic.onClick_linkShowDateSetting(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideDateSetting" width="100%" height="0">
+				<mx:VBox backgroundColor="0xECE3EE">
+					<mx:Spacer height="1" />
+					<mx:HBox>
+						<mx:Spacer width="1" />
+						<mx:LinkButton id="linkHideDateSetting" label="閉じる"
+							click="commutationRequestLogic.onClick_linkHideDateSetting(event);"/>
+						<mx:Label text="勤務月" styleName="LargeText"/>
+						<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+						<mx:Label text="年" styleName="LargeText"/>
+						<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+						<mx:Label text="月" styleName="LargeText"/>
+						<mx:Button id="btnRefresh" label="表示"
+							click="commutationRequestLogic.onClick_btnRefresh(event)"/>
+						<mx:Spacer width="1" />
+					</mx:HBox>
+					<mx:Spacer height="1" />
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Repeater id="rpLinkList" dataProvider="">
+				<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+					enabled="{rpLinkList.currentItem.enabled}"
+					click="commutationRequestLogic.onClick_linkList(event);" />
+			</mx:Repeater>
+		</mx:HBox>
+		
+		<mx:VDividedBox width="100%" height="100%">
+			<!-- 通勤費詳細タブ -->
+			<mx:Canvas width="100%" height="55%">
+				<mx:TabNavigator id="tabnavi" width="100%" height="100%" />
+			</mx:Canvas>
+			
+			
+			<!-- 画面下部 -->
+			<mx:Canvas width="100%" height="45%">
+				<mx:HDividedBox width="100%" height="100%">
+					<!-- 通勤費合計額 -->
+					<mx:Canvas width="60%" height="100%">
+						<mx:Form>
+							<mx:FormItem label="合計金額" required="false" direction="horizontal">
+								<mx:Label id="expenseTotal" styleName="LargeBoldText" width="120" textAlign="right" />
+								<mx:Label text="円" styleName="LargeBoldText"/>
+							</mx:FormItem>
+						
+							<mx:FormItem label="払戻額" required="false" direction="horizontal">
+								<mx:TextInput id="repayment" maxChars="6" editable="true" width="120" height="22" textAlign="right"
+									 change="commutationRequestLogic.change_Repayment(event)"
+									 focusOut="commutationRequestLogic.focusOut_Repayment(event)" />
+								<mx:Label text="円" styleName="LargeBoldText"/>
+							</mx:FormItem>
+				
+				
+							<mx:FormItem label="差引支給額" required="false" direction="horizontal">
+								<mx:Label  id="payment" styleName="LargeBoldText" width="120" textAlign="right"/>
+								<mx:Label text="円" styleName="LargeBoldText"/>
+								<mx:Spacer/>
+							</mx:FormItem>
+							<mx:FormItem label="">
+								<mx:Spacer width="10" />
+							</mx:FormItem>
+							<mx:FormItem label="備考" required="false" direction="horizontal">
+								<mx:TextArea  id="note" maxChars="256"  editable="true" wordWrap="true" width="480"
+									 change="commutationRequestLogic.change_Note(event)" />
+							</mx:FormItem>
+							
+							<mx:FormItem label="通勤費担当" required="false" direction="horizontal">
+								<mx:TextArea  id="noteCharge" maxChars="256"  editable="false" wordWrap="true" width="480"/>
+							</mx:FormItem>
+						</mx:Form>				
+					</mx:Canvas>
+					<!-- 通勤費申請手続き履歴一覧 -->
+					<mx:VBox width="30%" height="100%">
+						<mx:HBox>
+							<mx:Label text="申請の履歴"  styleName="LargeText"/>
+						</mx:HBox>
+						<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+						id="grdCommutationHistory"
+						editable="false"
+						allowMultipleSelection="false"
+						sortableColumns="false"
+						verticalScrollPolicy="on"
+						rowHeight="24"
+						variableRowHeight="true"
+						wordWrap="true"
+						>
+						
+							<mx:columns>
+								<mx:DataGridColumn
+									editable="false"
+									width="150"
+									headerText="日時"
+									dataField="registrationTime"
+									labelFunction="{commutationRequestLogic.dateTimeLabel}"
+									textAlign="left">
+									<mx:headerRenderer>
+									<mx:Component>
+									<mx:Label textAlign="center"/>
+									</mx:Component>
+									</mx:headerRenderer>
+								</mx:DataGridColumn>
+								<mx:DataGridColumn
+									width="250"
+									headerText="内容"
+									dataField="comment"
+									labelFunction="{commutationRequestLogic.commentLabel}"
+									textAlign="left">
+									<mx:headerRenderer>
+									<mx:Component>
+									<mx:Label textAlign="center"/>
+									</mx:Component>
+									</mx:headerRenderer>
+								</mx:DataGridColumn>
+							</mx:columns>
+						</mx:DataGrid>
+					</mx:VBox>
+				</mx:HDividedBox>
+			</mx:Canvas>
+		</mx:VDividedBox>
+	</mx:VBox>
+		
+		
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="commutationService" showBusyCursor="true">
+		<mx:method name="getCommutation"
+			result="commutationRequestLogic.onResult_getCommutation(event);"
+			fault="commutationRequestLogic.onFault_getCommutation(event);"
+		/>
+			
+		<mx:method name="getCommutationCopy"
+			result="commutationRequestLogic.onResult_getCommutationCopy(event);"
+			fault="commutationRequestLogic.onFault_getCommutationCopy(event);"
+		/>
+			
+			
+		<mx:method name="insertCommutation"
+			result="commutationRequestLogic.onResult_insertCommutation(event)"
+			fault="commutationRequestLogic.onFault_insertCommutation(event)"
+		/>			
+
+		<mx:method name="updateCommutation"
+			result="commutationRequestLogic.onResult_updateCommutation(event)"
+			fault="commutationRequestLogic.onFault_updateCommutation(event)"
+		/>
+
+		<mx:method name="insertCommutationHistory"
+			result="commutationRequestLogic.onResult_updateCommutation(event)"
+			fault="commutationRequestLogic.onFault_insertCommutation(event)"
+		/>			
+		
+		<mx:method name="applyCommutation"
+			result="commutationRequestLogic.onResult_applyCommutation(event)"
+			fault="commutationRequestLogic.onFault_applyCommutation(event)"
+		/>
+		
+		<mx:method name="applyCancelCommutation"
+			result="commutationRequestLogic.onResult_applyCancelCommutation(event)"
+			fault="commutationRequestLogic.onFault_applyCancelCommutation(event)"
+		/>
+		
+		<mx:method name="getStaffAddressList"
+			result="commutationRequestLogic.onResult_getStaffAddressList(event)"
+			fault="commutationRequestLogic.onFault_getStaffAddressList(event)"
+		/>
+	</mx:RemoteObject>
+	
+	<mx:RemoteObject id="srv2" destination="transportationService" showBusyCursor="true">
+		<mx:method name="getFacilityNameList"
+			result="commutationRequestLogic.onResult_getFacilityNameList(event)"
+			fault="commutationRequestLogic.onFault_getFacilityNameList(event)"
+			/>
+	</mx:RemoteObject>
+
+	
+	
+	
+	
+</mx:Module>

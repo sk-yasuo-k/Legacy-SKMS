@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	xmlns:search="subApplications.accounting.web.*"
+	>
+	<!-- Logicクラスの設定 -->
+	<logic:TransportRequestLogic id="transportRequestLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%" >
+		<mx:HBox width="100%">
+			<mx:Label text="交通費一覧" styleName="LargeBoldText" />
+			<mx:Spacer width="10" />
+			<search:TransportSearch id="transportationSearch"
+				result="transportRequestLogic.onResult_transportationSearch(event);"
+				fault ="transportRequestLogic.onFault_transportationSearch(event);"/>
+		</mx:HBox>
+
+		<mx:VDividedBox liveDragging="true" width="100%" height="100%">
+			<mx:HDividedBox width="100%" height="40%">
+				<!-- 交通費申請一覧 -->
+				<mx:VBox width="70%" height="100%">
+					<mx:HBox height="24">
+						<mx:Repeater id="rpLinkList" dataProvider="">
+							<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+								enabled="{rpLinkList.currentItem.enabled}"
+								click="transportRequestLogic.onClick_linkList(event);" />
+						</mx:Repeater>
+					</mx:HBox>
+					<dataGrid:TransportationDataGrid id="transportationList" width="100%" height="100%"
+						change="transportRequestLogic.onChange_transportationList(event);"
+						doubleClick="transportRequestLogic.onDoubleClick_transportationList(event);"
+						editable="false" allowMultipleSelection="false" doubleClickEnabled="true"
+						verticalScrollPolicy="on"  rowHeight="24"
+						/>
+				</mx:VBox>
+
+				<!-- 交通費申請履歴一覧 -->
+				<mx:VBox width="30%" height="100%">
+					<mx:HBox height="24">
+						<mx:Label text="申請の履歴"  styleName="LargeText"/>
+					</mx:HBox>
+					<dataGrid:HistoryDataGrid id="transportationHistory" width="100%" height="100%"
+						editable="false" allowMultipleSelection="false" sortableColumns="false"
+						verticalScrollPolicy="on"  rowHeight="24" variableRowHeight="true"
+						/>
+				</mx:VBox>
+			</mx:HDividedBox>
+
+			<!-- 交通費申請明細一覧 -->
+			<mx:VBox width="100%" height="60%" >
+				<mx:Label text="交通費明細"  styleName="LargeText"/>
+				<mx:HBox height="24">
+					<mx:Repeater id="rpLinkList2" dataProvider="">
+						<mx:LinkButton id="linkList2" label="{rpLinkList2.currentItem.label}"
+							enabled="{rpLinkList2.currentItem.enabled}"
+							click="transportRequestLogic.onClick_linkList2(event);" />
+					</mx:Repeater>
+				</mx:HBox>
+				<dataGrid:TransportationDetailDataGrid id="transportationDetail" width="100%" height="100%"
+					change="transportRequestLogic.onChange_transportationDetail(event);"
+					editable="false" allowMultipleSelection="true" sortableColumns="false"
+					verticalScrollPolicy="auto"  rowHeight="24"
+					/>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:VBox>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true">
+		<mx:method name="deleteTransportation"
+			result="transportRequestLogic.onResult_deleteTransportation(event)"
+			fault="transportRequestLogic.onFault_deleteTransportation(event)"
+			/>
+		<mx:method name="createTransportation"
+			result="transportRequestLogic.onResult_createTransportation(event)"
+			fault="transportRequestLogic.onFault_createTransportation(event)"
+			/>
+		<mx:method name="acceptTransportation"
+			result="transportRequestLogic.onResult_acceptTransportation(event)"
+			fault="transportRequestLogic.onFault_acceptTransportation(event)"
+			/>
+		<mx:method name="getFacilityNameList"
+			result="transportRequestLogic.onResult_getFacilityNameList(event);"
+			fault="transportRequestLogic.onFault_getFacilityNameList(event);"
+			/>
+	</mx:RemoteObject>
+
+</mx:Module>

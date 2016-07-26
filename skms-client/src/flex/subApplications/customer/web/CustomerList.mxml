@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.customer.logic.*"
+	xmlns:dataGrid="subApplications.customer.web.custom.*"
+	xmlns:search="subApplications.customer.web.custom.*"
+	>
+	
+	<!-- Logicクラスの設定 -->
+	<logic:CustomerListLogic id="customerListLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%" >
+		<mx:HBox width="100%">
+			<mx:Label text="取引先一覧" styleName="LargeBoldText"/>
+			<mx:Spacer width="10" />
+			<search:CustomerSearch id="customerSearch"
+				result="customerListLogic.onResult_customerSearch(event);"
+				fault ="customerListLogic.onFault_customerSearch(event);"
+				/>
+		</mx:HBox>
+
+		<mx:VDividedBox liveDragging="true" width="100%" height="100%">
+			<mx:VBox width="100%" height="55%">
+				<!-- 取引先 -->
+				<mx:HBox>
+					<mx:Repeater id="rpLinkList" dataProvider="">
+						<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+							enabled="{rpLinkList.currentItem.enabled}"
+							click="customerListLogic.onClick_linkList(event);"
+						/>
+					</mx:Repeater>
+				</mx:HBox>
+				<!-- variableRowHeight追加 @auther watanuki -->
+				<dataGrid:CustomerDataGrid id="customerList" width="100%" height="100%" rowHeight="24" authorize="{this.authorisation}" customerNameLink="true"
+					change="customerListLogic.onChange_customerList(event);"
+					doubleClick="customerListLogic.onDubleClick_customerList(event);" doubleClickEnabled="true"
+					allowMultipleSelection="true" verticalScrollPolicy="on"
+					variableRowHeight="true" wordWrap="true"
+					/>
+				<!-- 追加 @auther maruta -->
+				<mx:Label id="Notes" text="※下線が引いてある会社はリンク有り" styleName="LargeText"/>
+					
+			</mx:VBox>
+
+			<mx:VBox width="100%" height="45%">
+				<!-- 担当者 -->
+				<mx:Label id= "customerMemberListTitle" text="担当者" styleName="LargeText" />
+				<dataGrid:CustomerMemberDataGrid id="customerMemberList" width="100%" height="100%" rowHeight="24" authorize="{this.authorisation}"/>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:VBox>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="customerService" showBusyCursor="true">
+		<mx:method name="deleteCustomer"
+			result="customerListLogic.onResult_deleteCustomer(event)"
+			fault="customerListLogic.onFault_deleteCustomer(event)"
+			/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = false;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		]]>
+	</mx:Script>
+</mx:Module>

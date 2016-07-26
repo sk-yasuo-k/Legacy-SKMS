@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.profile.logic.*">
+	
+	<!--Logicクラスの設定-->
+	<logic:ProfileListLogic id="profileListLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="profileService" destination="profileService">
+		<mx:method name="getProfileList"
+					result="profileListLogic.onResult_getProfileList(event)" 
+					fault="profileListLogic.onFault_getInformation(event)" />
+	</mx:RemoteObject>
+
+	<mx:RemoteObject id="displayItemsShowService" destination="displayItemsShowService">
+		<mx:method name="getDisplayItemsShow"
+					result="profileListLogic.onResult_getDisplayItemsShow(event)" 
+					fault="profileListLogic.onFault_getDisplayItemsShow(event)" />
+	</mx:RemoteObject>
+	
+	<!--画面の設定-->
+	<!--<mx:ModuleLoader id="body" width="100%" height="100%">-->
+	<mx:VBox width="100%" height="95%">
+		<!--一覧情報-->
+		<!--<mx:DataGrid  id="profileList" sortableColumns="true" height="100%">-->
+		<!-- 追加 @auther watanuki -->
+		<mx:DataGrid id="profileList" sortableColumns="true" height="100%" doubleClickEnabled="true" itemDoubleClick="profileListLogic.onDoubleClick_Profile(event)">
+		<!-- -->	
+			<mx:columns>
+	 			<mx:DataGridColumn dataField="staffId"                     headerText="社員コード"             width="70"/>			
+	 			<mx:DataGridColumn dataField="fullName"                    headerText="氏名"                   width="100"/>
+	 			<mx:DataGridColumn dataField="sexName"                     headerText="性別"                   width="40"/>
+	 			<mx:DataGridColumn dataField="birthday"                    headerText="生年月日"               width="80" labelFunction="{LabelUtil.dateLabel}"/>
+	 			<mx:DataGridColumn dataField="age"                         headerText="年齢"                   width="50"/>
+	 			<mx:DataGridColumn dataField="bloodGroupName"              headerText="血液型"                 width="50"/>
+	 			<mx:DataGridColumn dataField="postalCode"                  headerText="郵便番号"               width="80"/>
+	 			<mx:DataGridColumn dataField="address1"                    headerText="住所１"                 width="300"/>
+	 			<mx:DataGridColumn dataField="address2"                    headerText="住所２"                 width="180"/>	
+	 			<mx:DataGridColumn dataField="homePhoneNo"                 headerText="電話番号"               width="100"/>
+	 			<mx:DataGridColumn dataField="handyPhoneNo"                headerText="携帯番号"               width="100"/>	 			 			
+	 			<mx:DataGridColumn dataField="joinDate"                    headerText="入社年月日"             width="80" labelFunction="{LabelUtil.dateLabel}"/>
+	 			<mx:DataGridColumn dataField="retireDate"                  headerText="退職年月日"             width="80" labelFunction="{LabelUtil.dateLabel}"/>
+	 			<mx:DataGridColumn dataField="departmentName"              headerText="所属"                   width="80"/>
+	 			<mx:DataGridColumn dataField="projectName"                 headerText="配属部署"               width="200"/>
+	 			<mx:DataGridColumn dataField="committeeName"               headerText="委員会"                 width="70"/>
+	 			<mx:DataGridColumn dataField="extensionNumber"             headerText="内線番号"               width="70"/>
+	 			<mx:DataGridColumn dataField="email"                       headerText="メールアドレス"         width="250"/>
+	 			<mx:DataGridColumn dataField="emergencyAddress"            headerText="緊急連絡先"             width="300"/>
+	 			<mx:DataGridColumn dataField="legalDomicileName"           headerText="本籍地"                 width="70"/>
+	 			<mx:DataGridColumn dataField="beforeExperienceYears"       headerText="入社前経験年数"         width="100"/>
+	 			<mx:DataGridColumn dataField="serviceYears"                headerText="勤続年数"               width="70"/>
+	 			<mx:DataGridColumn dataField="totalExperienceYears"        headerText="経験年数"               width="100"/>
+	 			<mx:DataGridColumn dataField="academicBackground"          headerText="最終学歴"               width="100"/>
+	 			<mx:DataGridColumn dataField="workStatusName"              headerText="勤務状態"               width="70"/>
+	 			<mx:DataGridColumn dataField="securityCardNo"              headerText="セキュリティカード番号" width="130"/>
+	 			<mx:DataGridColumn dataField="yrpCardNo"                   headerText="YRPカード番号"          width="100"/>
+	 			<mx:DataGridColumn dataField="insurancePolicySymbol"       headerText="保険証記号"             width="80"/>
+	 			<mx:DataGridColumn dataField="insurancePolicyNo"           headerText="保険証番号"             width="80"/>
+	 			<mx:DataGridColumn dataField="pensionPocketbookNo"         headerText="年金手帳番号"           width="80"/>
+	 			<mx:DataGridColumn dataField="basicClassNo"                headerText="資格 等級"              width="60"/>
+	 			<mx:DataGridColumn dataField="basicRankNo"                 headerText="号"                     width="50"/>
+	 			<mx:DataGridColumn dataField="basicMonthlySum"             headerText="基本給"                 width="70" labelFunction="{LabelUtil.expenseLabel}"/>
+	 			<mx:DataGridColumn dataField="managerialMonthlySum"        headerText="職務手当"               width="70" labelFunction="{LabelUtil.expenseLabel}"/>
+	 			<mx:DataGridColumn dataField="competentMonthlySum"         headerText="主務手当"               width="70" labelFunction="{LabelUtil.expenseLabel}"/>
+	 			<mx:DataGridColumn dataField="technicalSkillMonthlySum"    headerText="技能手当"               width="70" labelFunction="{LabelUtil.expenseLabel}"/>
+	 			<mx:DataGridColumn dataField="informationPayName"          headerText="情報処理資格保有"       width="110"/>
+	 			<mx:DataGridColumn dataField="housingMonthlySum"           headerText="住宅補助手当"           width="80" labelFunction="{LabelUtil.expenseLabel}"/>
+				<mx:DataGridColumn dataField="departmentHead"              headerText="所属部長"               width="70"/>
+				<mx:DataGridColumn dataField="projectPosition"             headerText="役職"                   width="70"/>
+				<mx:DataGridColumn dataField="managerialPosition"          headerText="経営役職"               width="70"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<!--フッタ情報-->
+		<mx:Form width="100%" height="25" borderStyle="solid" paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0">
+			<mx:HBox>
+				<mx:Text text="平均年齢："/>
+				<mx:Text text="0" id="averageAge"/>
+				<mx:Text text="歳"/>
+				<mx:Spacer width="10"/>
+				<mx:Text text="血液型分布"/>
+				<mx:Spacer width="5"/>
+				<mx:Text text="A型："/>
+				<mx:Text text="0" id="bloodTypeA"/>
+				<mx:Text text="人"/>
+				<mx:Spacer width="5"/>
+				<mx:Text text="B型："/>
+				<mx:Text text="0" id="bloodTypeB"/>
+				<mx:Text text="人"/>
+				<mx:Spacer width="5"/>
+				<mx:Text text="O型："/>
+				<mx:Text text="0" id="bloodTypeO"/>
+				<mx:Text text="人"/>
+				<mx:Spacer width="5"/>
+				<mx:Text text="AB型："/>
+				<mx:Text text="0" id="bloodTypeAB"/>
+				<mx:Text text="人"/>
+				<mx:Spacer width="5"/>
+				<!-- 追加 @auther okamoto -->
+				<mx:Text text="不明："/>
+				<mx:Text text="0" id="bloodTypeUnknown"/>
+				<mx:Text text="人"/>
+				<!-- -->
+			</mx:HBox>
+		</mx:Form>
+		
+		<mx:HBox>
+			<mx:Button label="表示項目選択" width="100" height="20" click="profileListLogic.onClick_itemSelectButton(event)"/>
+			<mx:Button label="詳細" width="50" height="20" click="profileListLogic.onClick_detailButton(event)"/>
+			<!--<mx:Button label="新入社員登録" width="100" height="20" click="profileListLogic.onClick_staffEntryButton(event)"/>-->
+		</mx:HBox>
+	</mx:VBox>
+	<!--</mx:ModuleLoader>	-->
+	<!-- Script -->
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+</mx:Module>

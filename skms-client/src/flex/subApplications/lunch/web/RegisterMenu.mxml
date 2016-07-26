@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="100%"
+	xmlns:cmp="components.*"
+	xmlns:components="subApplications.lunch.web.components.*" 
+	xmlns:logic="subApplications.lunch.logic.*">
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getMMenuList" 
+					result="registerMenuLogic.onResult_getMMenuList(event)" 
+					fault="registerMenuLogic.onFault_getMMenuList(event)" />
+		<mx:method name="getMenuCategory" 
+					result="registerMenuLogic.onResult_getMenuCategory(event)" 
+					fault="registerMenuLogic.onFault_getMenuCategory(event)" />
+		<mx:method name="getMOptionSetList" 
+					result="registerMenuLogic.onResult_getMOptionSetList(event)" 
+					fault="registerMenuLogic.onFault_getMOptionSetList(event)" />
+		<mx:method name="updateMenuData"
+					result="registerMenuLogic.onResult_updateMenuData(event)" 
+					fault="registerMenuLogic.onFault_updateMenuData(event)" />
+		<mx:method name="insertMenuData"
+					result="registerMenuLogic.onResult_insertMenuData(event)" 
+					fault="registerMenuLogic.onFault_insertMenuData(event)" />
+		<mx:method name="deleteMenuData"
+					result="registerMenuLogic.onResult_deleteMenuData(event)" 
+					fault="registerMenuLogic.onFault_deleteMenuData(event)" />														
+	</mx:RemoteObject>
+
+	<logic:RegisterMenuLogic id="registerMenuLogic" />		
+	
+	<mx:Panel width="100%" height="100%" title="メニュー管理">		
+		<mx:HBox width="100%" height="100%">
+			<mx:Panel title="既存メニュー" height="100%">
+				<components:SearchList id="menuList" height="100%" click="registerMenuLogic.onClick_menuList(event)"/>
+				<mx:Button id="deleteButton" label="削除" click="registerMenuLogic.onClick_menuDelete(event)" enabled="false"/>	
+			</mx:Panel>			
+			<mx:Panel title="メニュー新規登録・更新">
+				<mx:HBox>
+					<mx:VBox>
+						<mx:Image height="150" width="200" id="photo" scaleContent="true" autoLoad="false"/>
+						<mx:HBox width="100%" horizontalAlign="center">
+							<mx:Button id="imageButton" label="写真更新" click="registerMenuLogic.onClick_uploadPhotoButton(event)" enabled="false"/>							
+						</mx:HBox>
+					</mx:VBox>
+					<mx:Grid>
+							<mx:GridRow >
+								<mx:GridItem >
+									<mx:Text text="メニュー名" />
+								</mx:GridItem>
+								<mx:GridItem >
+									<mx:TextInput
+										id="menuName"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow >						
+								<mx:GridItem >
+									<mx:Text text="メニューコード"/>
+								</mx:GridItem>
+								<mx:GridItem >
+									<mx:TextInput
+									id="menuCode" />	
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow >
+								<mx:GridItem >
+									<mx:Text text="値段" />
+								</mx:GridItem>
+								<mx:GridItem >
+									<mx:TextInput
+										id="price"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow>
+								<mx:GridItem>
+									<mx:Text text="カテゴリー"/>
+								</mx:GridItem>
+								<mx:GridItem>
+									<cmp:ComboBoxEx id="categoryComboBox" dataField="id" labelField="categoryName"/>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow>
+								<mx:GridItem>
+									<mx:Text text="オプションセット選択"/>
+								</mx:GridItem>
+								<mx:GridItem>
+									<cmp:ComboBoxEx id="optionSetComboBox" dataField="id" labelField="optionName"/>
+								</mx:GridItem>
+							</mx:GridRow>
+						</mx:Grid>
+				</mx:HBox>
+				<mx:VBox height="100%" width="100%">
+					<mx:Text text="メニュー詳細" />
+					<mx:TextArea height="100%" width="100%"
+						id="comment" />
+					<mx:HBox width="100%" horizontalAlign="right">							
+						<mx:Button id="insertButton" label="新規" click="registerMenuLogic.onClick_menuInsert(event)" enabled="false"/>
+						<mx:Button id="updateButton" label="更新" click="registerMenuLogic.onClick_menuUpdate(event)" enabled="false"/>												
+					</mx:HBox>
+				</mx:VBox>
+			</mx:Panel>
+		</mx:HBox>
+	</mx:Panel>
+</mx:Module>

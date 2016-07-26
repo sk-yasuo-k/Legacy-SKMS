@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	showCloseButton="true"
+	title="諸経費詳細登録"
+	>
+
+
+	<!-- Logicの設定 -->
+	<logic:OverheadDetailEntryLogic id="aslogic" />
+
+
+	<!-- イベントの設定 -->
+	<mx:Metadata>
+		[Event(name="entryNew" ,type="flash.events.Event")]
+	</mx:Metadata>
+
+
+	<!-- 画面表示 -->
+		<mx:HBox>
+			<mx:Form id="fmBase">
+				<!-- form item : 0 -->
+				<mx:FormItem label="日付" id="fmiOverheadDate" required="true" direction="horizontal">
+					<mx:Canvas>
+						<cmp:EditDateField id="overheadDate" visible="{(this._isApproval || this._isApprovalAf) ? (overheadDate.selectedDate ? false : true): true}"/>
+						<mx:Label text="{overheadDate.text}" visible="{!overheadDate.visible}" />
+					</mx:Canvas>
+				</mx:FormItem>
+
+				<!-- form item : 1 -->
+				<mx:FormItem label="金額" id="fmiExpense" direction="vertical" required="true">
+					<mx:HBox>
+						<cmp:NumberTextInput id="expense" maxChars="10" textAlign="right" width="85" disabledItems="{new Array('0')}"/>
+						<mx:Label text="円" />
+					</mx:HBox>
+					<mx:HBox>
+						<mx:RadioButtonGroup id="rdPaymentTypeGrp" change="validatorPaymentCard.validate();"/>
+						<mx:Repeater id="rpPaymentType" dataProvider="">
+							<mx:RadioButton groupName="rdPaymentTypeGrp" id="rdPaymentType"
+								label="{rpPaymentType.currentItem.label}"
+								value="{rpPaymentType.currentItem.data}"
+								selected="{rpPaymentType.currentItem.selected}"
+								toolTip="{rpPaymentType.currentItem.toolTip}"
+								/>
+						</mx:Repeater>
+						<mx:ComboBox id="cmbPaymentCard" prompt="選択してください" enabled="{this.rdPaymentTypeGrp.selectedValue == PaymentId.CARD ? true : false}"/>
+					</mx:HBox>
+				</mx:FormItem>
+
+				<!-- form item : 2 -->
+				<mx:FormItem label="科目" id="fmiAccountItem" required="true">
+					<mx:ComboBox id="cmbAccountItem" prompt="選択してください"/>
+				</mx:FormItem>
+
+				<!-- form item : 3 -->
+				<mx:FormItem label="区分" id="fmiOverheadType" required="true" direction="vertical">
+					<mx:ComboBox id="cmbOverheadType" prompt="選択してください" change="aslogic.onChangeComboBox_overheadType(event);" />
+				</mx:FormItem>
+
+				<!-- form item : x -->
+				<mx:Spacer id="dummy"/>
+				<mx:Canvas id="cnvBtn">
+					<mx:Button label="設定" id="btnEntryNew"    click="aslogic.onButtonClick_entry_confirm(event);"   />
+					<mx:Button label="閉じる" click="this.closeWindow();"  x="60"/>
+				</mx:Canvas>
+			</mx:Form>
+		</mx:HBox>
+
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:Validator id="validatorOverheadDate"   source="{this.overheadDate}"     property="selectedDate"  required="true"  />
+		<mx:Validator id="validatorExpense"        source="{this.expense}"          property="text"          required="true"  />
+		<mx:Validator id="validatorPaymentCard"    source="{this.cmbPaymentCard}"   property="selectedItem"  required="{this.rdPaymentTypeGrp.selectedValue == PaymentId.CARD ? true: false}"/>
+		<mx:Validator id="validatorAccountItem"    source="{this.cmbAccountItem}"   property="selectedItem"  required="{this._authorizeApproval ? true : false}"  />
+		<mx:Validator id="validatorOveheadType"    source="{this.cmbOverheadType}"  property="selectedItem"  required="true"  />
+		<mx:Validator id="validatorNote"		   source="{this.note}"				property="text"          required="false" />
+		<!-- 諸経費区分：その他 -->
+		<mx:Validator id="validatorContent"        source="{this.contentContent}"   property="text" required="{this.currentState=='stsOther' ? true : false}" />
+		<!-- 諸経費区分：食事代 -->
+		<mx:Validator id="validatorContentPurpose" source="{this.contentPurpose}"   property="text" required="{this.currentState=='stsMeal' ? true : false}" />
+		<mx:Validator id="validatorContentShop"    source="{this.contentShop}"      property="text" required="false" />
+		<mx:Validator id="validatorContentPeople"  source="{this.contentPeople}"    property="text" required="false" />
+		<!-- 諸経費区分：管理設備 -->
+		<mx:Validator id="validatorEquipmentType"  source="{this.cmbEquipmentKind}" property="selectedItem" required="{this.currentState=='stsEquipment' ? true : false}" />
+		<!-- 諸経費区分：管理設備 PC -->
+		<mx:Validator id="validatorManagementNo_pc"  source="{this.managementNo_pc}"       property="text"          required="{this.currentState=='stsEquipmentPc' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorMaker_pc"         source="{this.maker_pc}"              property="text"          required="{this.currentState=='stsEquipmentPc' ? true : false}" />
+		<mx:Validator id="validatorEquipmentNo_pc"   source="{this.equipmentNo_pc}"        property="text"          required="{this.currentState=='stsEquipmentPc' ? true : false}" />
+		<mx:Validator id="validatorSerialNo_pc"      source="{this.equipmentSerialNo_pc}"  property="text"          required="{this.currentState=='stsEquipmentPc' ? true : false}" />
+		<mx:Validator id="validatorCmbPcKind_pc"     source="{this.cmbPcKind_pc}"          property="selectedItem"  required="{this.currentState=='stsEquipmentPc' ? true : false}" />
+		<mx:Validator id="validatorUseShare_pc"      source="{this.useShare_pc}"           property="text"          required="{this.currentState=='stsEquipmentPc' ? (this.rdUseShare_pc.selected ? true : false) : false}" />
+		<mx:Validator id="validatorCmbManage_pc"     source="{cmbManagementStaff_pc}"      property="selectedItem"  required="{this.currentState=='stsEquipmentPc' ? true : false}" />
+		<mx:Validator id="validatorGuaranteDate_pc"  source="{this.guaranteedDate_pc}"	   property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseDate_pc"  source="{this.purchaseDate_pc}"       property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseShop_pc"  source="{this.purchaseShop_pc}"       property="text"          required="false" />
+		<mx:Validator id="validatorMonitorUse_pc"    source="{this.monitorUse_pc}"         property="text"          required="{this.currentState=='stsEquipmentPc' ? (this.rdMonitorUse_pc.selected ? true : false) : false}" />
+		<mx:Validator id="validatorCmbLocation_pc"   source="{cmbLocation_pc}" property="selectedLabel" required="false" />
+		<mx:Validator id="validatorEquipmentNote_pc" source="{this.equipmentNote_pc}"      property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 PC周辺機器 -->
+		<mx:Validator id="validatorManagementNo_pc2"  source="{this.managementNo_pcOther}"       property="text"          required="{this.currentState=='stsEquipmentPcOther' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorMaker_pc2"         source="{this.maker_pcOther}"              property="text"          required="{this.currentState=='stsEquipmentPcOther' ? true : false}" />
+		<mx:Validator id="validatorEquipmentNo_pc2"   source="{this.equipmentNo_pcOther}"        property="text"          required="{this.currentState=='stsEquipmentPcOther' ? true : false}" />
+		<mx:Validator id="validatorEquipmentName_pc2" source="{this.equipmentName_pcOther}"      property="text"          required="{this.currentState=='stsEquipmentPcOther' ? true : false}" />
+		<mx:Validator id="validatorSerialNo_pc2"      source="{this.equipmentSerialNo_pcOther}"  property="text"          required="{this.currentState=='stsEquipmentPcOther' ? true : false}" />
+		<mx:Validator id="validatorUseShare_pc2"      source="{this.useShare_pcOther}"           property="text"          required="{this.currentState=='stsEquipmentPcOther' ? (this.rdUseShare_pcOther.selected ? true : false) : false}" />
+		<mx:Validator id="validatorCmbManage_pc2"     source="{cmbManagementStaff_pcOther}"      property="selectedItem"  required="{this.currentState=='stsEquipmentPcOther' ? true : false}" />
+		<mx:Validator id="validatorGuaranteDate_pc2"  source="{this.guaranteedDate_pcOther}"     property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseDate_pc2"  source="{this.purchaseDate_pcOther}"       property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseShop_pc2"  source="{this.purchaseShop_pcOther}"       property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_pc2" source="{this.equipmentNote_pcOther}"      property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 携帯 -->
+		<mx:Validator id="validatorManagementNo_celp"  source="{this.managementNo_celp}"       property="text"          required="{this.currentState=='stsEquipmentCellularPhone' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorMaker_celp"         source="{this.maker_celp}"              property="text"          required="{this.currentState=='stsEquipmentCellularPhone' ? true : false}" />
+		<mx:Validator id="validatorEquipmentNo_celp"   source="{this.equipmentNo_celp}"        property="text"          required="{this.currentState=='stsEquipmentCellularPhone' ? true : false}" />
+		<mx:Validator id="validatorSerialNo_celp"      source="{this.equipmentSerialNo_celp}"  property="text"          required="{this.currentState=='stsEquipmentCellularPhone' ? true : false}" />
+		<mx:Validator id="validatorCmbManage_celp"     source="{cmbManagementStaff_celp}"      property="selectedItem"  required="{this.currentState=='stsEquipmentCellularPhone' ? true : false}" />
+		<mx:Validator id="validatorGuaranteDate_celp"  source="{this.guaranteedDate_celp}"     property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseDate_celp"  source="{this.purchaseDate_celp}"       property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseShop_celp"  source="{this.purchaseShop_celp}"       property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_celp" source="{this.equipmentNote_celp}"      property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 モバイルカード -->
+		<mx:Validator id="validatorManagementNo_mbc"  source="{this.managementNo_mbc}"       property="text"          required="{this.currentState=='stsEquipmentMobileCard' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorMaker_mbc"         source="{this.maker_mbc}"              property="text"          required="{this.currentState=='stsEquipmentMobileCard' ? true : false}" />
+		<mx:Validator id="validatorEquipmentNo_mbc"   source="{this.equipmentNo_mbc}"        property="text"          required="{this.currentState=='stsEquipmentMobileCard' ? true : false}" />
+		<mx:Validator id="validatorSerialNo_mbc"      source="{this.equipmentSerialNo_mbc}"  property="text"          required="{this.currentState=='stsEquipmentMobileCard' ? true : false}" />
+		<mx:Validator id="validatorCmbManage_mbc"     source="{cmbManagementStaff_mbc}"      property="selectedItem"  required="{this.currentState=='stsEquipmentMobileCard' ? true : false}" />
+		<mx:Validator id="validatorGuaranteDate_mbc"  source="{this.guaranteedDate_mbc}"     property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseDate_mbc"  source="{this.purchaseDate_mbc}"       property="selectedDate"  required="false" />
+		<mx:Validator id="validatorPurchaseShop_mbc"  source="{this.purchaseShop_mbc}"       property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_mbc" source="{this.equipmentNote_mbc}"      property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 ソフトウェア -->
+		<mx:Validator id="validatorManagementNo_soft" source="{this.managementNo_soft}"      property="text"          required="{this.currentState=='stsEquipmentSoftware' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorTitle_soft"        source="{this.title_soft}"             property="text"          required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorPublisher_soft"    source="{this.publisher_soft}"         property="text"          required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorYear_soft"         source="{this.publicationYear_soft}"   property="text"          required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorOperationOs_soft"  source="{this.operationOs_soft}"       property="text"          required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorLicense_soft"      source="{this.license_soft}"           property="text"          required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorCmbJanre_soft"     source="{this.cmbJanre_soft}"          property="selectedItem"  required="{this.currentState=='stsEquipmentSoftware' ? true : false}" />
+		<mx:Validator id="validatorLocation_soft"     source="{this.location_soft}"          property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_soft" source="{this.equipmentNote_soft}"    property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 書籍 -->
+		<mx:Validator id="validatorManagementNo_book" source="{this.managementNo_book}"      property="text"          required="{this.currentState=='stsEquipmentBook' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorTitle_book"        source="{this.title_book}"             property="text"          required="{this.currentState=='stsEquipmentBook' ? true : false}" />
+		<mx:Validator id="validatorPublisher_book"    source="{this.publisher_book}"         property="text"          required="{this.currentState=='stsEquipmentBook' ? true : false}" />
+		<mx:Validator id="validatorYear_book"         source="{this.publicationYear_book}"   property="text"          required="{this.currentState=='stsEquipmentBook' ? true : false}" />
+		<mx:Validator id="validatorCmbJanre_book"     source="{this.cmbJanre_book}"          property="selectedItem"  required="{this.currentState=='stsEquipmentBook' ? true : false}" />
+		<mx:Validator id="validatorLocation_book"     source="{this.location_book}"          property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_book" source="{this.equipmentNote_book}"    property="text"          required="false" />
+		<!-- 諸経費区分：管理設備 DVD -->
+		<mx:Validator id="validatorManagementNo_dvd" source="{this.managementNo_dvd}"      property="text"          required="{this.currentState=='stsEquipmentDvd' ? ((this._isApproval || this._isApprovalAf) ? true : false) : false}" />
+		<mx:Validator id="validatorTitle_dvd"        source="{this.title_dvd}"             property="text"          required="{this.currentState=='stsEquipmentDvd' ? true : false}" />
+		<mx:Validator id="validatorPublisher_dvd"    source="{this.publisher_dvd}"         property="text"          required="{this.currentState=='stsEquipmentDvd' ? true : false}" />
+		<mx:Validator id="validatorYear_dvd"         source="{this.publicationYear_dvd}"   property="text"          required="{this.currentState=='stsEquipmentDvd' ? true : false}" />
+		<mx:Validator id="validatorCmbJanre_dvd"     source="{this.cmbJanre_dvd}"          property="selectedItem"  required="{this.currentState=='stsEquipmentDvd' ? true : false}" />
+		<mx:Validator id="validatorLocation_dvd"     source="{this.location_dvd}"          property="text"          required="false" />
+		<mx:Validator id="validatorEquipmentNote_dvd" source="{this.equipmentNote_dvd}"    property="text"          required="false" />
+	</mx:Array>
+
+
+	<!-- states -->
+	<cmp:states>
+		<!-- 共通 -->
+		<mx:State name="stsInput">
+			<mx:AddChild relativeTo="{this.dummy}" position="before" creationPolicy="all">
+				<mx:FormItem label="備考" >
+					<mx:TextArea id="note" width="300" maxChars="128" />
+				</mx:FormItem>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：その他 -->
+		<mx:State name="stsOther" basedOn="stsInput">
+			<mx:AddChild relativeTo="{this.fmiOverheadType}" position="after" creationPolicy="all">
+				<mx:FormItem label="内容" required="true">
+					<mx:TextInput id="contentContent" width="275" maxChars="64" />
+				</mx:FormItem>
+			</mx:AddChild>
+			<mx:SetProperty target="{this.validatorContent}" name="required" value="true"/>
+		</mx:State>
+
+		<!-- 諸経費区分：食事代 -->
+		<mx:State name="stsMeal" basedOn="stsInput">
+			<mx:AddChild relativeTo="{this.fmiOverheadType}" position="after" creationPolicy="all">
+				<mx:FormItem label="人数" required="false" direction="horizontal">
+					<cmp:NumberTextInput id="contentPeople" maxChars="3" disabledItems="{new Array('0')}"/>
+					<mx:Label text="人" />
+				</mx:FormItem>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{this.fmiOverheadType}" position="after" creationPolicy="all">
+				<mx:FormItem label="お店" required="false">
+					<mx:TextInput id="contentShop" width="275" maxChars="32" />
+				</mx:FormItem>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{this.fmiOverheadType}" position="after" creationPolicy="all">
+				<mx:FormItem label="目的" required="true">
+					<mx:TextInput id="contentPurpose" width="275" maxChars="64" />
+				</mx:FormItem>
+			</mx:AddChild>
+			<mx:SetProperty target="{this.validatorContentPurpose}" name="required" value="true"/>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備 -->
+		<mx:State name="stsEquipment" basedOn="stsInput">
+			<mx:AddChild relativeTo="{this.fmiOverheadType}" position="after" creationPolicy="all">
+				<mx:FormItem label="種別" required="true" id="fmiEquipmentKind" direction="horizontal">
+					<mx:ComboBox id="cmbEquipmentKind" prompt="選択してください" change="aslogic.onChangeComboBox_equipmentKind(event);"/>
+					<mx:Spacer width="10" />
+					<mx:Label id="equipmentInfo" text="{null}" styleName="LabelError"/>
+				</mx:FormItem>
+			</mx:AddChild>
+			<mx:SetProperty target="{this.validatorEquipmentType}" name="required" value="true"/>
+		</mx:State>
+		<!-- 諸経費区分：管理設備  PC -->
+		<mx:State name="stsEquipmentPc" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentPc" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_pc">
+						<mx:Canvas>
+							<mx:TextInput id="managementNo_pc" maxChars="16" width="120" />
+							<!-- label の visible の設定がうまくいかないため、textinput の visible の反対の値を設定する
+							<mx:Label text="{managementNo_pc.text}" visible="{!managementNo_pc.bisible}" />
+							-->
+							<!-- label の visible の制御はしない、常に編集可能にする
+							<mx:Label id="lbl_managementNo_pc"  />
+							-->
+						</mx:Canvas>
+					</mx:FormItem>
+
+					<mx:FormItem label="メーカ" required="true" direction="horizontal">
+						<mx:TextInput id="maker_pc" maxChars="16" width="120"/>
+						<mx:FormItem label="型番" required="true">
+							<mx:TextInput id="equipmentNo_pc" maxChars="32" width="120" />
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="製造番号" required="true">
+						<mx:TextInput id="equipmentSerialNo_pc" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="PC種別" required="true">
+						<mx:ComboBox id="cmbPcKind_pc" prompt="選択してください"/>
+					</mx:FormItem>
+					<mx:FormItem label="使用目的" required="true" direction="horizontal">
+						<mx:RadioButtonGroup id="rdUseGrp_pc" change="validatorUseShare_pc.validate();"/>
+						<mx:RadioButton groupName="rdUseGrp_pc" label="個人" value="{OverheadDetailEntryLogic.USE_STAFF}" id="rdUseStaff_pc" selected="true"/>
+						<mx:RadioButton groupName="rdUseGrp_pc" label="共有" value="{OverheadDetailEntryLogic.USE_SHARE}" id="rdUseShare_pc"/>
+						<mx:TextInput id="useShare_pc" maxChars="32" enabled="{this.rdUseShare_pc.selected ? true : false}"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="管理者" required="true">
+						<mx:ComboBox id="cmbManagementStaff_pc" prompt="選択してください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="保証期限" required="false">
+						<cmp:EditDateField id="guaranteedDate_pc" />
+					</mx:FormItem>
+
+					<mx:FormItem label="購入日付" direction="horizontal">
+						<cmp:EditDateField id="purchaseDate_pc" />
+						<mx:FormItem label="購入店" >
+							<mx:TextInput id="purchaseShop_pc" maxChars="32"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="モニタ" direction="horizontal">
+						<mx:RadioButtonGroup id="rdMonitorGrp_pc" change="validatorMonitorUse_pc.validate();"/>
+						<mx:RadioButton groupName="rdMonitorGrp_pc" label="未使用" value="{OverheadDetailEntryLogic.MONITOR_UNUSED}" id="rdMonitorUnuse_pc" selected="true"/>
+						<mx:RadioButton groupName="rdMonitorGrp_pc" label="使用"   value="{OverheadDetailEntryLogic.MONITOR_USE}"    id="rdMonitorUse_pc"/>
+						<mx:TextInput id="monitorUse_pc" maxChars="16" enabled="{this.rdMonitorUse_pc.selected ? true : false}"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="設置場所" >
+						<cmp:EditComboBox id="cmbLocation_pc" focusIn="{this.cmbLocation_pc.maxChars=16;}" prompt=" "/>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_pc" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備  PC周辺機器 -->
+		<mx:State name="stsEquipmentPcOther" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentPcOther" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_pcOther">
+							<mx:TextInput id="managementNo_pcOther" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="メーカ" required="true" direction="horizontal">
+						<mx:TextInput id="maker_pcOther" maxChars="16" width="120"/>
+						<mx:FormItem label="型番" required="false">
+							<mx:TextInput id="equipmentNo_pcOther" maxChars="32" width="120" />
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="機器名" required="true" direction="horizontal">
+						<mx:TextInput id="equipmentName_pcOther" maxChars="128" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="製造番号" required="true">
+						<mx:TextInput id="equipmentSerialNo_pcOther" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="使用目的" required="true" direction="horizontal">
+						<mx:RadioButtonGroup id="rdUseGrp_pcOther" change="validatorUseShare_pc.validate();"/>
+						<mx:RadioButton groupName="rdUseGrp_pcOther" label="個人" value="{OverheadDetailEntryLogic.USE_STAFF}" id="rdUseStaff_pcOther" selected="true"/>
+						<mx:RadioButton groupName="rdUseGrp_pcOther" label="共有" value="{OverheadDetailEntryLogic.USE_SHARE}" id="rdUseShare_pcOther"/>
+						<mx:TextInput id="useShare_pcOther" maxChars="32" enabled="{this.rdUseShare_pcOther.selected ? true : false}"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="管理者" required="true">
+						<mx:ComboBox id="cmbManagementStaff_pcOther" prompt="選択してください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="保証期限" required="false">
+						<cmp:EditDateField id="guaranteedDate_pcOther" />
+					</mx:FormItem>
+
+					<mx:FormItem label="購入日付" direction="horizontal">
+						<cmp:EditDateField id="purchaseDate_pcOther" />
+						<mx:FormItem label="購入店" >
+							<mx:TextInput id="purchaseShop_pcOther" maxChars="32"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_pcOther" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備  携帯 -->
+		<mx:State name="stsEquipmentCellularPhone" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentCelP" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_celp">
+							<mx:TextInput id="managementNo_celp" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="メーカ" required="true" direction="horizontal">
+						<mx:TextInput id="maker_celp" maxChars="16" width="120"/>
+						<mx:FormItem label="型番" required="false">
+							<mx:TextInput id="equipmentNo_celp" maxChars="32" width="120" />
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="製造番号" required="true">
+						<mx:TextInput id="equipmentSerialNo_celp" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="管理者" required="true">
+						<mx:ComboBox id="cmbManagementStaff_celp" prompt="選択してください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="保証期限" required="false">
+						<cmp:EditDateField id="guaranteedDate_celp" />
+					</mx:FormItem>
+
+					<mx:FormItem label="購入日付" direction="horizontal">
+						<cmp:EditDateField id="purchaseDate_celp" />
+						<mx:FormItem label="購入店" >
+							<mx:TextInput id="purchaseShop_celp" maxChars="32"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_celp" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備  モバイルカード -->
+		<mx:State name="stsEquipmentMobileCard" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentMbc" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_mbc">
+							<mx:TextInput id="managementNo_mbc" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="メーカ" required="true" direction="horizontal">
+						<mx:TextInput id="maker_mbc" maxChars="16" width="120"/>
+						<mx:FormItem label="型番" required="false">
+							<mx:TextInput id="equipmentNo_mbc" maxChars="32" width="120" />
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="製造番号" required="true">
+						<mx:TextInput id="equipmentSerialNo_mbc" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="管理者" required="true">
+						<mx:ComboBox id="cmbManagementStaff_mbc" prompt="選択してください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="保証期限" required="false">
+						<cmp:EditDateField id="guaranteedDate_mbc" />
+					</mx:FormItem>
+
+					<mx:FormItem label="購入日付" direction="horizontal">
+						<cmp:EditDateField id="purchaseDate_mbc" />
+						<mx:FormItem label="購入店" >
+							<mx:TextInput id="purchaseShop_mbc" maxChars="32"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_mbc" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備 ソフトウェア -->
+		<mx:State name="stsEquipmentSoftware" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentSoft" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_soft">
+							<mx:TextInput id="managementNo_soft" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="タイトル" required="true">
+						<mx:TextInput id="title_soft" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="メーカ" required="true" direction="horizontal">
+						<mx:TextInput id="publisher_soft" maxChars="16" width="180"/>
+						<mx:FormItem label="製造年" required="true" direction="horizontal">
+							<cmp:NumberTextInput id="publicationYear_soft" maxChars="4" disabledRange="{{rangeStart:1901, rangeEnd:2999}}"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="動作OS" required="true">
+						<mx:TextInput id="operationOs_soft" maxChars="32" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="ライセンス" required="true">
+						<mx:TextInput id="license_soft" maxChars="16" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="ジャンル" required="true">
+						<mx:ComboBox id="cmbJanre_soft" prompt="選んでください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="所蔵場所" >
+						<mx:TextInput id="location_soft" maxChars="16" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_soft" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+		<!-- 諸経費区分：管理設備 書籍 -->
+		<mx:State name="stsEquipmentBook" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentBook" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_book">
+							<mx:TextInput id="managementNo_book" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="タイトル" required="true">
+						<mx:TextInput id="title_book" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="出版社" required="true" direction="horizontal">
+						<mx:TextInput id="publisher_book" maxChars="16" width="180"/>
+						<mx:FormItem label="製造年" required="true" direction="horizontal">
+							<cmp:NumberTextInput id="publicationYear_book" maxChars="4" disabledRange="{{rangeStart:1901, rangeEnd:2999}}"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="ジャンル" required="true">
+						<mx:ComboBox id="cmbJanre_book" prompt="選んでください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="所蔵場所" >
+						<mx:TextInput id="location_book" maxChars="16" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_book" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+
+
+		<!-- 諸経費区分：管理設備 DVD -->
+		<mx:State name="stsEquipmentDvd" basedOn="stsEquipment">
+			<mx:SetProperty target="{this.equipmentInfo}" name="text" value="入力してください→" />
+			<mx:AddChild relativeTo="{this.fmBase}" position="after" creationPolicy="all">
+				<mx:Form id="fmEquipmentDvd" borderStyle="outset" >
+					<mx:FormItem label="管理番号" required="true" id="fmiManagementNo_dvd">
+							<mx:TextInput id="managementNo_dvd" maxChars="16" width="120" />
+					</mx:FormItem>
+
+					<mx:FormItem label="タイトル" required="true">
+						<mx:TextInput id="title_dvd" maxChars="32" width="180" />
+					</mx:FormItem>
+
+					<mx:FormItem label="出版社" required="true" direction="horizontal">
+						<mx:TextInput id="publisher_dvd" maxChars="16" width="180"/>
+						<mx:FormItem label="製造年" required="true" direction="horizontal">
+							<cmp:NumberTextInput id="publicationYear_dvd" maxChars="4" disabledRange="{{rangeStart:1901, rangeEnd:2999}}"/>
+						</mx:FormItem>
+					</mx:FormItem>
+
+					<mx:FormItem label="ジャンル" required="true">
+						<mx:ComboBox id="cmbJanre_dvd" prompt="選んでください"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="所蔵場所" >
+						<mx:TextInput id="location_dvd" maxChars="16" width="180"/>
+					</mx:FormItem>
+
+					<mx:FormItem label="備考" >
+						<mx:TextArea id="equipmentNote_dvd" maxChars="128" width="300" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+	</cmp:states>
+
+
+	<mx:Script>
+		<![CDATA[
+			import enum.PaymentId;
+			import subApplications.accounting.logic.AccountingLogic;
+			import enum.EquipmentKindId;
+			import mx.events.ListEvent;
+			import mx.controls.Label;
+			import mx.core.UIComponentDescriptor;
+			import mx.core.UIComponent;
+			import mx.core.Container;
+			import mx.controls.Alert;
+			import mx.utils.ObjectUtil;
+			import mx.controls.TextArea;
+			import enum.OverheadTypeId;
+			import mx.events.FlexEvent;
+
+			/**
+			 * 申請 or 承認モードの取得・設定.
+			 *
+			 * @param value 実行モード.
+			 */
+			[Bindable]
+			private var _isApproval:Boolean = false;
+			public function get approval():Boolean
+			{
+				return _isApproval;
+			}
+			[Bindable]
+			private var _isApprovalAf:Boolean = false;
+			public function get approvalAf():Boolean
+			{
+				return _isApprovalAf;
+			}
+			[Bindable]
+			private var _isApply:Boolean = false;
+			public function get apply():Boolean
+			{
+				return _isApply;
+			}
+			[Bindable]
+			private var _isEntry:Boolean = false;
+			public function get entry():Boolean
+			{
+				return _isEntry;
+			}
+			[Bindable]
+			private var _isCopy:Boolean = false;
+			public function get copy():Boolean
+			{
+				return _isCopy;
+			}
+			private var _actionMode:String;
+			public function set actionMode(value:String):void
+			{
+				_isCopy       = false;
+				_isEntry      = false;
+				_isApply      = false;
+				_isApproval   = false;
+				_isApprovalAf = false;
+				switch (value) {
+					case AccountingLogic.ACTION_NEW:
+					case AccountingLogic.ACTION_UPDATE:
+						_isEntry = true;
+						break;
+					case AccountingLogic.ACTION_APPLY:
+						_isApply = true;
+						break;
+					case AccountingLogic.ACTION_APPROVAL_AF:
+						_isApprovalAf = true;
+						break;
+					case AccountingLogic.ACTION_APPROVAL:
+						_isApproval = true;
+						break;
+					case AccountingLogic.ACTION_COPY:
+						_isCopy = true;
+						break;
+				}
+				_actionMode = value;
+			}
+
+			/**
+			 * 承認権限（PM or 総務）の設定.
+			 *
+			 * @param value 権限.
+			 */
+			[Bindable]
+			private var _authorizeApproval:Boolean = false;
+			public function set authorizeApproval(value:Boolean):void
+			{
+				_authorizeApproval = value;
+			}
+			public function get authorizeApproval():Boolean
+			{
+				return _authorizeApproval;
+			}
+
+			/**
+			 * 設定する諸経費の取得.
+			 */
+			public function get entryOverhead():Object
+			{
+				return aslogic.entryOverhead;
+			}
+
+			/**
+			 * 検証の実行.
+			 */
+			public function validate():Boolean
+			{
+				return aslogic.validate();
+			}
+		]]>
+	</mx:Script>
+</cmp:PopUpWindow>

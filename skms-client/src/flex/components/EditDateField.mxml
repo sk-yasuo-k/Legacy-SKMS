@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DateField xmlns:mx="http://www.adobe.com/2006/mxml"
+	editable="true"
+	formatString="YYYY/MM/DD"
+	initialize="onInit(event);"
+	>
+
+	<mx:Metadata>
+		[Event(name="itemEditUpdate", type="flash.events.Event")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.controls.DataGrid;
+			import mx.events.FlexEvent;
+			import mx.controls.dataGridClasses.DataGridListData;
+			import com.googlecode.kanaxs.Kana;
+			import mx.utils.ObjectUtil;
+
+			protected function onInit(event:FlexEvent):void
+			{
+				// DataGrid の itemEditor のとき.
+				if (event.currentTarget.owner is DataGrid) {
+					;
+				}
+				// 上記以外のとき.
+				else {
+					addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+				}
+			}
+
+			/**
+			 * 日付チェック＆更新.
+			 *
+			 * @return 更新.
+			 */
+			private function updateDate():Boolean
+			{
+				// 半角変換する.
+				var hankaku:String = Kana.toHankakuCase(this.text);
+				var cnvDate:Date = DateField.stringToDate(hankaku, this.formatString);
+
+				// 変換したかどうか確認する.
+				var cnvFlg:Boolean = false;
+				if (ObjectUtil.dateCompare(this.selectedDate, cnvDate) != 0) {
+					cnvFlg = true;
+				}
+
+				// リセットするかどうか確認する.
+				var resetFlg:Boolean = false;
+				if (_reset) {
+					if (!cnvDate) {
+						// 変換エラーのときは 入力テキストをクリアする.
+						resetFlg = true;
+					}
+					else {
+						// 範囲エラーのときは 入力テキストをクリアする.
+						if (this.selectableRange) {
+							var target:Date  = cnvDate;
+							var range:Object = this.selectableRange;
+							if (range.rangeStart && range.rangeEnd) {
+								if (ObjectUtil.compare(target, range.rangeStart) < 0 ||
+									ObjectUtil.compare(range.rangeEnd, target)   < 0 )
+									resetFlg = true;
+							}
+							else if (range.rangeStart) {
+								if (ObjectUtil.compare(target, range.rangeStart) < 0)
+									resetFlg = true;
+							}
+							else if (range.rangeEnd) {
+								if (ObjectUtil.compare(range.rangeEnd, target) < 0)
+									resetFlg = true;
+							}
+						}
+					}
+				}
+
+				// データを設定する.
+				if (resetFlg) {
+					this.selectedDate = null;
+					this.text         = "";
+					if (cnvDate)	return true;
+					else			return false;
+				}
+				else {
+					this.selectedDate = cnvDate;
+					this.text         = hankaku;
+					if (cnvFlg)		return true;
+					else			return false;
+				}
+			}
+
+			/**
+			 * 日付取得.
+			 *
+			 * @return 半角＆範囲チェック済みの日付（reset = true）.
+			 */
+			public function get editedDate():Date
+			{
+				// 入力日付をチェックする.
+				var update:Boolean = updateDate();
+				return this.selectedDate;
+			}
+
+
+			/**
+			 * フォーカスアウトイベント.
+			 */
+			protected function onFocusOut(event:FocusEvent):void
+			{
+				// 入力日付をチェックする.
+				updateDate();
+			}
+
+			/**
+			 * 日付初期化.
+			 * reset = true のとき、入力エラーならば "" に設定する.
+			 */
+			private var _reset:Boolean = true;
+// 現在、強制的に reset されます. いずれ reset されないようにできたらよいかと･････.
+//			public function set reset(value:Boolean):void
+//			{
+//				_reset = value;
+//			}
+		]]>
+	</mx:Script>
+
+</mx:DateField>

@@ -1,0 +1,19 @@
+Subject: 【SKMS:通勤費】通勤費${data.approvalType}承認取り消しのお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.approvalName}さんが通勤費の承認を取り消しました。
+通勤費は${data.approvalType}承認前の状態に戻りました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請者　　　　　　 ： ${data.applicantName}
+◆通勤月　　　　　　 ： ${data.commutationYear}年${data.commutationMonth}月
+◆金額　　　　　　　 ： ${data.payment}
+◆取り消し理由　　　 ： ${data.reason}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

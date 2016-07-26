@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:cmp="components.*" 
+		xmlns:logic="subApplications.lunch.logic.*"
+		close="selectedOptionLogic.onClose(event)">
+
+	<logic:SelectedOptionLogic id="selectedOptionLogic" />		
+
+	<!--画面の設定-->
+	<mx:VBox height="100%">
+		<mx:HBox height="100%">
+			<mx:VBox width="100" height="100%">
+				<mx:Label text="オプション" width="100%" fontSize="12" textAlign="center"/>
+				<mx:List id="optionList" labelField="optionName" width="100%" height="100%"/>
+			</mx:VBox>
+			<mx:VBox height="100%" verticalAlign="middle">	
+					<mx:Button label="＞" width="50" click="selectedOptionLogic.onClick_selectedOption(event)"/>
+					<mx:Spacer width="20" height="20"/>
+					<mx:Button label="＜" width="50" click="selectedOptionLogic.onClick_deleteOption(event)"/>
+			</mx:VBox>			
+			<mx:VBox width="100" height="100%">
+				<mx:Label text="選択中オプション" width="100%" fontSize="12" textAlign="center"/>
+				<mx:List id="option" labelField="optionName" width="100%" height="100%"/>
+			</mx:VBox>			
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button label="閉じる" width="60" click="selectedOptionLogic.onClick_close(event)"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

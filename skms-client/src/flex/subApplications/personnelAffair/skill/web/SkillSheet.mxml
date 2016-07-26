@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:skill="subApplications.personnelAffair.skill.web.*"
+	xmlns:logic="subApplications.personnelAffair.skill.logic.*">
+	
+	<!--Logicクラスの設定-->
+	<logic:SkillSheetLogic id="skillSheetLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="skillSheetService" destination="skillSheetService">
+		<mx:method name="getStaffDetail" 
+					result="skillSheetLogic.onResult_getStaffDetail(event)" 
+					fault="skillSheetLogic.onFault_getInformation(event)" />
+		<mx:method name="getStaffSkillList"
+					result="skillSheetLogic.onResult_getStaffSkillList(event)"
+					fault="skillSheetLogic.onFault_getInformation(event)" />
+		<mx:method name="updateSkillSheetList"
+					result="skillSheetLogic.onResult_updateSkillSheetList(event)"
+					fault="skillSheetLogic.onFault_updateSkillSheetList(event)" />
+	</mx:RemoteObject>
+	
+	<!--画面の設定-->
+	<mx:VDividedBox liveDragging="true" height="95%">
+		<mx:VBox width="100%" height="240">
+			<skill:SkillSheetHeader id="skillSheetHeader" width="100%" height="240"/>
+		</mx:VBox>
+		<mx:VBox width="100%" height="100%">
+			<mx:VBox width="100%" height="20">
+				<mx:HBox>
+					<mx:Spacer width="10"/>
+					<mx:LinkButton id="newB"    label="新規" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_new(event)"/>
+					<mx:LinkButton id="modifyB" label="変更" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_modify(event)"/>
+					<mx:LinkButton id="deleteB" label="削除" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_delete(event)"/>
+					<mx:LinkButton id="updateB" label="保存" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_update(event)"/>
+					<mx:LinkButton id="cancelB" label="取消" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_cancel(event)"/>
+					<mx:LinkButton id="importB" label="インポート" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_import(event)"/>
+					<mx:LinkButton id="exportB" label="Excel形式にて出力" fontSize="12" fontWeight="bold" click="skillSheetLogic.onClick_linkList_export(event)"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="100%" height="100%">
+				<skill:SkillSheetFooter id="skillSheetFooter" width="100%" height="100%"
+					dragCompleteHistoryList="skillSheetLogic.onDragCompleteHistoryList(event);"
+					itemClickHistoryList="skillSheetLogic.onItemClickHistoryList(event);"/>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:VDividedBox>
+</mx:Module>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	showCloseButton="true"
+	title="交通費発生日付を選択してください" >
+
+	<!-- 画面表示 -->
+	<mx:Canvas width="219" height="228">
+		<mx:Label text="[Ctrlキー+クリック]で複数選択可能です。" x="7"/>
+		<mx:DateChooser id="dateChooser" allowMultipleSelection="true" width="199" height="160"  x="10" y="27"/>
+		<mx:HBox y="195" x="10">
+			<mx:Button label="選択" click="this.closeWindow(PopUpWindow.ENTRY);" id="btnEntry" enabled="{this.dateChooser.selectedDate ? true:false}"/>
+			<mx:Button label="戻る" click="this.closeWindow();" />
+		</mx:HBox>
+	</mx:Canvas>
+</cmp:PopUpWindow>

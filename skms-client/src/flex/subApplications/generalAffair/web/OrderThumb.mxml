@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="190" height="168" 
+	horizontalAlign="center" verticalGap="0" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:CurrencyFormatter id="cf"/>
+	
+	<mx:Text id="menuName" text="{data.menuName}" fontWeight="bold" fontSize="14" width="100%"/>
+	<mx:Spacer height="5"/>
+	<mx:Repeater id="rpOption" dataProvider="{data.options}" >
+		<mx:HBox>
+			<mx:Label id="optionName" text="{rpOption.currentItem.optionName}:"/>
+			<mx:Text id="optionChoice"
+				text="{rpOption.currentItem.optionChoices.getItemAt(rpOption.currentItem.defaultIndex).choiceName}" 
+				 />
+		</mx:HBox>
+		<mx:Spacer height="5"/>
+	</mx:Repeater>
+	<mx:HBox>
+		<mx:Label text="価格："/>
+		<mx:Label id="lbPrice" text="{cf.format(data.price)}" styleName="price"/>
+	</mx:HBox>
+	<mx:Spacer height="5"/>
+	<mx:Button label="取消"  click="dispatchEvent(new Event('cancelOrder', true, true))"/>
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.events.ListEvent;
+    	import mx.events.CloseEvent;
+        private function setOptionChoicesLabel(item:Object):String {
+        	var price:String = "";
+        	if (item.price > 0) {
+        		price = "(+" + item.price + "円)";
+        	} else if(item.price < 0) {
+        		price = "(-" + item.price + "円)";
+        	}
+            return item.choiceName + " " + price;
+        }
+
+    ]]>
+    </mx:Script>
+
+</mx:VBox>

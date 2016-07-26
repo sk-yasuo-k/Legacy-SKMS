@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:cmp="components.*"
+	xmlns:logic="subApplications.lunch.logic.*"
+	close="orderLogic.onClose_OrderDlg(event)"
+	currentState="noPicture">
+
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getShopMenuList" 
+					result="orderLogic.onResult_getShopMenuList(event)" 
+					fault="orderLogic.onFault_getShopMenuList(event)" />	
+		<mx:method name="insertOrder"
+					result="orderLogic.onResult_insertOrder(event)" 
+					fault="orderLogic.onFault_insertOrder(event)" />			
+	</mx:RemoteObject>	
+	
+	<logic:OrderLogic id="orderLogic"/>
+	<mx:states>
+		<mx:State name="noPicture">
+			<mx:RemoveChild target="{photo}"/>				
+		</mx:State>
+		<mx:State name="picture">
+			<mx:RemoveChild target="{noPhoto}"/>				
+		</mx:State>		
+	</mx:states>
+	<mx:Panel title="注文">	
+		<mx:VBox height="100%" width="100%">			
+			<mx:HBox height="100%" width="100%">
+				<mx:VBox>
+					<mx:Canvas height="150" width="200" id="Picture">
+						<mx:Image height="150" width="200" source="{data.photo}" id="photo"  scaleContent="true" autoLoad="false"/>
+						<mx:Text id="noPhoto" text="No Image" fontSize="15" x="30" y="60" fontWeight="bold" visible="false"/>
+					</mx:Canvas>
+					<mx:TextArea id="comment" editable="false" height="100%" width="100%" />					
+				</mx:VBox>
+				<mx:VBox>
+					<mx:HBox width="100%">
+						<mx:Text text="メニュー名" />
+					</mx:HBox>
+					<mx:HBox horizontalAlign="right" width="100%">
+						<mx:Text id="menuName" fontSize="13" fontWeight="bold" />
+					</mx:HBox>
+					<mx:Grid>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="基本価格"/>	
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:Text id="price"/>			
+							</mx:GridItem>								
+						</mx:GridRow>
+						<mx:Repeater id="optionKind">
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="{optionKind.currentItem.optionKindDisplayName}" />	
+							</mx:GridItem>
+							<mx:GridItem>
+								<cmp:ComboBoxEx id="options" labelFunction="orderLogic.optionPriceLabel" dataProvider="{optionKind.currentItem.optionKindList}"
+									change="orderLogic.onChange_cbOptionChoices(event)" dataField="price"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						</mx:Repeater>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="個数" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:NumericStepper minimum="1" value="1" id="qty" change="orderLogic.onChange_qty(event)"/>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="注文日"/>		
+							</mx:GridItem>
+							<mx:GridItem>
+								<cmp:EditDateField id="orderDate" showToday="true"/>		
+							</mx:GridItem>
+						</mx:GridRow>	
+					</mx:Grid>					
+				</mx:VBox>			
+			</mx:HBox>
+			<mx:HBox width="100%" horizontalAlign="center">		
+				<mx:VBox horizontalAlign="center" >
+					<mx:HBox>
+						<mx:Text text="合計金額 :" fontSize="13" />
+						<mx:Text id="totalPrice" fontSize="13" fontWeight="bold" />
+						<mx:Text text="円" fontSize="13" fontWeight="bold" />
+					</mx:HBox>
+					<mx:HBox>						
+						<mx:Button id="orderButton" label="注文" click="orderLogic.onClick_btnOrder(event)" enabled="false"/>
+						<mx:Button label="戻る" click="orderLogic.onClick_btnCancel(event)"/>	
+					</mx:HBox>
+					<mx:CheckBox label="連続して注文する" id="orderCheck"/>
+				</mx:VBox>		
+			</mx:HBox>		
+		</mx:VBox>
+	</mx:Panel>	
+</mx:TitleWindow>

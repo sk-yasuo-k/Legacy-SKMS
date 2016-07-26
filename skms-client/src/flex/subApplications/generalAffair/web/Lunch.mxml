@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*">
+
+	<!-- Logicクラスの設定 -->
+	<logic:LunchLogic id="lunchLogic" />
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="oldLunchService">
+		<mx:method name="getMonthlyOrder"
+			result="lunchLogic.onGetMonthlyOrderResult(event)"
+			fault="lunchLogic.onFault(event)"
+		/>
+		<mx:method name="getLunchShop"
+			result="lunchLogic.onGetLunchShopResult(event)"
+			fault="lunchLogic.onFault(event)"
+		/>
+	</mx:RemoteObject>
+
+    <mx:Array id="weekHeader">
+        <mx:Object name="日" color="#F76B6E" />
+        <mx:Object name="月" color="#6AD0E6" />
+        <mx:Object name="火" color="#6AD0E6" />
+        <mx:Object name="水" color="#6AD0E6" />
+        <mx:Object name="木" color="#6AD0E6" />
+        <mx:Object name="金" color="#6AD0E6" />
+        <mx:Object name="土" color="#F6B371" />
+    </mx:Array>
+
+	<mx:VBox height="100%" width="100%">
+		<mx:LinkBar id="lbLunchSelect" dataProvider="viewStack1" itemClick="lunchLogic.onItemClick_lbRunchSelect(event);">
+		</mx:LinkBar>
+		<mx:ViewStack id="viewStack1" width="100%" height="100%" creationComplete="lunchLogic.onCreateComplete_viewStack1(event);">
+			<mx:HBox label="注文する" width="100%" height="100%">
+				<mx:Spacer width="1"/>
+				<mx:Panel width="60%" height="100%" layout="absolute" title="お店とメニューを選んでください。">
+					<mx:Accordion width="100%" height="100%">
+						<mx:Repeater id="rpShop" dataProvider="" >
+							<mx:Canvas label="{rpShop.currentItem.shopName}" width="100%" height="100%">
+								<mx:TileList id="tlMenuList" dataProvider="{rpShop.currentItem.menus}"
+									 itemRenderer="subApplications.generalAffair.web.MenuThumb" width="100%" height="100%" dragEnabled="true"
+									 creationComplete="lunchLogic.onCreationComplete_tlMenuList(event)"/> 
+							</mx:Canvas>
+						</mx:Repeater>
+					</mx:Accordion>
+				</mx:Panel>
+				<mx:Spacer width="1"/>
+				<mx:Panel id="pnlTray" width="40%" height="100%" layout="absolute" title="注文トレイ">
+					<mx:TileList id="tlOrderList" dropEnabled="true"
+						 itemRenderer="subApplications.generalAffair.web.OrderThumb" width="100%" height="100%"
+						 creationComplete="lunchLogic.onCreationComplete_tlOrderList(event)" /> 
+				</mx:Panel>
+				<mx:Spacer width="1"/>
+			</mx:HBox>
+			<mx:Canvas label="みんなの注文状況" width="100%" height="100%">
+			</mx:Canvas>
+			<mx:VBox label="あなたの注文履歴" height="100%" width="100%">
+				<mx:HBox width="100%">
+					<mx:LinkButton id="prevMonth" label="前の月" click="lunchLogic.onClick_prevMonth(event);"/>
+					<mx:LinkButton id="nextMonth" label="次の月" click="lunchLogic.onClick_nextMonth(event);"/>
+				</mx:HBox>
+				<mx:Grid width="90%" height="90%" horizontalGap="0" verticalGap="0"
+					 creationComplete="lunchLogic.onCreationComplete_monthlyLunch(event);">
+					<mx:GridRow width="100%" height="20" borderStyle="none">
+						<mx:Repeater id="rpHeader" dataProvider="{weekHeader}">
+							<mx:GridItem width="100%" height="100%" borderStyle="solid" backgroundColor="{rpHeader.currentItem.color}">
+								<mx:Label text="{String(rpHeader.currentItem.name)}" width="100%" textAlign="center" color="#FFFFFF"/>
+							</mx:GridItem>
+						</mx:Repeater>
+					</mx:GridRow>
+					<mx:Repeater id="rpMonth" dataProvider="" >
+						<mx:GridRow width="100%" height="20" borderStyle="none">
+							<mx:Repeater id="rpWeek" dataProvider="{rpMonth.currentItem.lunchOrders}" >
+								<mx:GridItem width="100%" height="100%" borderStyle="solid" backgroundColor="#FFFFFF">
+									<mx:Label text="{rpWeek.currentItem.orderDate.getDate().toString()}" width="100%" textAlign="center"/>
+								</mx:GridItem>
+							</mx:Repeater>
+						</mx:GridRow>
+					</mx:Repeater>
+				</mx:Grid>
+			</mx:VBox>
+		</mx:ViewStack>
+		<mx:Spacer width="1"/>
+	</mx:VBox>
+
+</mx:Module>

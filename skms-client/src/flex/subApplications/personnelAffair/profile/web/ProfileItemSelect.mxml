@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.profile.logic.*"
+	xmlns:cmp="components.*"
+	close="profileItemSelectLogic.onClose(event)">
+	
+	<!--Logicクラスの設定-->
+	<logic:ProfileItemSelecctLogic id="profileItemSelectLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="displayItemsShowService" destination="displayItemsShowService">
+		<mx:method name="getDisplayItemsShow"
+					result="profileItemSelectLogic.onResult_getDisplayItemsShow(event)" 
+					fault="profileItemSelectLogic.onFault_getDisplayItemsShow(event)" />
+		<mx:method name="updatelistData"
+					result="profileItemSelectLogic.onResult_updatelistData(event)" 
+					fault="profileItemSelectLogic.onFault_updatelistData(event)" />					
+	</mx:RemoteObject>
+		
+	<!--画面の設定-->
+	<mx:VBox height="100%">
+		<!--ヘッダの設定-->
+		<mx:Label text="項目選択(チェックボックスを複数選択)" width="100%" fontSize="15" textAlign="center"/>
+		
+		<!--チェック項目の設定--> 
+		<mx:VBox id="check" width="100%" height="300" verticalScrollPolicy="on">
+			<mx:CheckBox id="staffId"                     label="社員コード"/>
+			<mx:CheckBox id="fullname"                    label="氏名"/>
+			<mx:CheckBox id="sexName"                     label="性別"/>
+			<mx:CheckBox id="birthday"                    label="生年月日"/>
+			<mx:CheckBox id="age"                         label="年齢"/>
+			<mx:CheckBox id="bloodGroupName"              label="血液型"/>
+			<mx:CheckBox id="postalCode"                  label="郵便番号"/>
+			<mx:CheckBox id="address1"                    label="住所１"/>
+			<mx:CheckBox id="address2"                    label="住所２"/>	
+			<mx:CheckBox id="homePhoneNo"                 label="電話番号"/>
+			<mx:CheckBox id="handyPhoneNo"                label="携帯番号"/>					
+			<mx:CheckBox id="joinDate"                    label="入社年月日"/>
+			<mx:CheckBox id="retireDate"                  label="退職年月日"/>
+			<mx:CheckBox id="departmentName"              label="所属"/>		
+			<mx:CheckBox id="projectName"                 label="配属部署"/>
+			<mx:CheckBox id="committeeName"               label="委員会"/>
+			<mx:CheckBox id="extensionNumber"             label="内線番号"/>
+			<mx:CheckBox id="email"                       label="メールアドレス"/>
+			<mx:CheckBox id="emergencyAddress"            label="緊急連絡先"/>
+			<mx:CheckBox id="legalDomicileName"           label="本籍地"/>
+			<mx:CheckBox id="beforeExperienceYears"       label="入社前経験年数"/>
+			<mx:CheckBox id="serviceYears"                label="勤続年数"/>
+			<mx:CheckBox id="totalExperienceYears"        label="経験年数"/>
+			<mx:CheckBox id="academicBackground"          label="最終学歴"/>
+			<mx:CheckBox id="workStatusName"              label="勤務状態"/>
+			<mx:CheckBox id="securityCardNo"              label="セキュリティカード番号"/>
+			<mx:CheckBox id="yrpCardNo"                   label="YRPカード番号"/>
+			<mx:CheckBox id="insurancePolicySymbol"       label="保険証記号"/>
+			<mx:CheckBox id="insurancePolicyNo"           label="保険証番号"/>
+			<mx:CheckBox id="pensionPocketbookNo"         label="年金手帳番号"/>
+			<mx:CheckBox id="basicClassNo"                label="資格 等級"/>
+			<mx:CheckBox id="basicRankNo"                 label="号"/>
+			<mx:CheckBox id="basicMonthlySum"             label="基本給"/>
+			<mx:CheckBox id="managerialMonthlySum"        label="職務手当"/>
+			<mx:CheckBox id="competentMonthlySum"         label="主務手当"/>
+			<mx:CheckBox id="technicalSkillMonthlySum"    label="技能手当"/>
+			<mx:CheckBox id="informationPayName"          label="情報処理資格保有"/>
+			<mx:CheckBox id="housingMonthlySum"           label="住宅補助手当"/>
+			<mx:CheckBox id="departmentHead"              label="所属部長"/>
+			<mx:CheckBox id="projectPosition"             label="役職"/>
+			<mx:CheckBox id="managerialPosition"          label="経営役職"/>
+			<!-- 追加 @auther maruta -->
+			<mx:CheckBox id="retirestaff"				  label="退職者"/>
+			
+		</mx:VBox>
+		
+		<!--フッタの設定-->
+		<mx:HBox>
+			<mx:Button label="OK" width="90" click="profileItemSelectLogic.onOk(event)"/>
+			<mx:Button label="キャンセル" width="90" click="profileItemSelectLogic.onCancel(event)"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Button id="storage" label="保存" width="90" click="profileItemSelectLogic.onStorage(event)" visible="false"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%">
+
+	<!--イベントの設定-->
+	<mx:Metadata>
+		[Event(name="itemClickHistoryList" ,type="mx.events.ListEvent")]
+		[Event(name="dragCompleteHistoryList" ,type="mx.events.DragEvent")]
+	</mx:Metadata>
+	
+	<!--画面の設定-->
+	<mx:VBox height="100%">
+		<mx:HBox height="100%">
+			<mx:DataGrid id="history" width="100%" height="100%" fontSize="12" wordWrap="true"
+				itemClick="onItemClick_historyList(event);"
+				dragComplete="onDragComplete_historyList(event);">
+				
+				<mx:columns>
+					<mx:DataGridColumn dataField="sequenceNo"  headerText="スキルシート連番"   width="30" visible="false"/>
+					<mx:DataGridColumn dataField="title"       headerText="件名"               width="100" visible="false"/>
+					<mx:DataGridColumn dataField="projectCode" headerText="プロジェクトコード" width="90"/>
+					<mx:DataGridColumn dataField="projectName" headerText="プロジェクト名"     width="100"/>
+					<mx:DataGridColumn dataField="kindId"      headerText="区分ID"             width="30" visible="false"/>
+					<mx:DataGridColumn dataField="kindName"    headerText="区分"               width="150"/>
+					<mx:DataGridColumn dataField="joinDate"    headerText="参加開始"           width="90" labelFunction="{LabelUtil.dateLabel}"/>
+					<mx:DataGridColumn dataField="retireDate"  headerText="参加終了"           width="90" labelFunction="{LabelUtil.dateLabel}"/>
+					<mx:DataGridColumn dataField="hardware"    headerText="ハード"             width="50"/>
+					<mx:DataGridColumn dataField="os"          headerText="OS"                 width="100"/>
+					<mx:DataGridColumn dataField="language"    headerText="言語"               width="100"/>
+					<mx:DataGridColumn dataField="Phase"       headerText="作業フェーズ"       width="160"/>
+					<mx:DataGridColumn dataField="Position"    headerText="参加形態"           width="70"/>
+					<mx:DataGridColumn dataField="keyword"     headerText="キーワード"         width="100"/>
+					<mx:DataGridColumn dataField="content"     headerText="担当した内容"       width="200"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+		<mx:HBox height="20">
+			<mx:Spacer width="10"/>
+			<mx:Label text="制御系" fontSize="12"/>
+			<mx:Label id="control" text="      "/>
+			<mx:Label text="年"/>
+			<mx:Spacer width="10"/>
+			<mx:Label text="業務系" fontSize="12"/>
+			<mx:Label id="open" text="      "/>
+			<mx:Label text="年"/>
+			<mx:Spacer width="10"/>
+			<mx:Label text="保守" fontSize="12"/>
+			<mx:Label id="maintenance" text="      "/>
+			<mx:Label text="年"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<!-- Script -->
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import mx.events.ListEvent;
+			import mx.events.DragEvent;
+			
+			/**
+			 * 一覧選択
+			 */
+			private function onItemClick_historyList(event:ListEvent):void
+			{
+				dispatchEvent(new ListEvent("itemClickHistoryList"));
+			}
+			
+			/**
+			 * 一覧ドラッグ＆ドロップ完了
+			 */
+			private function onDragComplete_historyList(event:DragEvent):void
+			{
+				dispatchEvent(new DragEvent("dragCompleteHistoryList"));
+			}
+			
+			/**
+			 * 一覧ドラッグ＆ドロップ設定
+			 */
+			public function setEnableDragDrop(enabled:Boolean):void
+			{
+				history.dropEnabled=enabled;
+				history.dragEnabled=enabled;
+				history.dragMoveEnabled=enabled;
+			}
+		]]>
+	</mx:Script>
+</mx:Module>
+

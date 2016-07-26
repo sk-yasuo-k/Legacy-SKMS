@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.system.logic.*"
+	xmlns:cmp="components.*"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:StaffSettingLogic id="logic" />
+
+	<!-- 画面表示 -->
+		<mx:VBox height="100%" width="100%">
+			<mx:Spacer height="1" />
+			<mx:HBox height="100%" width="100%">
+				<mx:Spacer width="1" />
+				<mx:TabNavigator id="tabNavSetting" width="100%" height="100%">
+					<mx:Canvas id="tabWorkingHours" label="勤務表" width="100%" height="100%"
+						creationComplete="logic.onCreationComplete_tabWorkingHours(event)"
+						>
+						<mx:VBox width="100%" height="100%">
+							<mx:HBox height="100%" width="100%">
+								<mx:Spacer width="1" />
+								<mx:Panel title="勤務表のドロップダウンリストに表示する時刻の選択" height="100%">
+									<mx:VBox width="100%" height="100%">
+										<mx:HBox  width="100%" height="100%">
+											<mx:Spacer width="1"/>
+											<mx:VBox width="90" height="100%">
+												<mx:Label text="ここから選びます" width="100%" />
+												<mx:List id="listTimeChoices" width="80" height="100%"
+													 dropEnabled="true"
+													 dragEnabled="true"
+													 allowMultipleSelection="true"
+													 dragEnter="logic.onDragEnter_listTimeChoices(event)"
+													 dragDrop="logic.onDragDrop_listTimeChoices(event)"
+												/>
+											</mx:VBox>
+											<mx:VBox height="100%" horizontalAlign="center">
+												<mx:Spacer height="50%" />
+												<mx:Text text="時刻を&#13;Drag&amp;Drop&#13;してください"/>
+												<mx:Spacer height="1" />
+												<mx:HBox>
+													<mx:Label text="追加→"/>
+												</mx:HBox>
+												<mx:HBox>
+													<mx:Label text="←削除"/>
+												</mx:HBox>
+												<mx:Spacer height="50%" />
+											</mx:VBox>
+											<mx:VBox height="100%">
+												<mx:Canvas width="100%" height="100%" borderStyle="none">
+													<mx:VBox height="100%">
+														<mx:Label text="時差時刻のドロップダウンリスト" />
+														<mx:HBox width="100%" height="100%">
+															<mx:Spacer width="1" />
+															<mx:List id="listStaggeredStartTime" width="80" height="100%"
+																 dragEnabled="true"
+																 dropEnabled="true"
+																 dragMoveEnabled="true"
+																 allowMultipleSelection="true"
+																 dragEnter="logic.onDragEnter_listStaggeredStartTime(event)"
+																 dragOver="logic.onDragOver_listWorkingTime(event)"
+																 dragDrop="logic.onDragDrop_listWorkingTime(event)"
+															/>
+															<mx:VBox width="100%" height="100%">
+																<mx:CheckBox id="chkDefaultStaggeredStartTime" label="以下を既定値とする"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+																<mx:ComboBox id="cmbDefaultStaggeredStartTime" width="80"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+															</mx:VBox>
+														</mx:HBox>
+														<mx:Spacer height="1" />
+													</mx:VBox>
+												</mx:Canvas>
+												<mx:Canvas width="100%" height="100%" borderStyle="none">
+													<mx:VBox height="100%">
+														<mx:Label text="開始時刻のドロップダウンリスト" />
+														<mx:HBox width="100%" height="100%">
+															<mx:Spacer width="1" />
+															<mx:List id="listStartTime" width="80" height="100%"
+																 dragEnabled="true"
+																 dropEnabled="true"
+																 dragMoveEnabled="true"
+																 allowMultipleSelection="true"
+																 dragEnter="logic.onDragEnter_listStartTime(event)"
+																 dragOver="logic.onDragOver_listWorkingTime(event)"
+																 dragDrop="logic.onDragDrop_listWorkingTime(event)"
+															/>
+															<mx:VBox width="100%" height="100%">
+																<mx:CheckBox id="chkDefaultStartTime" label="以下を既定値とする"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+																<mx:ComboBox id="cmbDefaultStartTime" width="80"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+															</mx:VBox>
+														</mx:HBox>
+														<mx:Spacer height="1" />
+													</mx:VBox>
+												</mx:Canvas>
+												<mx:Canvas width="100%" height="100%" borderStyle="none">
+													<mx:VBox height="100%">
+														<mx:Label text="終了時刻のドロップダウンリスト" />
+														<mx:HBox width="100%" height="100%">
+															<mx:Spacer width="1" />
+															<mx:List id="listQuittingTime" width="80" height="100%"
+																 dragEnabled="true"
+																 dropEnabled="true"
+																 dragMoveEnabled="true"
+																 allowMultipleSelection="true"
+																 dragEnter="logic.onDragEnter_listQuittingTime(event)"
+																 dragOver="logic.onDragOver_listWorkingTime(event)"
+																 dragDrop="logic.onDragDrop_listWorkingTime(event)"
+															/>
+															<mx:VBox width="100%" height="100%">
+																<mx:CheckBox id="chkDefaultQuittingTime" label="以下を既定値とする"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+																<mx:ComboBox id="cmbDefaultQuittingTime" width="80"
+																	 change="logic.onChange_defaultWorkingTime(event)"
+																/>
+															</mx:VBox>
+														</mx:HBox>
+														<mx:Spacer height="1" />
+													</mx:VBox>
+												</mx:Canvas>
+											</mx:VBox>
+											<mx:Spacer width="1"/>
+										</mx:HBox>
+									<mx:Spacer height="1" />
+									</mx:VBox>
+								</mx:Panel>
+								<mx:Spacer width="1" />
+								<mx:Form x="10" y="10" width="100%" height="100%">
+									<mx:FormItem label="">
+										<mx:CheckBox id="cbxSendMailWorkingHours" label="勤務表提出・承認時にメールを受け取る。"
+											 change="logic.onChange_cbxSendMailTransportation(event)"/>
+									</mx:FormItem>
+								</mx:Form>
+							</mx:HBox>
+							<mx:Spacer height="1" />
+						</mx:VBox>
+	   				</mx:Canvas>
+					<mx:Canvas id="tabTransportation" label="通勤費・交通費・諸経費" width="100%" height="100%"
+						creationComplete="logic.onCreationComplete_tabTransportation(event)"
+						>
+						<mx:Form x="10" y="10" width="100%" height="272">
+							<mx:FormItem label="">
+								<mx:CheckBox id="cbxSendMailTransportation" label="通勤費、交通費申請・承認、諸経費申請・承認時にメールを受け取る。"
+									 change="logic.onChange_cbxSendMailTransportation(event)"/>
+							</mx:FormItem>
+						</mx:Form>
+					</mx:Canvas>
+					<mx:Canvas id="tabMenu" label="メニュー" width="100%" height="100%"
+						creationComplete="logic.onCreationComplete_tabMenu(event);">
+						<mx:Form x="10" y="10" width="100%" height="272">
+							<mx:FormItem label="">
+								<mx:CheckBox id="cbxAllMenu" label="メニューをすべて表示する。"
+									 change="logic.onChange_cbxAllMenu(event)"/>
+							</mx:FormItem>
+							<mx:FormItem label="">
+								<mx:CheckBox id="cbxMyMenu" label="マイメニューを表示する。"
+									 change="logic.onChange_cbxMyMenu(event)"/>
+							</mx:FormItem>
+							<mx:FormItem >
+								<mx:Label text="※次回起動時に反映されます。" />
+							</mx:FormItem>
+						</mx:Form>
+					</mx:Canvas>
+				</mx:TabNavigator>
+				<mx:Spacer width="5" />
+			</mx:HBox>
+			<mx:HBox x="10" y="290" width="100%" height="29">
+				<mx:Spacer width="100%" />
+				<mx:Button id="btnOk" label="変更を保存する" click="logic.onClick_btnOk(event)" enabled="false"/>
+				<mx:Button id="btnCancel" label="変更を元に戻す"  click="logic.onClick_btnCancel(event)"  enabled="false"/>
+				<mx:Spacer width="2" />
+			</mx:HBox>
+		</mx:VBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="systemService">
+		<mx:method name="updateStaffSetting"
+			result="logic.onResult_updateStaffSetting(event)"
+			fault="logic.onFault_updateStaffSetting(event)"
+		/>
+	</mx:RemoteObject>
+
+
+</mx:Module>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	title="経路登録">
+
+	<!-- Logicクラスの設定 -->
+	<logic:RouteEntryLogic id="routeEntryLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox>
+		<mx:Spacer width="10" />
+
+		<mx:HBox>
+			<mx:Spacer width="10" />
+			<!-- 経路一覧 -->
+			<mx:Box width="212" height="420">
+				<mx:HBox height="28">
+					<mx:Repeater id="rpLinkList" dataProvider="">
+						<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+							enabled="{rpLinkList.currentItem.enabled}"
+							click="routeEntryLogic.onClick_linkList(event);" />
+					</mx:Repeater>
+				</mx:HBox>
+				<dataGrid:RouteDataGrid id="route" rowHeight="24" width="100%" height="100%"
+					editable="true" allowMultipleSelection="false" sortableColumns="false"
+					verticalScrollPolicy="auto" dragSourceNotify="true"
+					dropEnabled="true" dragEnabled="true" dragMoveEnabled="true"
+					change="routeEntryLogic.onChange_route(event);"
+					itemFocusOut="routeEntryLogic.onItemFocusOut_route(event);"
+					setDropIndex="routeEntryLogic.onSetDropIndex_route(event);"
+					dragSource="routeEntryLogic.onDragSource_route(event);"
+					/>
+			</mx:Box>
+			<!-- 経路詳細一覧 -->
+			<mx:Box width="578" height="420">
+				<mx:HBox height="28">
+					<mx:Repeater id="rpLinkList2" dataProvider="">
+						<mx:LinkButton id="linkList2" label="{rpLinkList2.currentItem.label}"
+							enabled="{rpLinkList2.currentItem.enabled}"
+							click="routeEntryLogic.onClick_linkList2(event);" />
+					</mx:Repeater>
+				</mx:HBox>
+				<dataGrid:RouteDetailDataGrid id="routeDetail" width="100%" height="100%" rowHeight="24"
+					editable="true" allowMultipleSelection="true" sortableColumns="false"
+					verticalScrollPolicy="auto"
+					dropEnabled="true" dragEnabled="true" dragMoveEnabled="true"
+					change="routeEntryLogic.onChange_routeDetail(event);"
+					itemFocusOut="routeEntryLogic.onItemFocusOut_routeDetail(event);"
+					setDropIndex="routeEntryLogic.onSetDropIndex_routeDetail(event);"
+					/>
+			</mx:Box>
+			<mx:Box width="10" />
+		</mx:HBox>
+
+		<mx:HBox width="100%">
+			<mx:Spacer width="10" />
+		    <mx:Button label="登録" click="routeEntryLogic.onButtonClick_entry_confirm(event);" id="btnEntry"/>
+		    <mx:Button label="戻る" click="routeEntryLogic.onButtonClick_close(event);" />
+			<mx:Spacer width="100%" />
+			<mx:LinkButton id="help" label="ヘルプ" click="routeEntryLogic.onClick_help(event);" styleName="SmallText" />
+			<mx:Spacer width="10" />
+		</mx:HBox>
+
+		<mx:Spacer width="10" />
+	</mx:VBox>
+
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="routeService" showBusyCursor="true">
+		<mx:method name="getRoutes"
+			result="routeEntryLogic.onResult_getRoutes(event);"
+			fault ="routeEntryLogic.onFault_getRoutes(event);"
+			/>
+		<mx:method name="createRoutes"
+			result="routeEntryLogic.onResult_createRoutes(event);"
+			fault ="routeEntryLogic.onFault_createRoutes(event);"
+			/>
+		<!-- 登録のタイミングで削除するようにする.
+		<mx:method name="deleteRoute"
+			result="routeEntryLogic.onResult_deleteRoute(event);"
+			fault ="routeEntryLogic.onFault_deleteRoute(event);"
+			/>
+		<mx:method name="deleteRouteDetails"
+			result="routeEntryLogic.onResult_deleteRouteDetails(event);"
+			fault ="routeEntryLogic.onFault_deleteRouteDetails(event);"
+			/>
+		-->
+	</mx:RemoteObject>
+
+</cmp:PopUpWindow>

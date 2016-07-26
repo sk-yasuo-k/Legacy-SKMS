@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionScriptProperties mainApplicationPath="Index.mxml" version="3">
+<compiler additionalCompilerArguments="-services &quot;${DOCUMENTS}\skms-server\webapp\WEB-INF\flex\services-config.xml&quot; -locale ja_JP" copyDependentFiles="true" enableModuleDebug="true" flexSDK="Flex 3.4" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersion="10.0.32" htmlPlayerVersionCheck="true" outputFolderLocation="DOCUMENTS/skms-server/webapp/bin" outputFolderPath="bin-debug" rootURL="http://localhost:8400/skms-server/bin/" sourceFolderPath="src/flex" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
+<compilerSourcePath/>
+<libraryPath defaultLinkType="1">
+<libraryPathEntry kind="4" path="">
+<modifiedEntries>
+<libraryPathEntry kind="3" linkType="4" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" useDefaultLinkType="true">
+<crossDomainRsls>
+<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swz"/>
+<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swf"/>
+</crossDomainRsls>
+</libraryPathEntry>
+</modifiedEntries>
+</libraryPathEntry>
+<libraryPathEntry kind="1" linkType="1" path="libs"/>
+</libraryPath>
+<sourceAttachmentPath/>
+</compiler>
+<applications>
+<application path="Index.mxml"/>
+</applications>
+<modules>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterShopAdmin.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterShopAdmin.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/WorkingHoursMonthly.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/WorkingHoursMonthly.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/TransportApproval.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/TransportApproval.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/ChangeAddressApproval.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/ChangeAddressApproval.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/WorkingHoursImport.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/WorkingHoursImport.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/skill/web/SkillSheetView.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/skill/web/SkillSheetView.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/WorkingHoursEntry.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/WorkingHoursEntry.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/web/WorkStatus.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/web/WorkStatus.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterShopMenu.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterShopMenu.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/OverheadRequest.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/OverheadRequest.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/TransportMonthly.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/TransportMonthly.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/profile/web/ProfileItemSelect.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/profile/web/ProfileItemSelect.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterOptionKind.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterOptionKind.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/CommutationApproval.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/CommutationApproval.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterCategory.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterCategory.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/web/Belonging.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/web/Belonging.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/WorkingHoursApproval.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/WorkingHoursApproval.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterShop.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterShop.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/profile/web/AuthorityProfileItemSelect.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/authority/web/AuthorityProfileItemSelect.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/Committee.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/Committee.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/skill/web/SkillSheet.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/skill/web/SkillSheet.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/web/Licence.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/web/Licence.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/Lunch.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/Lunch.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/CommutationRequest.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/CommutationRequest.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/Order.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/Order.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/Lunch.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/Lunch.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/OverheadApproval.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/OverheadApproval.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/home/web/HomePage.swf" optimize="false" sourcePath="src/flex/subApplications/home/web/HomePage.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/CommitteeMemberChangeDlg.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/CommitteeMemberChangeDlg.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/PreserveNewAddress.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/PreserveNewAddress.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterMenu.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterMenu.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/license/web/CompanyLicense.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/license/web/CompanyLicense.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterOptionSet.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterOptionSet.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/customer/web/CustomerList.swf" optimize="false" sourcePath="src/flex/subApplications/customer/web/CustomerList.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/StaffEntry.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/StaffEntry.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/profile/web/ProfileList.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/profile/web/ProfileList.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/web/ChangeAddressApply.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/web/ChangeAddressApply.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/project/web/ProjectList.swf" optimize="false" sourcePath="src/flex/subApplications/project/web/ProjectList.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/system/web/StaffSetting.swf" optimize="false" sourcePath="src/flex/subApplications/system/web/StaffSetting.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/RegisterOption.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/RegisterOption.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/personnelAffair/web/QualificationEntry.swf" optimize="false" sourcePath="src/flex/subApplications/personnelAffair/web/QualificationEntry.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/accounting/web/TransportRequest.swf" optimize="false" sourcePath="src/flex/subApplications/accounting/web/TransportRequest.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/workingConditions/web/WorkingConditions.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/workingConditions/web/WorkingConditions.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/SelectedOption.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/SelectedOption.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/lunch/web/SelectedOptionKind.swf" optimize="false" sourcePath="src/flex/subApplications/lunch/web/SelectedOptionKind.mxml"/>
+<module application="src/flex/Index.mxml" destPath="subApplications/generalAffair/paidVacationMaintenance/web/PaidVacationMaintenance.swf" optimize="false" sourcePath="src/flex/subApplications/generalAffair/paidVacationMaintenance/web/PaidVacationMaintenance.mxml"/>
+</modules>
+<buildCSSFiles/>
+</actionScriptProperties>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*">
+
+	<!-- Logicクラスの設定 -->
+	<logic:CommutationApprovalLogic id="commutationApprovalLogic" />
+
+	<!-- 通勤費申請画面 -->
+	<mx:VBox x="5" y="0" width="99%" height="99%" >
+		<mx:Label text="通勤費承認" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前月" icon="@Embed('images/arrow_previous.gif')"
+				click="commutationApprovalLogic.onClick_linkPreviousMonth(event);"/>
+			<mx:Label id="lblCommuMonth" text="0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月" icon="@Embed('images/arrow_next.gif')"
+				click="commutationApprovalLogic.onClick_linkNextMonth(event);"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:LinkButton id="linkShowDateSetting" label="表示条件の指定..."
+					click="commutationApprovalLogic.onClick_linkShowDateSetting(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideDateSetting" width="100%" height="0">
+				<mx:Grid backgroundColor="0xECE3EE">
+					<mx:GridRow/>
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:LinkButton id="linkHideDateSetting" label="閉じる"
+								click="commutationApprovalLogic.onClick_linkHideDateSetting(event);"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:Label text="勤務月" styleName="LargeText"/>
+							<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+							<mx:Label text="年" styleName="LargeText"/>
+							<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+							<mx:Label text="月" styleName="LargeText"/>
+							<mx:Button id="btnRefresh" label="表示"
+								click="commutationApprovalLogic.onClick_btnRefresh(event)"/>
+						</mx:GridItem>
+					</mx:GridRow>
+
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:CheckBox id="chkSubordinateOnly" label="部下のみ" selected="true" visible="true"/>
+						</mx:GridItem>
+					</mx:GridRow>
+
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:Text text="状態" />
+							<mx:Repeater id="rpStatusList" dataProvider="">
+								<mx:CheckBox id="chkStatus" label="{rpStatusList.currentItem.label}" selected="{rpStatusList.currentItem.selected}"
+									selectedField="{rpStatusList.currentItem.data}" enabled="{rpStatusList.currentItem.enabled}"/>
+							</mx:Repeater>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>			
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:HBox width="100%">
+			<mx:Repeater id="rpLinkList" dataProvider="">
+				<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+					enabled="{rpLinkList.currentItem.enabled}"
+					click="commutationApprovalLogic.onClick_linkList(event);" />
+			</mx:Repeater>
+		</mx:HBox>
+		
+		
+		
+		<mx:HDividedBox width="100%" height="100%">
+			<!-- 画面左部 -->
+			<mx:VBox width="200" height="100%">
+				<mx:DataGrid id="grdCommutationStatus" width="100%" height="100%"
+					 change="commutationApprovalLogic.onChange_grdCommutationStatus(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" width="50" dataField="staffId">
+							<mx:itemRenderer>
+							<mx:Component>
+							<mx:Label text="{data.fullName}"/>
+							</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="状態" width="60" dataField="commutationStatusId">
+							<mx:itemRenderer>
+							<mx:Component>
+							<mx:Label text="{data.commutationStatusName}"
+								 color="{data.commutationStatusColor}" />
+							</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="金額" width="60"
+							dataField="payment">
+							<mx:itemRenderer>
+							<mx:Component>
+							<mx:Label text="{paymentLabel(data.payment)}"
+								 color="{data.paymentColor}"
+								 textAlign="right">
+							<mx:Script>
+								<![CDATA[
+									import mx.formatters.CurrencyFormatter;
+									import mx.formatters.DateFormatter;
+								/**
+								 * 金額フォーマット処理.
+								 *
+								 * @param payment 金額.
+								 * @return フォーマット済みの金額.
+								 */
+								protected function paymentLabel(payment:int):String
+								{
+									var formatter:CurrencyFormatter = new CurrencyFormatter();
+									formatter.useThousandsSeparator = true;
+									formatter.useNegativeSign       = true;
+									return formatter.format(payment);
+							    }
+								]]>
+							</mx:Script>
+							</mx:Label>
+							</mx:Component>
+							</mx:itemRenderer>
+							<mx:headerRenderer>
+							<mx:Component>
+							<mx:Label textAlign="left"/>
+							</mx:Component>
+							</mx:headerRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<!-- 画面右部 -->
+			<mx:VBox width="85%" height="100%">
+				<mx:Label id="lblStaffName" styleName="LargeText"/>
+				<mx:VDividedBox width="100%" height="100%">
+					<!-- 通勤費詳細タブ -->
+					<mx:Canvas width="100%" height="55%">
+						<mx:TabNavigator id="tabnavi" width="100%" height="100%" />
+					</mx:Canvas>
+					<!-- 画面下部 -->
+					<mx:Canvas width="100%" height="45%">
+						<mx:HDividedBox width="100%" height="100%">
+							<!-- 通勤費合計額 -->
+							<mx:Canvas width="60%" height="100%">
+								<mx:Form>
+									<mx:FormItem label="合計金額" required="false" direction="horizontal">
+										<mx:Label id="expenseTotal" styleName="LargeBoldText" width="120" textAlign="right" />
+										<mx:Label text="円" styleName="LargeBoldText"/>
+									</mx:FormItem>
+								
+									<mx:FormItem label="払戻額" required="false" direction="horizontal">
+										<mx:TextInput id="repayment" maxChars="6" width="120" height="22" textAlign="right"
+											focusOut="commutationApprovalLogic.focusOut_Repayment(event)"
+										    change="commutationApprovalLogic.change_Repayment(event)"	
+											 />
+										<mx:Label text="円" styleName="LargeBoldText"/>
+									</mx:FormItem>
+						
+						
+									<mx:FormItem label="差引支給額" required="false" direction="horizontal">
+										<mx:Label  id="payment" styleName="LargeBoldText" width="120" textAlign="right"/>
+										<mx:Label text="円" styleName="LargeBoldText"/>
+										<mx:Spacer/>
+									</mx:FormItem>
+									<mx:FormItem label="">
+										<mx:Spacer width="10" />
+									</mx:FormItem>
+									<mx:FormItem label="備考" required="false" direction="horizontal">
+										<mx:TextArea  id="note" maxChars="256" wordWrap="true" width="480"/>
+									</mx:FormItem>
+									
+									<mx:FormItem label="通勤費担当" required="false" direction="horizontal">
+										<mx:TextArea  id="noteCharge" maxChars="256" wordWrap="true" width="480"
+											change="commutationApprovalLogic.change_NoteCharge(event)" />
+									</mx:FormItem>
+								</mx:Form>				
+							</mx:Canvas>
+							<!-- 通勤費申請手続き履歴一覧 -->
+							<mx:VBox width="30%" height="100%">
+								<mx:HBox>
+									<mx:Label text="手続きの履歴"  styleName="LargeText"/>
+								</mx:HBox>
+									
+								<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+								id="grdCommutationHistory"
+								editable="false"
+								allowMultipleSelection="false"
+								sortableColumns="false"
+								verticalScrollPolicy="on"
+								rowHeight="24"
+								variableRowHeight="true"
+								wordWrap="true"
+								>
+								
+									<mx:columns>
+										<mx:DataGridColumn
+											editable="false"
+											width="150"
+											headerText="日時"
+											dataField="registrationTime"
+											labelFunction="{commutationApprovalLogic.dateTimeLabel}"
+											textAlign="left">
+											<mx:headerRenderer>
+											<mx:Component>
+											<mx:Label textAlign="center"/>
+											</mx:Component>
+											</mx:headerRenderer>
+										</mx:DataGridColumn>
+										<mx:DataGridColumn
+											width="250"
+											headerText="内容"
+											dataField="comment"
+											labelFunction="{commutationApprovalLogic.commentLabel}"
+											textAlign="left">
+											<mx:headerRenderer>
+											<mx:Component>
+											<mx:Label textAlign="center"/>
+											</mx:Component>
+											</mx:headerRenderer>
+										</mx:DataGridColumn>
+									</mx:columns>
+								</mx:DataGrid>
+							</mx:VBox>
+						</mx:HDividedBox>
+					</mx:Canvas>					
+				</mx:VDividedBox>
+
+			</mx:VBox>
+		</mx:HDividedBox>	
+	</mx:VBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="commutationService" showBusyCursor="true">
+	
+		<mx:method name="getSubordinateCurrentCommutationStatus"
+			result="commutationApprovalLogic.onResult_getSubordinateCurrentCommutationStatus(event)"
+			fault="commutationApprovalLogic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getCurrentCommutationStatus"
+			result="commutationApprovalLogic.onResult_getCurrentCommutationStatus(event)"
+			fault="commutationApprovalLogic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getCommutationStatusList"
+			result="commutationApprovalLogic.onResult_getCommutationStatusList(event)"
+			fault="commutationApprovalLogic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getStaffProjectPositionId"
+			result="commutationApprovalLogic.onResult_getStaffProjectPositionId(event)"
+			fault="commutationApprovalLogic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getCommutation"
+			result="commutationApprovalLogic.onResult_getCommutation(event);"
+			fault="commutationApprovalLogic.onFault_getCommutation(event);"
+		/>
+		<mx:method name="approvalCommutation"
+			result="commutationApprovalLogic.onResult_approvalCommutation(event);"
+			fault="commutationApprovalLogic.onFault_approvalCommutation(event);"
+		/>
+		<mx:method name="approvalCancelCommutation"
+			result="commutationApprovalLogic.onResult_approvalCancelCommutation(event);"
+			fault="commutationApprovalLogic.onFault_approvalCancelCommutation(event);"
+		/>
+		<mx:method name="approvalRejectCommutation"
+			result="commutationApprovalLogic.onResult_approvalRejectCommutation(event);"
+			fault="commutationApprovalLogic.onFault_approvalRejectCommutation(event);"
+		/>
+		
+		<mx:method name="getStaffAddressList"
+			result="commutationApprovalLogic.onResult_getStaffAddressList(event)"
+			fault="commutationApprovalLogic.onFault_getStaffAddressList(event)"
+		/>		
+			
+	</mx:RemoteObject>
+
+</mx:Module>

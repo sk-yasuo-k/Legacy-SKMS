@@ -1,0 +1,183 @@
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*"
+	xmlns:cmp="components.*"
+	click ="staffentryLogic.onValidateCheck(event);"
+	>
+    
+	<!-- Logicクラスの設定 -->
+	<logic:StaffEntryLogic id="staffentryLogic" />
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="staffEntryService" destination="staffEntryService">
+		<!-- 都道府県名の取得する -->
+		<mx:method name="getContinentList"
+					result="staffentryLogic.onResult_showContinentList(event)" 
+					fault="staffentryLogic.onFault_remoteObject(event)" />
+		<!-- 等級マスタの取得する -->
+		<mx:method name="getBasicClassPayList"
+					result="staffentryLogic.onResult_showBasicClassPayList(event)" 
+					fault="staffentryLogic.onFault_remoteBasicClassPayList(event)" />
+		<!-- 基本給マスタの取得する -->
+		<mx:method name="getBasicPayList"
+					result="staffentryLogic.onResult_showBasicPayList(event)" 
+					fault="staffentryLogic.onFault_remoteBasicPayList(event)" />
+		<!-- 新入社員情報を追加する -->
+		<mx:method name="insertLinkMStaff"
+					result="staffentryLogic.onResult_SucceedSave(event)" 
+					fault="staffentryLogic.onFault_failureSave(event)" />														
+	</mx:RemoteObject>
+	
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Label id="lblCommitteeName" text="新入社員登録" styleName="LargeBoldText"/>
+		<mx:TabNavigator width="100%" height="100%">
+			<mx:HBox label="個人情報" width="100%" height="100%" horizontalAlign="left">
+				<mx:Form height="100%">
+					<mx:FormItem label="ログイン名" required="true" direction="horizontal">
+						<mx:TextInput id="LoginName" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+					</mx:FormItem>
+					<mx:FormItem label="入社日" required="true">
+						<mx:DateField id="postaldateField" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+					</mx:FormItem>					
+					<mx:FormItem label="姓（漢字）" required="true" direction="horizontal">
+						<mx:TextInput id="lastName" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}" imeMode="JAPANESE_HIRAGANA"/>
+					</mx:FormItem>
+					<mx:FormItem label="名（漢字）" required="true" direction="horizontal">
+						<mx:TextInput id="firstName" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}" imeMode="JAPANESE_HIRAGANA"/>
+					</mx:FormItem>
+					<mx:FormItem label="姓（フリガナ）" required="true" direction="horizontal">
+						<mx:TextInput id="lastNameKana" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}" imeMode="JAPANESE_KATAKANA_HALF"/>
+					</mx:FormItem>
+					<mx:FormItem label="名（フリガナ）" required="true" direction="horizontal">
+						<mx:TextInput id="firstNameKana" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}" imeMode="JAPANESE_KATAKANA_HALF"/>
+					</mx:FormItem>
+					<mx:FormItem label="性別" required="true">
+						<mx:ComboBox id="cmbSex" prompt="選択してください" valueCommit="staffentryLogic.onValidateCheck(event);"/>
+					</mx:FormItem>
+					<mx:FormItem label="血液型" required="true">
+						<mx:ComboBox id="cmbBloodGroup" prompt="選択してください" valueCommit="staffentryLogic.onValidateCheck(event);"/>
+					</mx:FormItem>
+					<mx:FormItem label="生年月日" required="true">
+						<mx:DateField id="txdateField" valueCommit="staffentryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+					</mx:FormItem>
+					<mx:FormItem label="年齢">
+						<mx:TextInput id="presentAge" valueCommit="staffentryLogic.onValidateCheck(event);" width="20%"/>
+					</mx:FormItem>
+					<mx:FormItem label="本籍地">
+						<mx:ComboBox id="cmbdomicileOriginCode" valueCommit="staffentryLogic.onValidateCheck(event);" prompt="選択してください"/>
+					</mx:FormItem>
+					<mx:FormItem label="緊急連絡先">
+						<mx:TextInput id="emergencyAddress" valueCommit="staffentryLogic.onValidateCheck(event);" imeMode="JAPANESE_HIRAGANA" width="225"/>
+					</mx:FormItem>
+					<mx:FormItem label="等級" required="true">
+						<mx:HBox>
+							<cmp:ComboBoxEx id="basicPyaClassNo" labelField="className" dataField="classId" change="staffentryLogic.onChange_basicClass(event)" width="75"/>
+							<mx:FormItem label="号" required="true">
+								<cmp:ComboBoxEx id="basicPayRankNo" labelField="rankNo" dataField="classNo" width="75"/>
+							</mx:FormItem>								
+						</mx:HBox>
+					</mx:FormItem>	
+				</mx:Form>
+			</mx:HBox>
+			<mx:HBox label="住所" width="100%" height="100%" horizontalAlign="left" creationComplete="staffentryLogic.onClick_addressFromFlag(event)">
+				<cmp:AddressForm id="addressForm">
+				</cmp:AddressForm>
+			</mx:HBox>
+			<mx:HBox label="学歴・職歴">
+				<mx:HDividedBox width="100%" height="100%">
+					<mx:VBox width="50%" height="100%">
+						<mx:Label text="学歴"/>
+						<dataGrid:StaffDetailDataGrid id="staffentryLogicDetail" width="100%" height="100%" wordWrap="true" rowHeight="24" 
+											editable="true" sortableColumns="false"
+											creationComplete="staffentryLogic.onCreationComplete_tabStaffEntry(event)"
+											itemFocusOut="staffentryLogic.onItemFocusOut_StaffDetail(event);"
+						>
+						</dataGrid:StaffDetailDataGrid>
+						<mx:HBox>
+							<mx:FormItem>
+								<mx:TextInput width="0" />
+							</mx:FormItem>
+							<mx:FormItem>
+								<mx:TextInput width="0"/>
+							</mx:FormItem>
+						</mx:HBox>
+						<mx:Spacer width="5" />
+					</mx:VBox>
+					<mx:VBox width="50%" height="100%">
+						<mx:Label text="職歴"/>
+						<dataGrid:StaffDetailDataGrid id="staffentryLogicDetailBusinessCareer" width="100%" height="100%" wordWrap="true"  rowHeight="24"
+											editable="true" sortableColumns="false"
+											creationComplete="staffentryLogic.onCreationComplete_tabStaffEntryBusinessCareer(event)"
+											itemFocusOut="staffentryLogic.onItemFocusOut_StaffDetailBusinessCareer(event);"
+						>
+						</dataGrid:StaffDetailDataGrid>
+						<mx:HBox>
+							<mx:FormItem label="入社前経験年数" >
+								<!--<mx:TextInput text="5" height="22" width="22" />-->
+								<mx:TextInput id="experienceYears" height="22" width="22" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="2"/>
+							</mx:FormItem>
+							<mx:FormItem label="年"  horizontalAlign="right" height="22" width="22">
+								<mx:TextInput  width="0"/>
+							</mx:FormItem>
+						</mx:HBox>
+						<mx:Spacer width="5" />
+					</mx:VBox>
+				</mx:HDividedBox>
+			</mx:HBox>
+		</mx:TabNavigator>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button id="btnOk" label="保存する" click="staffentryLogic.onButtonClick_entry_confirm(event);" visible="{this.authorisation}"/>
+			<mx:Button id="btnCancel" label="初期化" click="staffentryLogic.onClick_confirmFormat(event);"/>
+		</mx:HBox>
+	</mx:VBox>
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<!-- ログイン名はチェックする -->
+		<mx:StringValidator id="validatorLoginName" source="{this.LoginName}"  required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 姓(漢字)はチェックする -->
+		<mx:StringValidator id="validatorLastName" source="{this.lastName}"    required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 名(漢字)はチェックする -->		
+		<mx:StringValidator id="validatorFirstName" source="{this.firstName}"    required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>		
+		<!-- 姓(かな)はチェックする -->
+		<mx:StringValidator id="validatorLastNameKana" source="{this.lastNameKana}"      required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 名(かな)はチェックする -->
+		<mx:StringValidator id="validatorFirstNameKana" source="{this.firstNameKana}" required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 性別はチェックする -->
+		<mx:StringValidator id="validatorSex" source="{this.cmbSex}" required="true"  property="selectedItem" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 血液型はチェックする -->
+		<mx:StringValidator id="validatorBloodGroup" source="{this.cmbBloodGroup}" required="true"  property="selectedItem" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 生年月日はチェックする -->
+		<mx:StringValidator id="validatorDateField" source="{this.txdateField}" required="true"  property="selectedDate" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 入社日はチェックする -->
+		<mx:StringValidator id="validatorPostalDateField" source="{this.postaldateField}" required="true"  property="selectedDate" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 年齢はチェックしない -->
+		<!-- 本籍地はチェックしない -->
+		<!-- 緊急連絡先はチェックしない -->
+		<!-- 基本給(等級)はチェックしない -->
+	</mx:Array>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import utils.LabelUtil;
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = true;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+				if (authorisation) {
+					this.currentState = "stsAuthorize"
+				}
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		
+		]]>
+	</mx:Script>
+
+</mx:Module>

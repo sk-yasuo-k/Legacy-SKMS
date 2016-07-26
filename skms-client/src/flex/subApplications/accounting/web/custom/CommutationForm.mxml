@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:logic="subApplications.accounting.logic.custom.*"
+	xmlns:cmp="components.*"
+	xmlns:cmpcus="subApplications.accounting.web.custom"
+	height="100%"
+    width="100%"	
+    horizontalScrollPolicy="off"
+    verticalScrollPolicy="off">
+	<mx:Metadata>
+		[Event(name="loadComplete" ,type="flash.events.Event")]
+		[Event(name="changeExpense" ,type="flash.events.Event")]
+		[Event(name="changeInputData" ,type="flash.events.Event")]
+	</mx:Metadata>
+    
+
+	<!-- Logicの設定 -->
+	<logic:CommutationFormLogic id="commutationFormLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:FormItem label="住所">
+	<mx:Label id="address"  text="" />
+	</mx:FormItem>
+	
+	<mx:FormItem label="通勤開始日" required="true">
+		<cmp:EditDateField id="commuStartDate"
+			 selectableRange="{range}"
+			 change="commutationFormLogic.onChange_startDate(event)" 
+			 />
+	</mx:FormItem>
+	
+	<mx:FormItem label="通勤情報" required="true" direction="horizontal" width="100%" height="100%">
+		<mx:DataGrid id="grdCommutationItem"
+			 rowHeight="24"
+			 sortableColumns="false" 
+			 editable="true" 
+			 dragEnabled="true"
+			 dropEnabled="true"
+			 dragMoveEnabled="true"
+			 height="100%" 
+			 width="100%" 
+			 itemFocusIn="commutationFormLogic.onItemFocosIn(event)" 
+			 itemFocusOut="commutationFormLogic.onItemFocosOut(event)" 
+			 itemEditEnd="commutationFormLogic.onItemEditEnd(event)">
+			<mx:columns>
+				<mx:DataGridColumn
+					 headerText="No"
+					 dataField="itemNo"
+					 width="50"
+					 editable="false"
+					 visible="false"/>
+			
+				<mx:DataGridColumn 
+					headerText="通勤先等" 
+					dataField="destination"
+				    textAlign="left"
+					width="100"
+				    itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+
+				<mx:DataGridColumn
+					headerText="交通手段" 
+					dataField="facilityName"
+					width="80"
+					editable="true"
+				    itemEditor="components.EditComboBox"
+				    itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+				
+				<mx:DataGridColumn 
+					headerText="交通機関名" 
+					dataField="facilityCmpName"
+				    textAlign="left"
+					width="100"
+					itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+				
+				<mx:DataGridColumn 
+					headerText="出発地" 
+					dataField="departure"
+					width="120"
+					itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+
+				<mx:DataGridColumn 
+					headerText="到着地" 
+					dataField="arrival"
+					width="120"
+					itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+
+				<mx:DataGridColumn 
+					headerText="経由" 
+					dataField="via"
+					width="100">
+					
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+						
+				<mx:DataGridColumn 
+					headerText="金額" 
+					dataField="expense"
+					width="80"
+				    textAlign="right"	
+				    labelFunction="LabelUtil.expenseLabel"
+				    itemRenderer="subApplications.accounting.web.custom.CommutationRequestItemRenderer">
+					
+					<mx:headerRenderer>
+						<mx:Component>
+							<mx:Label textAlign="center"/>
+						</mx:Component>
+					</mx:headerRenderer>
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+	</mx:FormItem>
+	
+	<mx:FormItem label="" width="100%" horizontalAlign="right">
+		<mx:HBox>
+			<mx:Label text="合計金額：" width="90" textAlign="right" />
+			<mx:Label id="commuItemsTotal" textAlign="right" />
+			<mx:Label text="円"  textAlign="left"/>
+		</mx:HBox>
+	
+	
+	</mx:FormItem>
+
+	<mx:Spacer width="10" />
+
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:Validator id="validatorCommuStartDate" source="{this.commuStartDate}" required="true"  property="selectedDate" />
+	</mx:Array>
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import mx.collections.ArrayCollection;
+			import subApplications.accounting.dto.CommutationDetailDto;
+			
+			[Bindable]
+			private var range:Object = null;
+
+
+			/**
+			 * validatorチェック.
+			 */
+			public function validateAll():Boolean
+			{
+				return commutationFormLogic.validateAll();
+			}
+
+			/**
+			 * 通勤費情報の表示.
+			 * 
+			 */
+			public function displayCommuDetail(cd:CommutationDetailDto,
+												 al:ArrayCollection,
+												 fl:ArrayCollection ):void
+			{
+				range = commutationFormLogic.getDateField_selectableRange(cd.commutationStartDate,true);
+				commutationFormLogic.displayCommuDetail(cd,al,fl);
+			}
+
+
+			/**
+			 * 通勤費詳細情報の作成.
+			 */
+			public function createCommuDetail():CommutationDetailDto
+			{
+				return commutationFormLogic.createCommuDetail();
+			}
+
+		]]>
+	</mx:Script>
+</mx:Form>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" height="100%"
+	xmlns:logic="subApplications.lunch.logic.*">
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getMenuCategoryList" 
+					result="registerCategoryLogic.onResult_getMenuCategoryList(event)" 
+					fault="registerCategoryLogic.onFault_getMenuCategoryList(event)" />
+	</mx:RemoteObject>
+
+	<logic:RegisterCategoryLogic id="registerCategoryLogic" />
+	
+	<mx:Panel title="カテゴリ管理" height="100%">		
+		<mx:HBox height="100%" width="100%">
+			<mx:Panel title="既存カテゴリ" height="100%">
+				<mx:HBox>
+					<mx:Text text="検索" />
+					<mx:TextInput 
+						id="searchWord"/>
+				</mx:HBox>
+				<mx:List height="100%" width="100%"
+					id="categoryList" />
+				<mx:Button label="削除" />											
+			</mx:Panel>
+			<mx:Panel title="カテゴリ新規登録・更新">
+				<mx:Grid>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="カテゴリー名(管理用)" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput
+								id="name_" />
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="カテゴリー名(メニュー表示用)" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput
+								id="displayName" />
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="カテゴリーコード" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput
+								id="code" />
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="新規" />
+					<mx:Button label="更新" />
+				</mx:HBox>
+			</mx:Panel>
+		</mx:HBox>
+	</mx:Panel>
+</mx:Module>

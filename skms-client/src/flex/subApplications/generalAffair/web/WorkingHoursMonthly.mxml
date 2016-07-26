@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:comp="components.*"
+	>
+
+	<!-- Logic -->
+	<logic:WorkingHoursMonthlyLogic id="logic" />
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" height="95%" width="95%">
+		<!-- タイトル・集計条件 -->
+		<mx:HBox>
+			<mx:Label text="勤務管理集計" styleName="LargeBoldText" />
+			<mx:HBox>
+				<mx:Button label="集計" id="btnSearch" click="logic.onButtonClick_btnSearch(event);"/>
+				<mx:HBox   id="searchOpt" backgroundColor="0xECE3EE" enabled="true">
+					<mx:Spacer width="10"/>
+					<mx:Grid   id="searchGrid">
+						<mx:GridRow ></mx:GridRow>
+						<!-- 集計対象 -->
+						<mx:GridRow>
+							<mx:GridItem horizontalAlign="right" paddingTop="2"><mx:Label text="集計対象"/></mx:GridItem>
+							<mx:GridItem>
+								<mx:Canvas>
+									<mx:Label text="プロジェクトコード"  y="2"/>
+									<mx:TextInput id="projectCode" maxChars="12" restrict="[0-9,A-Z,\-]"  x="96" y="0"/>
+
+									<mx:Label text="プロジェクト名"  y="2" x="260"/>
+									<mx:TextInput id="projectName" maxChars="128"   x="336" y="0"/>
+
+									<mx:Label text="社員氏名"  y="32"/>
+									<mx:TextInput id="staffName" maxChars="12"  x="96" y="30"/>
+								</mx:Canvas>
+							</mx:GridItem>
+						</mx:GridRow>
+
+						<!-- 集計期間 -->
+						<mx:GridRow>
+							<mx:GridItem horizontalAlign="right" paddingTop="2"><mx:Label text="集計期間"/></mx:GridItem>
+							<mx:GridItem>
+								<mx:Canvas>
+									<mx:RadioButtonGroup id="rdRangeGrp" change="logic.onChange_rdRangeGrp(event);" />
+
+									<mx:RadioButton groupName="rdRangeGrp" value="{WorkingHoursMonthlyLogic.RANGE_MONTH}" selected="true" x="0" y="2"/>
+									<comp:EditDateField id="startDate"  change="logic.onChange_dateField(event);" selectableRange="{this.finishDate.selectedDate ? {rangeEnd:this.finishDate.selectedDate}  : null}" x="22"  y="0"/>
+									<mx:Label text="～"  x="120" y="0"/>
+									<comp:EditDateField id="finishDate" change="logic.onChange_dateField(event);" selectableRange="{this.startDate.selectedDate  ? {rangeStart:this.startDate.selectedDate} : null}" x="144" y="0"/>
+
+									<mx:RadioButton groupName="rdRangeGrp" value="{WorkingHoursMonthlyLogic.RANGE_TERM}"  x="260" y="2"/>
+									<mx:TextInput id="term" maxChars="2" restrict="[0-9]" focusOut="logic.onFocusOut_term(event);" x="282" y="0"/><mx:Label text="期"  x="320" y="2"/>
+								</mx:Canvas>
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow ></mx:GridRow>
+					</mx:Grid>
+					<mx:Spacer width="10" />
+				</mx:HBox>
+			</mx:HBox>
+		</mx:HBox>
+		<!-- 表示形式 -->
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="集計項目" />
+			<mx:RadioButtonGroup id="rdContentGrp" />
+			<mx:RadioButton groupName="rdContentGrp" value="{WorkingHoursMonthlyLogic.CONT_WORK_HOUR}"      label="勤務時間" selected="true"/>
+			<mx:RadioButton groupName="rdContentGrp" value="{WorkingHoursMonthlyLogic.CONT_REAL_WORK_HOUR}" label="実働時間"/>
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="集計単位" />
+			<mx:RadioButtonGroup id="rdMonthlyGrp" />
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{WorkingHoursMonthlyLogic.TYPE_MONTHLY}"      label="月別"     selected="true"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{WorkingHoursMonthlyLogic.TYPE_TERM}"         label="期別"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{WorkingHoursMonthlyLogic.TYPE_TERM_6MONTHS}" label="上下期別"/>
+		</mx:HBox>
+		<!-- 集計 -->
+		<mx:HBox id="boxDg" width="100%" height="100%">
+			<dataGrid:WorkingHoursMonthlyDataGrid id="dgMonthly" visible="false" width="100%" height="100%"
+				horizontalScrollPolicy="auto" verticalScrollPolicy="auto"
+				type="{rdMonthlyGrp.selectedValue as int}"
+				content="{rdContentGrp.selectedValue as int}"
+				colorLeave="0xF4EEE1" colorRetire="0xDCDCDC" colorLocked="0xF9FCFB"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="workingHoursService" showBusyCursor="true">
+		<mx:method name="getWorkingHoursMonthlyList"  result="logic.onResult_getWorkingHoursMonthlyList(event);"
+													  fault="logic.onFault_getWorkingHoursMonthlyList(event);"/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.TermDateUtil;
+		]]>
+	</mx:Script>
+
+</mx:Module>

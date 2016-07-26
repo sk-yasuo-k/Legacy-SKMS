@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.customer.logic.*"
+	xmlns:dataGrid="subApplications.customer.web.custom.*"
+	title="取引先 表示順変更">
+
+	<!-- Logicクラスの設定 -->
+	<logic:CustomerSortOrderLogic id="customerSortOrderLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:Grid>
+		<!-- Define Row 1. -->
+		<mx:GridRow>
+			<mx:GridItem colSpan="3" height="5"/>
+		</mx:GridRow>
+
+		<!-- Define Row 2. -->
+		<mx:GridRow>
+			<mx:GridItem width="10" />
+			<mx:GridItem>
+				<mx:Label text="ドラッグ＆ドロップで行の順番を入れ替えてください。"/>
+			</mx:GridItem>
+		</mx:GridRow>
+
+		<!-- Define Row 3. -->
+		<mx:GridRow>
+			<mx:GridItem width="10"/>
+			<mx:GridItem>
+				<dataGrid:CustomerDataGrid id="customerList" width="100%" height="100%" rowHeight="24" rowCount="15"
+					verticalScrollPolicy="on" sortableColumns="false"
+					dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" allowMultipleSelection="true"
+					dragEnter="customerSortOrderLogic.onDragEnter_customerList(event);"
+					dragDrop="customerSortOrderLogic.onDragDrop_customerList(event);"
+					dragComplete="customerSortOrderLogic.onDragComplete_customerList(event);"
+					/>
+			</mx:GridItem>
+			<mx:GridItem width="10"/>
+		</mx:GridRow>
+
+		<!-- Define Row 4. -->
+		<mx:GridRow>
+			<mx:GridItem width="10"/>
+			<mx:GridItem>
+				<mx:Button label="登録" click="customerSortOrderLogic.onButtonClick_entry_confirm(event);" id="btnEntry" />
+				<mx:Button label="戻る" click="customerSortOrderLogic.onButtonClick_close(event);"/>
+				<mx:Spacer width="100%" />
+				<mx:LinkButton label="ヘルプ" click="customerSortOrderLogic.onButtonClick_help(event);" id="help" styleName="SmallText" x="{this.customerList.width - width}"/>
+			</mx:GridItem>
+			<mx:GridItem width="10"/>
+		</mx:GridRow>
+		<mx:GridRow />
+	</mx:Grid>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="customerService" showBusyCursor="true">
+		<mx:method name="getCustomerList"
+			result="customerSortOrderLogic.onResult_getCustomerList(event)"
+			fault="customerSortOrderLogic.onFault_getCustomerList(event)"
+			/>
+		<mx:method name="changeCustomerSort"
+			result="customerSortOrderLogic.onResult_changeCustomerSort(event)"
+			fault="customerSortOrderLogic.onFault_changeCustomerSort(event)"
+			/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = false;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		]]>
+	</mx:Script>
+</cmp:PopUpWindow>

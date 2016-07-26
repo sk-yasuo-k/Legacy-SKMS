@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.accounting.logic.*"
+	title=""
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:TransportEntryWithdrawLogic id="transportEntryWithdrawLogic" />
+
+
+
+	<!-- 画面表示 -->
+	<mx:Form >
+		<mx:FormItem id="reasonName" required="true">
+		    <mx:TextArea id="reason" width="350" maxChars="1024" change="this.validator.validate()"/>
+		</mx:FormItem>
+
+		<mx:Spacer width="10" />
+
+		<mx:HBox >
+			<mx:Button label="" click="transportEntryWithdrawLogic.onButtonClick_entry_confirm(event);" id="btnEntry"/>
+			<mx:Button label="戻る" click="transportEntryWithdrawLogic.onButtonClick_close(event);" />
+		</mx:HBox>
+	</mx:Form>
+
+	<!-- Validator -->
+	<mx:StringValidator id="validator"  required="true"  source="{this.reason}" property="text"
+						invalid="transportEntryWithdrawLogic.onInvalid_validator(event);"
+						valid="transportEntryWithdrawLogic.onValid_validator(event);"/>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true"
+		result="transportEntryWithdrawLogic.onResult_entryWithdraw(event)"
+		fault="transportEntryWithdrawLogic.onFault_entryWithdraw(event)" >
+		<mx:method name="approvalCancelTransportation"
+			/>
+		<mx:method name="approvalWithdrawTransportation"
+			/>
+		<mx:method name="paymentCancelTransportation"
+			/>
+		<mx:method name="applyWithdrawTransportation"
+			/>
+		<mx:method name="acceptCancelTransportation"
+			/>
+	</mx:RemoteObject>
+</cmp:PopUpWindow>

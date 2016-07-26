@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.profile.logic.*"
+	xmlns:cmp="components.*"
+	close="profileDetailLogic.onClose(event)">
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+		
+	<!--Logicクラスの設定-->
+	<logic:ProfileDetailLogic id="profileDetailLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="profileService" destination="profileService">
+		<mx:method name="getProfileDetail"
+					result="profileDetailLogic.onResult_getProfileDetail(event)" 
+					fault="profileDetailLogic.onFault_getProfileDetail(event)" />
+		<mx:method name="getProfileData"
+					result="profileDetailLogic.onResult_getProfileData(event)" 
+					fault="profileDetailLogic.onFault_getProfileDetail(event)" />					
+	</mx:RemoteObject>
+	
+	<!--画面の設定-->
+	<mx:VBox height="100%"
+			paddingTop="10" paddingBottom="10"
+			paddingLeft="10" paddingRight="10">
+		<!--ヘッダの設定(基本情報)-->
+		<mx:HBox width="100%">
+			<mx:Label text="基本情報"/>
+			<mx:HRule width="100%" height="100%"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<!--画像-->
+			<mx:Image id="staffImage" scaleContent="true" autoLoad="false" height="100" width="80"/>
+			
+			<mx:VBox width="50%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--姓名-->
+					<mx:FormItem label="姓" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="lastName" text=" " width="70" height="19"/>
+						</mx:Form>
+						<mx:FormItem label="名">
+							<mx:Form borderStyle="solid"
+									paddingTop="0" paddingBottom="0"
+									paddingLeft="0" paddingRight="0">
+								<mx:Text id="firstName" text=" " width="70" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+					</mx:FormItem>
+					
+					<!--性別-->
+					<mx:FormItem label="性別" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="sexName" text=" " width="40" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--血液型-->
+					<mx:FormItem label="血液型" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="bloodGroupName" text=" " width="40" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--生年月日/年齢-->
+					<mx:FormItem label="生年月日" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="birthday" text=" " width="100" height="19"/>
+						</mx:Form>
+						<mx:FormItem label="年齢">
+							<mx:Form borderStyle="solid"
+									paddingTop="0" paddingBottom="0"
+									paddingLeft="0" paddingRight="0">
+								<mx:Text id="age" text=" " width="40" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+			
+			<mx:VBox width="50%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--入社年月日-->
+					<mx:FormItem label="入社年月日" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="joinDate" text=" " width="100" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--勤続年数/入社前経験年数-->
+					<mx:FormItem label="勤続年数" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="serviceYears" text=" " width="40" height="19"/>
+						</mx:Form>
+						<mx:Text text="年"/>
+						<mx:FormItem label="入社前経験年数">
+							<mx:Form borderStyle="solid"
+									paddingTop="0" paddingBottom="0"
+									paddingLeft="0" paddingRight="0">
+								<mx:Text id="beforeExperienceYears" text=" " width="40" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+						<mx:Text text="年"/>
+					</mx:FormItem>
+					
+					<!--経験年数-->
+					<mx:FormItem label="経験年数" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="totalExperienceYears" text=" " width="40" height="19"/>
+						</mx:Form>
+						<mx:Text text="年"/>
+					</mx:FormItem>
+					
+					<!--等級/号-->
+					<mx:FormItem label="等級" direction="horizontal" id="staffQualification">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="basicClassNo" text=" " width="40" height="19"/>
+						</mx:Form>
+						<mx:FormItem label="号">
+							<mx:Form borderStyle="solid"
+									paddingTop="0" paddingBottom="0"
+									paddingLeft="0" paddingRight="0">
+								<mx:Text id="basicRankNo" text=" " width="40" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+					</mx:FormItem>					
+				</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<!--ヘッダの設定(業務関連)-->
+		<mx:HBox width="100%">
+			<mx:Label text="業務関連"/>
+			<mx:HRule width="100%" height="100%"/>
+		</mx:HBox>
+		<mx:HBox width="50%">
+			<mx:VBox width="100%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--部署/所属-->
+					<mx:FormItem label="部署" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="departmentName" text=" " width="150" height="19"/>
+						</mx:Form>
+						<mx:FormItem label="所属">
+							<mx:Form borderStyle="solid"
+									paddingTop="0" paddingBottom="0"
+									paddingLeft="0" paddingRight="0">
+								<mx:Text id="workPlaseName" text=" " width="100" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+					</mx:FormItem>
+					
+					<!--配属先-->
+					<mx:FormItem label="配属先" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="projectName" text=" " width="300" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+			
+			<mx:VBox width="100%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--委員会-->
+					<mx:FormItem label="委員会" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="committeeName" text=" " width="100" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--内線番号-->
+					<mx:FormItem label="内線番号" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="extensionNumber" text=" " width="80" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<!--ヘッダの設定(連絡先)-->
+		<mx:HBox width="100%">
+			<mx:Label text="連絡先"/>
+			<mx:HRule width="100%" height="100%"/>
+		</mx:HBox>
+		<mx:HBox width="50%">
+			<mx:VBox width="100%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--メールアドレス-->
+					<mx:FormItem label="メールアドレス" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="email" text=" " width="250" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--電話番号-->
+					<mx:FormItem label="電話番号" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="homePhoneNo" text=" " width="150" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--携帯番号１-->
+					<mx:FormItem label="携帯番号" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="handyPhoneNo" text=" " width="150" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--携帯番号２-->
+					
+					<!--緊急連絡先-->
+					<mx:FormItem label="緊急連絡先" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="emergencyAddress" text=" " width="150" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+			
+			<mx:VBox width="100%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--郵便番号-->
+					<mx:FormItem label="郵便番号" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="postalCode" text=" " width="100" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--住所１-->
+					<mx:FormItem label="住所１" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="address1" text=" " width="300" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--住所２-->
+					<mx:FormItem label="住所２" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="address2" text=" " width="300" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--本籍地-->
+					<mx:FormItem label="本籍地" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id="legalDomicileName" text=" " width="100" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+					
+					<!--連絡のとりやすい社員-->
+					<mx:FormItem label="連絡のとりやすい社員" direction="horizontal">
+						<mx:Form borderStyle="solid"
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">
+							<mx:Text id = "associateStaff" text=" " width="150" height="19"/>
+						</mx:Form>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<!--資格一覧/受講履歴の設定-->
+		<mx:HBox width="100%">
+			<mx:HRule width="100%" height="100%"/>
+		</mx:HBox>
+		<mx:HBox height="100%">
+			<!--技術関連資格-->
+			<mx:VBox>
+				<mx:Label text="技術関連資格"/>
+				<mx:DataGrid id="licenceList" rowCount="3">
+					<mx:columns>
+						<mx:DataGridColumn headerText="日付" dataField="acquisitionDate" labelFunction="{LabelUtil.dateLabel}" width="80"/>
+						<mx:DataGridColumn headerText="資格ID" dataField="licenceId" width="70" visible="false"/>
+						<mx:DataGridColumn headerText="資格名" dataField="licenceName" width="150"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<!--その他の資格-->
+			<mx:VBox>
+				<mx:Label text="その他の資格"/>
+				<mx:DataGrid id="otherLicenceList" rowCount="3">
+					<mx:columns>
+						<mx:DataGridColumn headerText="日付" dataField="acquisitionDate" labelFunction="{LabelUtil.dateLabel}" width="80"/>
+						<mx:DataGridColumn headerText="資格名" dataField="licenceName" width="150"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			
+			<!--セミナー受講履歴-->
+			<mx:VBox>
+				<mx:Label text="セミナー受講履歴"/>
+				<mx:DataGrid id="seminarParticipant" rowCount="3">
+					<mx:columns>
+						<mx:DataGridColumn headerText="日付" dataField="startTime" labelFunction="{LabelUtil.dateLabel}" width="80"/>
+						<mx:DataGridColumn headerText="セミナーID" dataField="seminarId" width="70" visible="false"/>
+						<mx:DataGridColumn headerText="セミナー名" dataField="seminarTitle" width="150"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<!--フッタの設定(一覧)-->
+		<mx:HBox>
+			<mx:Button id="modifyButton" label="更新" width="50" click="profileDetailLogic.onClick_modifyButton(event)" enabled="false"/>
+			<mx:Button label="戻る" width="50" click="profileDetailLogic.onClick_returnButton(event)"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

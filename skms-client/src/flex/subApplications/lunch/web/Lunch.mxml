@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" 
+	xmlns:logic="subApplications.lunch.logic.*"
+	 currentState="admin" xmlns:web="subApplications.lunch.web.*">
+	 
+	 <!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+
+	</mx:RemoteObject>
+
+	<logic:LunchLogic id="lunchLogic" />
+	 
+	<mx:states>
+		<mx:State name="baisc">
+			<mx:RemoveChild target="{lunchAggregate}"/>
+		</mx:State>				
+		<mx:State name="admin">
+		</mx:State>
+	</mx:states>
+
+	<mx:VBox height="100%" width="100%">
+		<mx:LinkBar dataProvider="{viewStack}" id="linkBar" initialize="viewStack"/>			
+		<mx:ViewStack id="viewStack" height="100%" width="100%" creationPolicy="all">
+			<web:LunchOrder label="注文する" />
+			<web:LunchHistory label="あなたの注文履歴" id="lunchHistory"/>
+			<web:LunchAggregate label="みんなの注文"  id="lunchAggregate"/>			
+		</mx:ViewStack>
+	</mx:VBox>
+</mx:Module>

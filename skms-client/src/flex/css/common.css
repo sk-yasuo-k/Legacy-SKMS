@@ -1,0 +1,62 @@
+/* CSS file */
+	global {
+		fontSize: 11px;
+		fontFamily: "Verdana";
+	}
+
+	LinkButton {
+		fontSize: 12px;
+	}
+
+	.LargeText {
+		fontSize: 12px;
+	}
+
+	.LargeBoldText {
+		fontSize: 12px;
+		fontWeight: bold;
+	}
+
+	.SmallText {
+		fontSize: 10px;
+	}
+
+	.LabelLink {
+		fontSize: 11px;
+		fontFamily: "Verdana";
+		textDecoration : underline;
+		color : #4169E1;
+	}
+
+	.LabelError {
+		fontSize: 11px;
+		fontFamily: "Verdana";
+		color : #ff6666;
+	}
+
+	.ButtonLink {
+		color : #4682B4;
+		fillAlphas : 0.3, 0.2;
+	}
+
+	.InfoLargeBoldText {
+		fontSize: 12px;
+		fontWeight: bold;
+		color : #4169E1;
+	}
+
+	.DateWeekday {
+		color	: #0b333c;
+	}
+
+	.DateSaturday {
+		color	: #f17b08;
+	}
+
+	.DateSunday {
+		color	: #dd3337;
+	}
+
+	.DateHoliday {
+		color	: #dd3337;
+	}

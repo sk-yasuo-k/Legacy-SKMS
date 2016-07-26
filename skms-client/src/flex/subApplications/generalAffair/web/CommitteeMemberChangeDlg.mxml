@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	close="logic.onClose_committeeMemberChangeDlg(event)"
+	title=""
+	>
+	<!-- Logicクラスの設定 -->
+	<logic:CommitteeMemberChangeDlgLogic id="logic" />
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="committeeService" destination="committeeService">
+		<!-- 社員一覧の取得する(コンボボックス用) -->
+		<mx:method name="getCommitteeLabel"
+					result="logic.onResult_showCommitteeLabel(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に追加する(入会) -->			
+		<mx:method name="insertJoinCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に更新する(退会) -->			
+		<mx:method name="updateLinkRetireCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に追加する(委員長に任命) -->				
+		<mx:method name="insertLinkJoinHeadCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に追加する(委員長を退任) -->	
+		<mx:method name="updateLinkRetireHeadCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に追加する(副委員長に任命) -->
+		<mx:method name="insertLinkJoinSubHeadCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 委員会所属一覧に追加する(副委員長を退任) -->
+		<mx:method name="updateLinkRetireSubHeadCommittee"
+					result="logic.onResult_JoinCommittee(event)" 
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 追加 @auther okamoto-y -->
+		<!-- 退任日の比較 -->
+		<mx:method name="compareRetireDate"
+					result="logic.onResult_CompareDate(event)"
+					fault="logic.onFault_remoteObject(event)" />
+		<!-- 退会日の比較 -->			
+		<mx:method name="compareWithdrawalDate"
+					result="logic.onResult_CompareDate(event)"
+					fault="logic.onFault_remoteObject(event)" />												
+	</mx:RemoteObject>
+
+	<mx:VBox width="100%" height="100%">
+		<mx:Form width="100%">
+			<mx:FormItem id="fitmMemberName" label="委員名"	height="0" visible="false">
+				<mx:Label id="lblStaffName" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmStaffName" label="社員名">
+				<mx:ComboBox id="cmbStaffName" width="130"/>
+			</mx:FormItem>
+			<!-- 追加 @auther okamoto-y -->
+			<mx:FormItem id="committeeDate" label="日付" height="0" visible="false">
+				<mx:DateField id="edfcommitteeDate" editable="true" width="100%" visible="false" height="0" />
+			</mx:FormItem>
+			
+			<!-- 追加 @auther maruta-->
+<!--		<mx:FormItem id="enrollmentDate" label="入会日" height="0" visible="false">
+				<mx:DateField id="edfenrollmentDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>	
+			<mx:FormItem id="withdrawalDate" label="退会日" height="0" visible="false">
+				<mx:DateField id="edfwithdrawalDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>
+			<mx:FormItem id="joinheadDate" label="任命日" height="0" visible="false">
+				<mx:DateField id="edfjoinheadDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>
+			<mx:FormItem id="retireheadDate" label="退任日" height="0" visible="false">
+				<mx:DateField id="edfretireheadDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>
+			<mx:FormItem id="joinsubheadDate" label="任命日" height="0" visible="false">
+				<mx:DateField id="edfjoinsubheadDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>
+			<mx:FormItem id="retiresubheadDate" label="退任日" height="0" visible="false">
+				<mx:DateField id="edfretiresubheadDate" editable="true" width="100%" visible="false" height="0"/>
+			</mx:FormItem>	
+-->								
+			
+<!--			<mx:FormItem id="fitmApplyDate" label="">
+				<mx:DateField id="dtfApplyDate" editable="true" width="100%"/>
+			</mx:FormItem>
+-->
+		</mx:Form>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button id="btnOk" label="OK" click="logic.onClick_btnOk(event)" enabled="false"/>
+			<mx:Button id="btnCancel" label="キャンセル" click="logic.onClick_btnCancel(event)"  enabled="false"/>
+			<mx:Spacer width="1"/>
+		</mx:HBox>
+		<mx:Spacer height="1"/>
+	</mx:VBox>
+</mx:TitleWindow>

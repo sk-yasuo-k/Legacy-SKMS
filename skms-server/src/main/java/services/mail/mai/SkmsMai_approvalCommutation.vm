@@ -1,0 +1,17 @@
+Subject: 【SKMS:通勤費】通勤費${data.approvalType}承認のお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.approvalName}さんが通勤費を承認しました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請者　　　　　　 ： ${data.applicantName}
+◆通勤月　　　　　　 ： ${data.commutationYear}年${data.commutationMonth}月
+◆金額　　　　　　　 ： ${data.payment}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

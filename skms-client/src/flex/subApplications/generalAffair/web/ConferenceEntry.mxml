@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%">
+
+   <mx:Script>
+        <![CDATA[
+        	import mx.collections.ArrayCollection;
+            [Bindable]
+            public var dummyArray:ArrayCollection = new ArrayCollection([{col1:"20",col2:"1",col3:""},{col1:"21",col2:"2",col3:""},{col1:"22",col2:"3",col3:""},{col1:"23",col2:"4",col3:""}]);
+            
+	      ]]>
+    </mx:Script>
+    <mx:VBox width="399">
+		<mx:DataGrid dataProvider="{dummyArray}" width="399"  editable="true">
+			<mx:columns>
+				<mx:DataGridColumn headerText="期" width="20"  itemEditor="mx.controls.NumericStepper" dataField="col1">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="月" width="20" itemEditor="mx.controls.NumericStepper" dataField="col2">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="ファイル名" width="100" itemEditor="mx.controls.TextInput" dataField="col3">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="" width="20" itemRenderer="mx.controls.Button">
+				</mx:DataGridColumn>
+				
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox>
+			<mx:Button label="アップロード" /> 
+			<mx:Button label="キャンセル" />
+		</mx:HBox>
+	
+	</mx:VBox>
+	
+</mx:Module>

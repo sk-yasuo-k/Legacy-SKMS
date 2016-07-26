@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%">
+
+	<!--画面の設定-->
+	<mx:VBox>
+		<mx:DataGrid id="staffDetail" width="100%" rowCount="1" fontSize="12" textAlign="center">
+			<mx:columns>
+				<mx:DataGridColumn dataField="staffId"                  headerText="No."       width="38"/>
+				<mx:DataGridColumn dataField="fullName"                 headerText="氏名"      width="110"/>
+				<mx:DataGridColumn dataField="sex"                      headerText="性別"      width="38"/>
+				<mx:DataGridColumn dataField="birthday"                 headerText="生年月日"  width="90" labelFunction="{LabelUtil.dateLabel}"/>
+				<mx:DataGridColumn dataField="occuredDate"              headerText="入社日"    width="90" labelFunction="{LabelUtil.dateLabel}"/>
+				<mx:DataGridColumn dataField="age"                      headerText="年齢"      width="40"/>
+				<mx:DataGridColumn dataField="experienceYears"          headerText="経験年数"  width="65"/>
+				<mx:DataGridColumn dataField="managerialPositionName"   headerText="役職"      width="60"/>
+				<mx:DataGridColumn dataField="occupationalCategoryName" headerText="職種"      width="60"/>
+				<mx:DataGridColumn dataField="departmentName"           headerText="所属部署"  width="75"/>
+				<mx:DataGridColumn dataField="finalAcademicBackground"  headerText="最終学歴"  width="310"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox>
+			<mx:Spacer width="20"/>
+			<mx:VBox>
+				<mx:HBox>
+					<mx:Label text="取得資格" fontSize="12"/>
+					<mx:Text id="authorizedLicence" width="526" fontSize="12"/>
+				</mx:HBox>
+				<mx:HRule width="100%" height="1"/>
+				<mx:HBox>
+					<mx:Label text="取得免許" fontSize="12"/>
+					<mx:Text id="otherLocence" width="526" fontSize="12"/>
+				</mx:HBox>
+				<mx:HRule width="100%" height="1"/>
+				<mx:HBox>
+					<mx:Label text="作業フェーズ" fontSize="12"/>
+					<mx:Label text="JM（ﾏﾈｰｼﾞﾒﾝﾄ）、RQ（要求検討）、BI（基本検討）、BD（基本設計）、FD（機能設計）、DD（詳細設計）、MK（ｺｰﾃﾞｨﾝｸﾞ・ﾌｧｲﾙ化）、UT（単体試験）、&#13;IT（結合試験）、ST（総合試験）、RT（運用試験）、MA（保守）" height="38" fontSize="12"/>
+				</mx:HBox>
+				<mx:HRule x="33" y="172" width="100%" height="1"/>
+				<mx:HBox>
+					<mx:Label text="参加形態" fontSize="12"/>
+					<mx:Label text="L（ﾘｰﾀﾞｰ）、SL（ｻﾌﾞﾘｰﾀﾞｰ）、SE（ｼｽﾃﾑｴﾝｼﾞﾆｱ）、PG（ﾌﾟﾛｸﾞﾗﾏｰ）、OP（ｵﾍﾟﾚｰﾀｰ）" fontSize="12"/>					
+				</mx:HBox>
+				<mx:HRule width="100%" height="1"/>
+				<mx:HBox>
+					<mx:Label text="キーワード" fontSize="12"/>
+					<mx:Label text="そのｼﾞｮﾌﾞに参加した際に必要とされた技術やそのｼﾞｮﾌﾞを通じて取得した技術（言語等）" fontSize="12"/>
+				</mx:HBox>
+				<mx:HRule width="100%" height="1"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>	
+
+	<!-- Script -->
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+</mx:Module>

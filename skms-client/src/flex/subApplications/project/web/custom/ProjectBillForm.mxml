@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:logic="subApplications.project.logic.custom.*"
+	xmlns:logicC="subApplications.project.logic.*"
+	xmlns:comp="components.*">
+
+	<!-- Logicの設定 -->
+	<logic:ProjectBillFormLogic id="projectBillLogic" />
+	<logicC:ProjectLogic        id="projectLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:FormItem label="請求日" required="true">
+		<comp:EditDateField id="billDate" change="projectBillLogic.onChange_billDate(event);"/>
+	</mx:FormItem>
+
+	<mx:FormItem label="請求項目" required="true" direction="vertical">
+		<mx:Canvas>
+			<!-- variableRowHeight を true に設定するときは注意が必要!!
+				 true にすると、rowHeight が無効になり itemRenderer の高さが優先表示されることになり.
+				 請求項目表は itemRenderer を指定していないため、行が空データになるとつぶれてしまう.
+			-->
+			<mx:DataGrid id="dgBillItemList" rowHeight="24" editable="true"
+				itemFocusIn="projectBillLogic.onItemFocusIn_billItemList(event);"
+				itemFocusOut="projectBillLogic.onItemFocusOut_billItemList(event);"
+				itemEditEnd="projectBillLogic.onItemEditEnd_billItemList(event);"
+				>
+				<mx:columns>
+					<mx:DataGridColumn headerText="No"              dataField="itemNo"     width="50"  editable="false"  visible="false"/>
+					<mx:DataGridColumn headerText="発注ＮＯ."       dataField="orderNo"    width="120"/>
+					<mx:DataGridColumn headerText="件名"            dataField="title"      width="250"/>
+					<mx:DataGridColumn headerText="金額(単位：円)"  dataField="billAmount" width="100" textAlign="right" labelFunction="{LabelUtil.currencyLabel}"/>
+				</mx:columns>
+			</mx:DataGrid>
+
+		<mx:Label text="固定請負分小計" x="490" y="126" width="90" textAlign="right"/><mx:Label id="billItems"      x="590" y="126" width="80" textAlign="right"/><mx:Label text="円" x="675" y="126"/>
+		<mx:Label text="消費税"         x="490" y="152" width="90" textAlign="right"/><mx:Label id="billItemsTax"   x="590" y="152" width="80" textAlign="right"/><mx:Label text="円" x="675" y="152"/>
+		</mx:Canvas>
+
+		<mx:Canvas>
+			<mx:Label text="固定請負分合計" x="280" y="0" width="90" textAlign="right"/><mx:Label id="billItemsTotal" x="380"       width="80" textAlign="right"/><mx:Label text="円" x="465"        />
+		</mx:Canvas>
+
+		<mx:Canvas id="cnvBillOther">
+			<mx:Button id="btnBillOther" toggle="true" selected="false" styleName="ButtonLink"
+				label="その他の項目を入力する" change="oButtonChange_btnBillOther(event);"/>
+			<mx:Label text="その他"         x="280"       width="90" textAlign="right"/><mx:Label id="billOthersTotal" x="380"      width="80" textAlign="right"/><mx:Label text="円" x="465"        />
+		</mx:Canvas>
+	</mx:FormItem>
+
+	<mx:FormItem label="請求金額" required="false" direction="horizontal">
+		<mx:Label id="billTotal" styleName="LargeBoldText"/><mx:Label text="円" styleName="LargeBoldText"/>
+	</mx:FormItem>
+
+	<mx:FormItem label="振込口座" required="true" direction="vertical">
+		<mx:ComboBox id="cmbBankAccount" labelFunction="projectBillLogic.bankAccountLabel" change="projectBillLogic.onCmbChange_bankAccount(event);"/>
+		<mx:Canvas id="cnvBankAccount">
+			<mx:Label text="口座"   x="0" y="0" /><mx:Label id="bankName"    x="45"  y="0" />
+												  <mx:Label id="branchName"  x="{this.bankName.x + this.bankName.width + 10}"      y="0" />
+												  <mx:Label id="accountNo"   x="{this.branchName.x + this.branchName.width + 10}"  y="0"/>
+			<mx:Label text="口座名" x="0" y="27"/><mx:Label id="accountName" x="45"  y="27"/>
+		</mx:Canvas>
+	</mx:FormItem>
+
+
+	<!-- 条件表示 -->
+	<mx:states>
+		<mx:State name="stsBillOther">
+			<mx:AddChild relativeTo="{this.cnvBillOther}" position="after" creationPolicy="all">
+					<mx:DataGrid id="dgBillOtherList" rowHeight="24" editable="true"
+						itemFocusIn="projectBillLogic.onItemFocusIn_billOtherList(event);"
+						itemFocusOut="projectBillLogic.onItemFocusOut_billOtherList(event);"
+						itemEditEnd="projectBillLogic.onItemEditEnd_billOtherList(event);"
+						>
+						<mx:columns>
+							<mx:DataGridColumn headerText="項目"           dataField="orderNo"    width="120" />
+							<mx:DataGridColumn headerText="内容"           dataField="title"      width="250" />
+							<mx:DataGridColumn headerText="金額(単位：円)" dataField="billAmount" width="100" textAlign="right" labelFunction="{LabelUtil.currencyLabel}"/>
+						</mx:columns>
+					</mx:DataGrid>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="stsBankAccount">
+			<mx:AddChild relativeTo="{this.cmbBankAccount}" position="after" creationPolicy="all">
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:Validator id="validatorBillDate"    source="{this.billDate}"       required="true"  property="selectedDate" />
+		<!-- DataGrid の validator はセルfocus中に赤枠表示され常時赤枠表示されないため DataGrid にerrorStringを設定し常時赤枠表示させる -->
+		<mx:Validator id="validatorBankAccount" source="{this.cmbBankAccount}" required="true"  property="selectedLabel"/>
+	</mx:Array>
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import mx.collections.ArrayCollection;
+			import subApplications.project.dto.ProjectBillDto;
+
+			/**
+			 * validatorチェック.
+			 */
+			public function validateAll():Boolean
+			{
+				return projectBillLogic.validateAll();
+			}
+
+			/**
+			 * 請求書情報の表示.
+			 * */
+			public function displayBill(index:int, bill:ProjectBillDto, banklist:ArrayCollection):void
+			{
+				projectBillLogic.displayBill(index, bill, banklist);
+			}
+
+			/**
+			 * 請求書情報の作成.
+			 */
+			public function createBill():ProjectBillDto
+			{
+				return projectBillLogic.createBill();
+			}
+
+			/**
+			 * 複製する請求書情報の作成.
+			 */
+			public function createBillCopy():ProjectBillDto
+			{
+				return projectBillLogic.createBillCopy();
+			}
+
+			/**
+			 * 削除する請求書情報の作成.
+			 */
+			public function createBillDelete():ProjectBillDto
+			{
+				return projectBillLogic.createBillDelete();
+			}
+
+
+			/**
+			 * その他項目の表示ボタン押下.
+			 */
+			public function oButtonChange_btnBillOther(e:Event):void
+			{
+				var btn:Button = this.btnBillOther;
+				if (btn.selected) {
+					btn.label = "その他の入力項目を隠す";
+					this.currentState = "stsBillOther";
+				}
+				else {
+					btn.label = "その他の項目を入力する"
+					this.currentState = "";
+				}
+			}
+
+		]]>
+	</mx:Script>
+</mx:Form>

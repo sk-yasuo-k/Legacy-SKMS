@@ -1,0 +1,21 @@
+Subject: 【SKMS:交通費】交通費申請取り下げのお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.applicantName}さんが交通費の申請を取り下げました。
+交通費は申請前の状態に戻りました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請ID　　　　　　 ： ${data.transportationId}
+◆申請者　　　　　　 ： ${data.applicantName}
+◆プロジェクトコード ： ${data.projectCode}
+◆プロジェクト名　　 ： ${data.projectName}
+◆金額　　　　　　　 ： ${data.expense}
+◆取り下げ理由　　　 ： ${data.reason}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	xmlns:custom="subApplications.accounting.logic.custom.*"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<custom:OverheadSearchLogic id="aslogic" />
+
+
+	<!-- metaデータの設定 -->
+	<mx:Metadata>
+		[Event(name="result", type="mx.rpc.events.ResultEvent")]
+		[Event(name="fault",  type="mx.rpc.events.FaultEvent")]
+		[Event(name="requesting",  type="flash.events.Event")]
+	</mx:Metadata>
+
+
+	<!-- 画面表示 -->
+	<mx:Button label="検索" id="btnSearch" click="aslogic.onButtonClick_btnSearch(event);"/>
+	<mx:HBox   id="searchOpt">
+		<mx:Button id="swSearch" toggle="true" skin="{null}" color="#4169E1"  styleName="LargeText" label="検索条件を開く"
+			click="aslogic.onButtonClick_swSearch(event);" />
+
+		<mx:Grid   id="searchGrid" width="0" height="0">
+			<mx:GridRow />
+			<!-- Define Row 1. -->
+			<mx:GridRow id="rowProject">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="プロジェクト" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:CheckBox id="chkProject" selected="true" click="aslogic.onClick_chkProject(event);"/>
+					<mx:ComboBox id="cmbProject" width="350"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 2. -->
+			<mx:GridRow id="rowProject2">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="全社業務" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:CheckBox id="chkAllBusiness" selected="true" click="aslogic.onClick_chkAllBusiness(event);"/>
+					<mx:ComboBox id="cmbAllBusiness" width="350"/>
+					<mx:CheckBox id="chkSubordinateOnly" label="部下のみ" selected="{this._approval ? true : false}" visible="{this._approval}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 3. -->
+			<mx:GridRow id="rowStatus">
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="状態" />
+				</mx:GridItem>
+				<mx:GridItem >
+					<mx:Repeater id="rpStatusList" dataProvider="" >
+						<mx:CheckBox id="chkStatus"
+							label="{rpStatusList.currentItem.label}"
+							selected="{rpStatusList.currentItem.selected}"
+							selectedField="{rpStatusList.currentItem.data}"
+							enabled="{rpStatusList.currentItem.enabled}"/>
+					</mx:Repeater>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+
+		<mx:Spacer width="10" />
+	</mx:HBox>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="overheadService" showBusyCursor="true" fault="aslogic.onFault(event);">
+		<mx:method name="getRequestOverheads" result="aslogic.onResult_getXxxxxOverheads(event)"
+		/>
+		<mx:method name="getRequestStatus"    result="aslogic.onResult_getXxxxxStatus(event)"
+		/>
+		<mx:method name="getRequestProject"   result="aslogic.onResult_getXxxxxProject(event)"
+		/>
+		<mx:method name="getApprovalOverheads" result="aslogic.onResult_getXxxxxOverheads(event)"
+		/>
+		<mx:method name="getApprovalStatus"    result="aslogic.onResult_getXxxxxStatus(event)"
+		/>
+		<mx:method name="getApprovalProject"   result="aslogic.onResult_getXxxxxProject(event)"
+		/>
+		<mx:method name="getApprovalAfOverheads" result="aslogic.onResult_getXxxxxOverheads(event)"
+		/>
+		<mx:method name="getApprovalAfStatus"    result="aslogic.onResult_getXxxxxStatus(event)"
+		/>
+		<mx:method name="getApprovalAfProject"   result="aslogic.onResult_getXxxxxProject(event)"
+		/>
+		<mx:method name="getAllBusiness"  result="aslogic.onResult_getAllBusiness(event)"
+		/>
+	</mx:RemoteObject>
+
+
+	<!-- スクリプト -->
+	<mx:Script>
+		<![CDATA[
+			import mx.rpc.Fault;
+			import subApplications.accounting.logic.AccountingLogic;
+			import mx.core.Application;
+			import mx.controls.Alert;
+			import mx.controls.CheckBox;
+			import mx.utils.ObjectUtil;
+			import mx.collections.ArrayCollection;
+			import mx.events.CollectionEventKind;
+			import mx.events.CollectionEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+
+			/**
+			 * モードの設定.
+			 */
+			private var _request:Boolean    = false;
+			[Bindable]
+			private var _approval:Boolean   = false;
+			private var _approvalAf:Boolean = false;
+			public function set actionMode(value:String):void
+			{
+				if (!value)			return;
+
+				_request    = false;
+				_approval   = false;
+				_approvalAf = false;
+				switch (value) {
+					case AccountingLogic.ACTION_VIEW_REQUEST:
+						_request = true;
+						break;
+					case AccountingLogic.ACTION_VIEW_APPROVAL:
+						_approval = true;
+						break;
+					case AccountingLogic.ACTION_VIEW_APPROVAL_AF:
+						_approvalAf = true;
+						break;
+				}
+				// 検索条件を取得する.
+				aslogic.requestStatus();
+				aslogic.requestProject();
+		    	aslogic.requestAllBusiness();
+			}
+			public function get request():Boolean
+			{
+				return _request;
+			}
+			public function get approval():Boolean
+			{
+				return _approval;
+			}
+			public function get approvalAf():Boolean
+			{
+				return _approvalAf;
+			}
+
+			/**
+			 * 諸経費リストの取得.
+			 */
+			public function requestOverheads():void
+			{
+				aslogic.onButtonClick_btnSearch(new MouseEvent("requestOverheads"));
+			}
+		]]>
+	</mx:Script>
+
+</mx:HBox>

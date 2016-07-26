@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.accounting.logic.*"
+	title=""
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:OverheadEntryWithdrawLogic id="aslogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:Form >
+		<mx:FormItem id="reasonName" required="true">
+		    <mx:TextArea id="reason" width="350" maxChars="1024" change="this.validator.validate()"/>
+		</mx:FormItem>
+
+		<mx:Spacer width="10" />
+
+		<mx:HBox >
+			<mx:Button label="" click="aslogic.onButtonClick_entry(event);" id="btnEntry"/>
+			<mx:Button label="戻る" click="aslogic.onButtonClick_close(event);" />
+		</mx:HBox>
+	</mx:Form>
+
+	<!-- Validator -->
+	<mx:StringValidator id="validator"  required="true"  source="{this.reason}" property="text"
+						invalid="aslogic.onInvalid_validator(event);"
+						valid="aslogic.onValid_validator(event);"
+						/>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="overheadService" showBusyCursor="true"
+		result="aslogic.onResult_entryWithdraw(event)"
+		fault="aslogic.onFault_entryWithdraw(event)" >
+		<mx:method name="approvalCancelOverhead"		/>
+		<mx:method name="approvalWithdrawOverhead"		/>
+		<mx:method name="paymentCancelOverhead"			/>
+		<mx:method name="applyWithdrawOverhead"			/>
+		<mx:method name="acceptCancelOverhead"			/>
+	</mx:RemoteObject>
+
+</cmp:PopUpWindow>

@@ -1,0 +1,19 @@
+Subject: 【SKMS:交通費】交通費受領のお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.applicantName}さんが交通費を受領しました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請ID　　　　　　 ： ${data.transportationId}
+◆申請者　　　　　　 ： ${data.applicantName}
+◆プロジェクトコード ： ${data.projectCode}
+◆プロジェクト名　　 ： ${data.projectName}
+◆金額　　　　　　　 ： ${data.expense}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

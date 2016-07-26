@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" variableRowHeight="true" wordWrap="true">
+	<mx:columns>
+		<mx:DataGridColumn headerText="日付"     width="100" dataField="overheadDate"    labelFunction="{LabelUtil.dateLabel}"/>
+		<mx:DataGridColumn headerText="区分"     width="145" dataField="overheadTypeName"/>
+		<mx:DataGridColumn headerText="内訳"     width="200" dataField="content" wordWrap="true"/>
+		<mx:DataGridColumn headerText="科目"     width="125" dataField="accountItemName" visible="{this._authorizeApproval}"/>
+		<mx:DataGridColumn headerText="支払"     width="70"  dataField="paymentName"/>
+		<mx:DataGridColumn headerText="金額"     width="100" dataField="expense"         labelFunction="{LabelUtil.expenseLabel}" >
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:Label textAlign="right" />
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerText="領収書No" width="100" dataField="receiptNo"       visible="{this._receipt}"/>
+		<mx:DataGridColumn headerText="備考"     width="200" dataField="note"/>
+	</mx:columns>
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+
+			/**
+			 * 承認権限（PM or 総務）の設定.
+			 *
+			 * @param value 権限.
+			 */
+			[Bindable]
+			private var _authorizeApproval:Boolean = false;
+			public function set authorizeApproval(value:Boolean):void
+			{
+				_authorizeApproval = value;
+			}
+			public function get authorizeApproval():Boolean
+			{
+				return _authorizeApproval;
+			}
+
+			[Bindable]
+			private var _receipt:Boolean = false;
+			public function set visibleReceipt(value:Boolean):void
+			{
+				_receipt = value;
+			}
+
+			/**
+			 * invalid色定義.
+			 */
+			private var _invalidColor:Number = 0xffe6e6;
+			public function set invalidColor(value:Number):void
+			{
+				_invalidColor = value;
+			}
+
+			/**
+			 * validate結果の設定.
+			 */
+			private var _defaultColors:Array;
+			public function set validateIndices(value:Array):void
+			{
+				// デフォルト背景色を保持する.
+				if (!_defaultColors) {
+					_defaultColors = getStyle("alternatingItemColors");
+				}
+
+				var colors:Array = new Array();
+				// 表の行数を取得する.
+				var rowNum:int = dataProvider.length;
+				var rowCnt:int = rowCount;
+				// 初期表示・表示領域を拡大しているとき 初期値・現在の背景色で表示しようとするため.
+				// 表示最大行数を ダミー値の 50 に設定しておく.
+				// var rowMax:int = (rowNum > rowCnt) ? rowNum : rowCnt;
+				var rowMax:int = 50 * ((int)(rowNum / 50) + 1);
+				for (var i:int = 0; i < rowMax; i++){
+					if (i < rowNum) {
+						// データによって色を変更する.
+						if (value[i])	colors.push(_defaultColors[i%2]);		// valid.
+						else			colors.push(_invalidColor);				// invalid.
+					}
+					else {
+						colors.push(_defaultColors[i%2]);
+					}
+				}
+				setStyle("alternatingItemColors", colors);
+			}
+		]]>
+	</mx:Script>
+</mx:DataGrid>

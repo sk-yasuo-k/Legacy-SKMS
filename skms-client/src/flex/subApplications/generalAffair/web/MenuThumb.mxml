@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="190" height="168" 
+	horizontalAlign="center" verticalGap="0" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	xmlns:logic="subApplications.generalAffair.logic.*">
+	
+	<!-- Logicクラスの設定 -->
+	<logic:LunchLogic id="lunchLogic" />
+
+	<mx:CurrencyFormatter id="cf"/>
+	
+	<mx:Text id="menuName" text="{data.menuName}" fontWeight="bold" fontSize="14" width="100%"/>
+	<mx:Spacer height="5"/>
+	<mx:Repeater id="rpOption" dataProvider="{data.options}" >
+		<mx:HBox>
+			<mx:Label id="optionName" text="{rpOption.currentItem.optionName}:"/>
+			<mx:ComboBox id="cbOptionChoices" dataProvider="{rpOption.currentItem.optionChoices}"
+				selectedIndex="{rpOption.currentItem.defaultIndex}" labelFunction="setOptionChoicesLabel"
+				change="onChange_cbOptionChoices(event);">
+			</mx:ComboBox>	
+		</mx:HBox>
+		<mx:Spacer height="5"/>
+	</mx:Repeater>
+	<mx:HBox>
+		<mx:Label text="価格："/>
+		<mx:Label id="lbPrice" text="{cf.format(data.price)}" styleName="price"/>
+	</mx:HBox>
+	<mx:Spacer height="5"/>
+	<mx:Button id="btnToTray" label="注文" click="dispatchEvent(new Event('addOrder', true, true))" />
+
+    <mx:Script>
+    <![CDATA[
+    	import mx.events.ListEvent;
+    	import mx.events.CloseEvent;
+		import mx.core.Application;
+		import subApplications.generalAffair.web.Lunch;
+        private function setOptionChoicesLabel(item:Object):String {
+        	var price:String = "";
+        	if (item.price > 0) {
+        		price = "(+" + item.price + "円)";
+        	} else if(item.price < 0) {
+        		price = "(-" + item.price + "円)";
+        	}
+            return item.choiceName + " " + price;
+        }
+
+        private function onChange_cbOptionChoices(e:ListEvent):void {
+        	if (e.currentTarget.selectedIndex >= 0) {
+	        	var price:int = data.price;
+        		for (var i:int = 0; i < data.options.length; i++) {
+        			for (var j:int = 0; j < data.options[i].optionChoices.length; j++) {
+        				if (cbOptionChoices[i].selectedIndex == j) {
+        					price += data.options[i].optionChoices[j].price;
+	        				break;
+        				}
+        			}
+        		}
+   				lbPrice.text  = cf.format(price);
+        	}
+        }
+
+    ]]>
+    </mx:Script>
+
+</mx:VBox>

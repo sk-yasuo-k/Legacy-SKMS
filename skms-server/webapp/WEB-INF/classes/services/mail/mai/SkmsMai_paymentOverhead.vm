@@ -1,0 +1,20 @@
+Subject: 【SKMS:諸経費】諸経費支払のお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.approvalName}さんが諸経費を支払いました。
+受け取られましたら「受領」操作を実施してください。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請ID　　　　　　 ： ${data.overheadId}
+◆申請者　　　　　　 ： ${data.applicantName}
+◆プロジェクトコード ： ${data.projectCode}
+◆プロジェクト名　　 ： ${data.projectName}
+◆金額　　　　　　　 ： ${data.expense}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

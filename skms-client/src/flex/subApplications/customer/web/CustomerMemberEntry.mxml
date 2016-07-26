@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.customer.logic.*"
+	title="担当者情報">
+
+	<!-- Logicクラスの設定 -->
+	<logic:CustomerMemberEntryLogic id="memberEntryLogic" />
+
+	<!-- 画面表示 -->
+	<mx:Form id="formArea" >
+		<mx:FormItem label="姓（漢字）:" required="true" direction="horizontal">
+				<mx:TextInput id="lastName" maxChars="16" width="80" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="名（漢字）:" required="false" >
+					<mx:TextInput id="firstName" maxChars="16" width="80" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="姓（かな）:" required="true" direction="horizontal">
+				<mx:TextInput id="lastNameKana" maxChars="32" width="80" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="名（かな）:" required="false" >
+					<mx:TextInput id="firstNameKana" maxChars="32" width="80" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="部署 :" required="false" direction="horizontal">
+				<mx:TextInput id="department" maxChars="32" width="110" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="役職 :" required="false" >
+					<mx:TextInput id="position" maxChars="16" width="80" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="電話 :" required="false" direction="horizontal">
+				<mx:TextInput id="telephone" maxChars="16" width="110" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="FAX :" required="false" >
+					<mx:TextInput id="fax" maxChars="16" width="110" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="携帯電話 :" required="false" direction="horizontal">
+				<mx:TextInput id="telephone2" maxChars="16" width="110" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="Email :" required="false" direction="horizontal">
+				<mx:TextInput id="email" maxChars="64" width="237" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="住所 :" required="false" direction="horizontal" horizontalGap="0">
+				<mx:Label text="〒" width="15"/>
+				<mx:TextInput id="addressNo" maxChars="8" restrict="[0-9,\-]" width="70" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+		<mx:FormItem required="false" direction="horizontal" >
+				<mx:TextInput id="address" maxChars="64" width="320" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="備考 :" required="false" >
+			<mx:TextArea id="note" maxChars="128" width="350" valueCommit="memberEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:Spacer width="8" />
+
+		<mx:Canvas>
+			<mx:Button label="設定" click="memberEntryLogic.onButtonClick_entry_confirm(event);"  id="btnEntry"  visible="{this.authorisation}" toolTip="担当者の個人的な情報は入力しないでください。"/>
+			<mx:Button label="削除" click="memberEntryLogic.onButtonClick_delete_confirm(event);" id="btnDelete" visible="{this.authorisation}" x="{btnEntry.width + 10}" />
+			<mx:Button label="戻る" click="memberEntryLogic.onButtonClick_close(event);" visible="{this.authorisation}" x="{this.btnDelete.visible ? (this.btnDelete.x + this.btnDelete.width + 10) : (this.btnEntry.width + 10)}"/>
+			<mx:Button label="戻る" click="memberEntryLogic.onButtonClick_close(event);" visible="{!this.authorisation}"/>
+			<mx:LinkButton label="ヘルプ" click="memberEntryLogic.onButtonClick_help(event);" id="help" styleName="SmallText" x="{this.note.x + this.note.width - this.help.width}" />
+		</mx:Canvas>
+	</mx:Form>
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:StringValidator id="validatorLastName"      source="{this.lastName}"      required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorLastNameKana"  source="{this.lastNameKana}"  required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 名前はチェックしない
+		<mx:StringValidator id="validatorFirstName"     source="{this.firstName}"     required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorFirstNameKana" source="{this.firstNameKana}" required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		-->
+		<!-- 部署はチェックしない -->
+		<!-- 役職はチェックしない -->
+		<mx:PhoneNumberValidator id="validatorPhone"    source="{this.telephone}"     required="false" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:PhoneNumberValidator id="validatorFax"      source="{this.fax}"           required="false" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:PhoneNumberValidator id="validatorPhone2"   source="{this.telephone2}"    required="false" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:EmailValidator       id="validatorEmail"    source="{this.email}"         required="false" property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 住所はチェックしない -->
+		<!-- 備考はチェックしない -->
+	</mx:Array>
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.customer.dto.CustomerMemberDto;
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = true;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+
+			/**
+			 * 追加担当者の取得.
+			 */
+			public function get newMember():CustomerMemberDto
+			{
+				return memberEntryLogic.getNewMember();
+			}
+
+			/**
+			 * 更新担当者の取得.
+			 */
+			public function get updateMember():CustomerMemberDto
+			{
+				return memberEntryLogic.getUpdateMember();
+			}
+
+			/**
+			 * 削除担当者の取得.
+			 */
+			public function get deleteMember():CustomerMemberDto
+			{
+				return memberEntryLogic.getDeleteMember();
+			}
+
+
+			/**
+			 * 入力項目チェック.
+			 */
+			 public function checkData(member:CustomerMemberDto):Boolean
+			 {
+			 	memberEntryLogic.setDisplayData(member);
+			 	memberEntryLogic.onValidateCheck(new Event("checkRequiredData"));
+			 	return this.btnEntry.enabled;
+			 }
+		]]>
+	</mx:Script>
+</cmp:PopUpWindow>

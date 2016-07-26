@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.profile.logic.*"
+	xmlns:cmp="components.*"
+	close="profileEntryLogic.onClose(event)">
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+	
+	<!--Logicクラスの設定-->
+	<logic:ProfileEntryLogic id="profileEntryLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="profileService" destination="profileService">
+		<mx:method name="updateProfileData"
+					result="profileEntryLogic.onResult_updateProfileData(event)" 
+					fault="profileEntryLogic.onFault_updateProfileData(event)" />
+	</mx:RemoteObject>
+	
+	<mx:RemoteObject id="staffEntryService" destination="staffEntryService">
+		<mx:method name="getBasicClassPayList"
+					result="profileEntryLogic.onResult_showBasicClassPayList(event)" 
+					fault="profileEntryLogic.onFault_remoteBasicClassPayList(event)" />
+		<mx:method name="getBasicPayList"
+					result="profileEntryLogic.onResult_showBasicPayList(event)" 
+					fault="profileEntryLogic.onFault_remoteBasicPayList(event)" />																
+	</mx:RemoteObject>	
+	
+    <mx:Blur id="blurImage" duration="1000" 
+        blurXFrom="0.0" blurXTo="10.0" 
+        blurYFrom="0.0" blurYTo="10.0"/>
+
+    <mx:Blur id="unblurImage" duration="1000" 
+        blurXFrom="10.0" blurXTo="0.0" 
+        blurYFrom="10.0" blurYTo="0.0"/>
+	
+	<!--画面の設定-->
+	<mx:VBox height="100%"
+			paddingTop="10" paddingBottom="10"
+			paddingLeft="10" paddingRight="10">
+		
+		<!--ヘッダの設定(基本情報/業務関連)-->
+		<mx:HBox width="100%">
+			<mx:VBox>
+				<!--画像-->
+				<mx:Image id="staffImage" scaleContent="true" autoLoad="false" height="100" width="80"/>
+				<mx:Button label="写真更新" width="80" click="profileEntryLogic.onClick_updateStaffImageButton(event)"/>
+			</mx:VBox>
+			<mx:VBox width="100%">
+				<mx:Grid>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="姓(漢字)" textAlign="right"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput id="lastName" text=" " width="70" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="名(漢字)" />
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:TextInput id="firstName" text=" " width="70" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="姓(かな)" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput id="lastNameKana" text=" " width="70" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="名(かな)" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:TextInput id="firstNameKana" text=" " width="70" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="性別"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="sexNameList" dataProvider="" fontSize="12" width="60"/>	
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="血液型" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="bloodGroupNameList" dataProvider="" fontSize="12" width="70"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="生年月日" />
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:EditDateField id="birthday" />
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow id="staffQualification" visible="false">
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="等級"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="basicClassNo" fontSize="12" width="75" labelField="className"
+								change="profileEntryLogic.onChange_BasicClassList(event)" dataField="classId"/>	
+						</mx:GridItem>
+						<mx:GridItem horizontalAlign="right">
+							<mx:Text text="号"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<cmp:ComboBoxEx id="basicRankNo" fontSize="12" width="75" labelField="rankNo" dataField="rankNo"/>
+						</mx:GridItem>
+					</mx:GridRow>		
+				</mx:Grid>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:HRule width="100%" height="1"/>
+		
+		<!--ヘッダの設定(連絡先)-->
+		<mx:HBox width="100%">
+			<mx:VBox width="100%">
+				<mx:Form width="100%"
+						paddingTop="0" paddingBottom="0"
+						paddingLeft="0" paddingRight="0">
+					
+					<!--内線番号-->
+					<mx:FormItem label="内線番号" direction="horizontal">
+						<mx:TextInput id="extensionNumber" text=" " width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="2"/>
+					</mx:FormItem>
+					
+					<!--メールアドレス-->
+					<mx:FormItem label="メールアドレス" direction="horizontal">
+						<mx:TextInput id="email" text=" " width="250" imeMode="ALPHANUMERIC_HALF"/>
+					</mx:FormItem>
+					
+					<!--携帯番号１-->
+					<mx:FormItem label="携帯番号" direction="horizontal">
+						<mx:TextInput id="handyPhoneNo" text=" " width="150" imeMode="ALPHANUMERIC_HALF" maxChars="14"/>
+					</mx:FormItem>
+					
+					<!--緊急連絡先-->
+					<mx:FormItem label="緊急連絡先" direction="horizontal">
+						<mx:TextInput id="emergencyAddress" text=" " width="150" imeMode="JAPANESE_HIRAGANA"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+		
+		<mx:HRule width="100%" height="1"/>
+		
+		<!--フッタの設定-->
+		<mx:HBox>
+			<mx:Button label="適用" width="50" click="profileEntryLogic.onClick_updateProfileDataButton(event)"/>
+			<mx:Button label="戻る" width="50" click="profileEntryLogic.onClick_returnButton(event)"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:logic="subApplications.project.logic.custom.*"
+	headerRelease="aslogic.onHeaderRelease(event);"
+	>
+	<mx:columns>
+		<mx:DataGridColumn headerText="プロジェクトコード" dataField="projectCode"      width="100"/>
+		<mx:DataGridColumn headerText="プロジェクト名"     dataField="projectName"      width="160"/>
+		<mx:DataGridColumn headerText="PM"                 dataField="projectManager"   width="80" labelFunction="{ProjectLogic.projectManagerLabel}" sortCompareFunction="{ProjectLogic.projectManagerSort}"/>
+		<mx:DataGridColumn headerText="開始実績日"         dataField="actualStartDate"  width="90" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualStartDateSort}"/>
+		<mx:DataGridColumn headerText="完了実績日"         dataField="actualFinishDate" width="90" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualFinishDateSort}"/>
+		<!-- 追加 @auther maruta -->
+		<mx:DataGridColumn headerText="報告日"		dataField="reportingDate" width="90" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.reportingDateSort}"/>
+		<!-- -->
+	</mx:columns>
+
+	<!-- Logicクラスの設定 -->
+	<logic:ProjectDataGridLogic id="aslogic" />
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.project.logic.ProjectLogic;
+			import utils.LabelUtil;
+			/** プロジェクト完了色 */
+			public function set completeColor(color:Number):void
+			{
+				aslogic.setCompleteColor(color);
+			}
+
+			/** dataProvider */
+			override public function set dataProvider(value:Object):void
+			{
+				super.dataProvider = value;
+				aslogic.setDataProvider();
+			}
+
+		]]>
+	</mx:Script>
+</mx:DataGrid>

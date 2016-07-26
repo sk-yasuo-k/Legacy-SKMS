@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="441" height="236"
+	xmlns:cmp="components.*"
+	xmlns:logic="subApplications.personnelAffair.skill.logic.*"
+	showCloseButton="true"
+	title="ハード選択" >
+	
+	<!-- Logicクラスの設定 -->
+	<!--logic:SkillSheetEntryLogic id="skillSheetEntryLogic" /-->
+	<logic:SkillSheetSearchHardLogic id="skillSheetSearchHardLogic" />
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="skillSheetEntryService" destination="skillSheetEntryService">
+		<mx:method name="getProjectHardList"
+					result="skillSheetSearchHardLogic.onResult_getProjectHardList(event)"
+					fault="skillSheetSearchHardLogic.onFault_getInformation(event)" />
+	</mx:RemoteObject>
+	
+	<mx:XMLList id="hardXml" xmlns:mx="http://www.adobe.com/2006/mxml">
+	</mx:XMLList>
+
+	<!--画面の設定-->
+	<mx:VBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:Spacer width="10"/>
+			<mx:VBox height="100%">
+				<mx:HBox>
+					<mx:Text width="110" text="ハード" fontSize="12" fontWeight="bold"/>
+					<cmp:MultiSelectableTree allowMultipleSelection="true" id="treeHard" height="100%" fontSize="12" labelField="@label" showRoot="false" dataProvider="{skillSheetSearchHardLogic._xmlList}" width="200" defaultLeafIcon="{null}" folderClosedIcon="{null}" folderOpenIcon="{null}">
+					</cmp:MultiSelectableTree>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Spacer width="10"/>
+			<mx:Button label="選択" click="skillSheetSearchHardLogic.onClick_btnSelect(event)" id="btnSelect"/>
+			<mx:Button label="戻る" click="skillSheetSearchHardLogic.onClick_btnCancel(event)" id="btnCancel"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<!-- Script -->
+	<mx:Script>
+		<![CDATA[
+			import subApplications.personnelAffair.skill.dto.StaffSkillSheetDto;
+		]]>
+	</mx:Script>
+</PopUpWindow>

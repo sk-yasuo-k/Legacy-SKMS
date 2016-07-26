@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:custom="subApplications.accounting.web.custom.*"
+	xmlns:logic="subApplications.accounting.logic.*"
+	visible="false"
+	width="800" height="100%"
+	title="諸経費登録"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:OverheadEntryLogic id="aslogic" />
+
+	<mx:Canvas width="100%" height="100%">
+		<mx:HBox height="24" x="10" width="100%" styleName="LargeBoldText">
+			<mx:Label text="プロジェクト"  />
+			<mx:Label text=":"/>
+				<mx:Canvas>
+					<mx:LinkButton id="linkProject" label="ここをクリックしてプロジェクトを選択してください..."
+						click="aslogic.onClick_linkProject(event);" visible="{(this._isApproval || this._isApprovalAf) ? false : true}"/>
+					<mx:Label text="{linkProject.label}" visible="{(this._isApproval || this._isApprovalAf) ? true : false}" />
+				</mx:Canvas>
+			<mx:Spacer width="100%" />
+			<mx:Label text="合計金額" />
+			<mx:Label text=":"/>
+			<mx:Label id="totalExpense"/>
+		</mx:HBox>
+
+		<mx:HBox height="24" x="10" y="28">
+			<mx:Repeater id="rpLinkList" dataProvider="">
+				<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+					enabled="{rpLinkList.currentItem.enabled}"
+					click="aslogic.onClick_linkList(event);" />
+			</mx:Repeater>
+		</mx:HBox>
+
+		<custom:OverheadDetailDataGrid id="overheadList" width="752" height="253" x="10" y="60"
+			visibleReceipt="false" authorizeApproval="{this._authorizeApproval}"
+			change="aslogic.onChangeDataGrid_overheadList(event);"
+			dragEnabled="{this._isEntry || this._isCopy}" dropEnabled="{this._isEntry || this._isCopy}" dragMoveEnabled="{this._isEntry || this._isCopy}"
+			dragEnter="aslogic.onDragEnter_overheadList(event);"
+			dragOver="aslogic.onDragOver_overheadList(event);"
+			/>
+
+		<mx:HBox x="10" y="321" height="28">
+			<mx:Canvas>
+				<mx:Button label="登録" id="btnEntry"    visible="{this._isEntry || this._isCopy}"    click="aslogic.onButtonClick_entry_confirm(event);"/>
+				<mx:Button label="申請" id="btnApply"    visible="{this._isApply}"    click="aslogic.onButtonClick_apply_confirm(event);"/>
+				<mx:Button label="承認" id="btnApproval" visible="{this._isApproval || this._isApprovalAf}" click="aslogic.onButtonClick_approval_confirm(event);"/>
+			</mx:Canvas>
+			<mx:Button label="戻る" click="aslogic.onButtonClick_close(event);"/>
+		</mx:HBox>
+	</mx:Canvas>
+
+
+	<!-- RemoteObject -->
+	<mx:RemoteObject id="srv" destination="overheadService" showBusyCursor="true">
+		<mx:method name="createOverhead"  result="aslogic.onResult_createOverhead(event)"
+										  fault="aslogic.onFault_createOverhead(event)"
+		/>
+		<mx:method name="applyOverhead"  result="aslogic.onResult_applyOverhead(event)"
+										 fault="aslogic.onFault_applyOverhead(event)"
+		/>
+		<mx:method name="approvalOverhead"  result="aslogic.onResult_approvalOverhead(event)"
+											fault="aslogic.onFault_approvalOverhead(event)"
+		/>
+		<mx:method name="approvalAfOverhead"  result="aslogic.onResult_approvalAfOverhead(event)"
+											  fault="aslogic.onFault_approvalAfOverhead(event)"
+		/>
+		<mx:method name="getOverheadType" result="aslogic.onResult_getOverheadType(event)"
+										  fault="aslogic.onFault_getOverheadType(event)"
+		/>
+		<mx:method name="getEquipmentKind" result="aslogic.onResult_getEquipmentKind(event)"
+										   fault="aslogic.onFault_getEquipmentKind(event)"
+		/>
+		<mx:method name="getPayment" result="aslogic.onResult_getPayment(event)"
+									 fault="aslogic.onFault_getPayment(event)"
+		/>
+		<mx:method name="getAccountItem" result="aslogic.onResult_getAccountItem(event)"
+										 fault="aslogic.onFault_getAccountItem(event)"
+		/>
+		<mx:method name="getPcKind" result="aslogic.onResult_getPcKind(event)"
+									fault="aslogic.onFault_getPcKind(event)"
+		/>
+		<mx:method name="getStaff" result="aslogic.onResult_getStaff(event)"
+								   fault="aslogic.onFault_getStaff(event)"
+		/>
+		<mx:method name="getInstallationLocation" result="aslogic.onResult_getInstallationLocation(event)"
+												  fault="aslogic.onFault_getInstallationLocation(event)"
+		/>
+		<mx:method name="getCreditCard" result="aslogic.onResult_getCreditCard(event)"
+										fault="aslogic.onFault_getCreditCard(event)"
+		/>
+		<mx:method name="getJanre" result="aslogic.onResult_getJanre(event)"
+								   fault="aslogic.onFault_getJanre(event)"
+		/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.accounting.logic.AccountingLogic;
+			import mx.utils.ObjectUtil;
+
+			/**
+			 * 申請 or 承認モードの取得・設定.
+			 *
+			 * @param value 実行モード.
+			 */
+			[Bindable]
+			private var _isApproval:Boolean = false;
+			public function get approval():Boolean
+			{
+				return _isApproval;
+			}
+			[Bindable]
+			private var _isApprovalAf:Boolean = false;
+			public function get approvalAf():Boolean
+			{
+				return _isApprovalAf;
+			}
+			[Bindable]
+			private var _isApply:Boolean = false;
+			public function get apply():Boolean
+			{
+				return _isApply;
+			}
+			[Bindable]
+			private var _isEntry:Boolean = false;
+			public function get entry():Boolean
+			{
+				return _isEntry;
+			}
+			[Bindable]
+			private var _isCopy:Boolean = false;
+			public function get copy():Boolean
+			{
+				return _isCopy;
+			}
+			private var _actionMode:String;
+			public function set actionMode(value:String):void
+			{
+				_isCopy       = false;
+				_isEntry      = false;
+				_isApply      = false;
+				_isApproval   = false;
+				_isApprovalAf = false;
+				switch (value) {
+					case AccountingLogic.ACTION_NEW:
+					case AccountingLogic.ACTION_UPDATE:
+						_isEntry = true;
+						break;
+					case AccountingLogic.ACTION_APPLY:
+						_isApply = true;
+						break;
+					case AccountingLogic.ACTION_APPROVAL_AF:
+						_isApprovalAf = true;
+						break;
+					case AccountingLogic.ACTION_APPROVAL:
+						_isApproval = true;
+						break;
+					case AccountingLogic.ACTION_COPY:
+						_isCopy = true;
+						break;
+				}
+				_actionMode = value;
+			}
+			public function get actionMode():String
+			{
+				return _actionMode;
+			}
+
+
+//			/**
+//			 * 申請 or 承認モードデータの設定.
+//			 *
+//			 * @param value 諸経費.
+//			 */
+//			private var _overhead:Object;
+//			public function set overhead(value:Object):void
+//			{
+//				_overhead = ObjectUtil.copy(value);
+//			}
+//			public function get overhead():Object
+//			{
+//				return _overhead;
+//			}
+
+
+			/**
+			 * 承認権限（PM or 総務）の設定.
+			 *
+			 * @param value 権限.
+			 */
+			[Bindable]
+			private var _authorizeApproval:Boolean = false;
+			public function set authorizeApproval(value:Boolean):void
+			{
+				_authorizeApproval = value;
+			}
+			public function get authorizeApproval():Boolean
+			{
+				return _authorizeApproval;
+			}
+
+		]]>
+	</mx:Script>
+</PopUpWindow>

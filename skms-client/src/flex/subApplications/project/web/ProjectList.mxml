@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.project.logic.*"
+	xmlns:custom="subApplications.project.web.custom.*"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:ProjectListLogic id="projectListLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%" >
+		<mx:HBox width="100%">
+			<mx:Label text="プロジェクト一覧" styleName="LargeBoldText"/>
+			<mx:Spacer width="10" />
+			<custom:ProjectSearch id="projectSearch"
+				result="projectListLogic.onResult_projectSearch(event);"
+				fault ="projectListLogic.onFault_projectSearch(event);"
+				/>
+		</mx:HBox>
+
+		<mx:VDividedBox liveDragging="true" width="100%" height="100%">
+			<mx:HDividedBox width="100%" height="100%">
+				<!-- プロジェクト -->
+				<mx:VBox width="60%" height="100%">
+					<mx:HBox height="24">
+						<mx:Repeater id="rpLinkList" dataProvider="">
+							<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+								enabled="{rpLinkList.currentItem.enabled}"
+								click="projectListLogic.onClick_linkList(event);"
+								/>
+						</mx:Repeater>
+					</mx:HBox>
+					<custom:ProjectDataGrid id="projectList" width="100%" height="100%" rowHeight="24"
+						change="projectListLogic.onChange_projectList(event);"
+						doubleClick="projectListLogic.onDoubleClick_projectList(event);" doubleClickEnabled="true"
+						completeColor="0xDCDCDC"
+						/>
+				</mx:VBox>
+
+				<!-- プロジェクトメンバ -->
+				<mx:VDividedBox liveDragging="true" width="40%" height="100%">
+					<mx:VBox width="100%" height="50%">
+						<mx:Label id= "projectMemberListTitle" text="プロジェクトメンバ" styleName="LargeText" height="24"/>
+						<custom:ProjectMemberDataGrid id="projectMemberList" width="100%" height="100%" rowHeight="24" />
+					</mx:VBox>
+					<mx:VBox width="100%" height="50%">
+						<mx:Label text="プロジェクト状況" styleName="LargeText" height="24"/>
+						<custom:ProjectSituation id="projectSituationList" referenceSituations="{null}"/>
+					</mx:VBox>
+				</mx:VDividedBox>
+			</mx:HDividedBox>
+		</mx:VDividedBox>
+	</mx:VBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="projectService">
+		<mx:method name="getProjectPositionPMList"
+			result="projectListLogic.onResult_getProjectPositionPMList(event)"
+			fault="projectListLogic.onFault_getProjectPositionPMList(event)"
+			/>
+		<mx:method name="deleteProject"
+			result="projectListLogic.onResult_deleteProject(event)"
+			fault="projectListLogic.onFault_deleteProject(event)"
+			/>
+	</mx:RemoteObject>
+</mx:Module>

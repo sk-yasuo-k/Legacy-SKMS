@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="466" height="336"
+	xmlns:custom="subApplications.project.web.custom.*"
+	xmlns:logic="subApplications.project.logic.*"
+	title="プロジェクト状況"
+	>
+
+	<logic:ProjectSituationEntryLogic id="entryLogic" />
+
+	<!-- 画面の表示 -->
+	<mx:VBox x="10" y="10" >
+		<custom:ProjectSituation id="ctmSituation" width="426" height="250"
+			initialize="onInitSituation(event);"
+			newSituation="onNewSituation(event);"
+			invalid="_validator = false"
+			valid="_validator = true"/>
+		<mx:HBox  >
+			<mx:Button id="btnEntry" label="登録" click="entryLogic.onButtonClick_entry_confirm(event);" enabled="{_validator}"/>
+			<mx:Button label="戻る" click="entryLogic.onButtonClick_close(event);"/>
+		</mx:HBox>
+	</mx:VBox>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="projectService" showBusyCursor="true">
+		<mx:method name="createProjectSituation"
+			result="entryLogic.onResult_createProjectSituation(event)"
+			fault="entryLogic.onFault_createProjectSituation(event)"
+			/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
+			import subApplications.project.dto.ProjectSituationDto;
+			import subApplications.project.dto.ProjectDto;
+
+
+			/** 更新対象のプロジェクト */
+			private var _project:ProjectDto;
+			public function set project(value:ProjectDto):void
+			{
+				_project = value;
+				if (_project.projectSituations && _project.projectSituations.length > 0) {
+					var updObject:Object = _project.projectSituations.getItemAt(0);
+					_situation = ObjectUtil.copy(updObject) as ProjectSituationDto;
+					_situationProp = "updateSituation";
+				}
+				else {
+					_situation = new ProjectSituationDto();
+					_situationProp = "newSituation";
+				}
+			}
+			public function get project():ProjectDto
+			{
+				return _project;
+			}
+
+			/** 更新対象のプロジェクト状況 */
+			private var _situation:ProjectSituationDto;
+			public function get situation():ProjectSituationDto
+			{
+				return _situation;
+			}
+
+			/** 変更対象のプロジェクト状況コントロールのプロパティ */
+			private var _situationProp:String;
+
+
+			/** 登録するプロジェクト状況 */
+			public function get entrySituation():ProjectSituationDto
+			{
+				var ctm:ProjectSituationDto = ctmSituation.entrySituation;
+				var entry:ProjectSituationDto = situation.entry(_project);
+				return entry;
+			}
+
+			/** プロジェクト状況コントロールの init */
+			private function onInitSituation(e:Event):void
+			{
+				ctmSituation[_situationProp] = _situation;
+			}
+
+			/** プロジェクト状況の新規追加 */
+			private function onNewSituation(e:Event):void
+			{
+				_situation = new ProjectSituationDto();
+				_situationProp = "newSituation";
+				ctmSituation[_situationProp] = _situation;
+				validate();
+			}
+
+
+			/** 検証結果 */
+			[Bindable]
+			private var _validator:Boolean = false;
+
+			/** 検証 */
+			public function validate():void
+			{
+				ctmSituation.validate();
+			}
+		]]>
+	</mx:Script>
+</PopUpWindow>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%" 
+	xmlns:components="components.*"
+	xmlns:logic="subApplications.generalAffair.paidVacationMaintenance.logic.*">
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="paidVacationMaintenanceService" destination="paidVacationMaintenanceService" showBusyCursor="true">
+		<mx:method name="getWorkingStaffNameList"  result="paidVacationMaintenanceLogic.onResult_getWorkingStaffNameList(event);"
+													  fault="paidVacationMaintenanceLogic.onFault_getWorkingStaffNameList(event);"/>
+		<mx:method name="storageWorkingHoursMonthly"  result="paidVacationMaintenanceLogic.onResult_storageWorkingHoursMonthly(event);"
+													  fault="paidVacationMaintenanceLogic.onFault_storageWorkingHoursMonthly(event);"/>
+	</mx:RemoteObject>
+
+	<logic:PaidVacationMaintenanceLogic id="paidVacationMaintenanceLogic" />
+	
+	<mx:VBox x="5" y="0" width="99%" height="99%" >
+		<mx:Label text="有給・代休メンテナンス" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前月" icon="@Embed('images/arrow_previous.gif')"
+				click="paidVacationMaintenanceLogic.onClick_linkPreviousMonth(event);"/>
+			<mx:Label id="lblWorkingMonth" text="0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月" icon="@Embed('images/arrow_next.gif')"
+				click="paidVacationMaintenanceLogic.onClick_linkNextMonth(event);"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:LinkButton id="linkShowDateSetting" label="表示条件の指定..."
+					click="paidVacationMaintenanceLogic.onClick_linkShowDateSetting(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideDateSetting" width="100%" height="0">
+				<mx:Grid backgroundColor="0xECE3EE">
+					<mx:GridRow/>
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:LinkButton id="linkHideDateSetting" label="閉じる"
+								click="paidVacationMaintenanceLogic.onClick_linkHideDateSetting(event);"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:Label text="勤務月" styleName="LargeText"/>
+							<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+							<mx:Label text="年" styleName="LargeText"/>
+							<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+							<mx:Label text="月" styleName="LargeText"/>
+							<mx:Button id="btnRefresh" label="表示"
+								click="paidVacationMaintenanceLogic.onClick_btnRefresh(event)"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:CheckBox id="chkSubordinateOnly" label="部下のみ" selected="true" visible="true"/>
+						</mx:GridItem>
+					</mx:GridRow>			
+				</mx:Grid>
+			</mx:VBox>
+		</mx:HBox>	
+		<mx:LinkButton id="storageButton" label="保存" click="paidVacationMaintenanceLogic.onClick_storageWorkingHoursMonthly(event)"/>		
+		<mx:DataGrid id="list" height="100%" editable="true" itemFocusOut="paidVacationMaintenanceLogic.onFocusOut(event);">
+			<mx:columns>
+				<mx:DataGridColumn headerText="社員氏名" textAlign="left" width="80" id="staffFullNameColumn" dataField="staffId" editable="false">
+					<mx:itemRenderer>
+					<mx:Component>
+					<mx:Label text="{data.staffName.fullName}"/>
+					</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="有給繰越日数" textAlign="right" width="85"
+					id="lastPaidVacationCount" dataField="lastPaidVacationCount" editable="false"/>
+				<mx:DataGridColumn headerText="有給消滅日数" textAlign="right" width="85"
+					id="lostPaidVacationCount" dataField="lostPaidVacationCount" editable="true"/>
+				<mx:DataGridColumn headerText="有給今月発生日数" textAlign="right" width="105"
+					id="givenPaidVacationCount" dataField="givenPaidVacationCount" editable="true"/>
+				<mx:DataGridColumn headerText="有給今月使用日数" textAlign="right" width="105"
+					id="takenPaidVacationCount" dataField="takenPaidVacationCount" editable="false"/>					
+				<mx:DataGridColumn headerText="有給今月残日数" textAlign="right" width="95"
+					id="currentPaidVacationCount" dataField="currentPaidVacationCount" editable="false"/>
+				<mx:DataGridColumn headerText="代休繰越日数" textAlign="right" width="85"
+					id="lastCompensatoryDayOffCount" dataField="lastCompensatoryDayOffCount" editable="false"/>						
+				<mx:DataGridColumn headerText="代休消滅日数" textAlign="right" width="85"
+					id="lostCompensatoryDayOffCount" dataField="lostCompensatoryDayOffCount" editable="true"/>
+				<mx:DataGridColumn headerText="代休今月発生日数" textAlign="right" width="105"
+					id="givenCompensatoryDayOffCount" dataField="givenCompensatoryDayOffCount" editable="true"/>
+				<mx:DataGridColumn headerText="代休今月使用日数" textAlign="right" width="105"
+					id="takenCompensatoryDayOffCount" dataField="takenCompensatoryDayOffCount" editable="false"/>
+				<mx:DataGridColumn headerText="代休今月残日数" textAlign="right" width="95"
+					id="currentCompensatoryDayOffCount" dataField="currentCompensatoryDayOffCount" editable="false"/> 
+			</mx:columns>
+		</mx:DataGrid>		
+	</mx:VBox>
+</mx:Module>

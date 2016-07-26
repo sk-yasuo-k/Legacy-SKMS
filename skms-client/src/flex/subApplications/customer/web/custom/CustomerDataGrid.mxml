@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" 	xmlns:logic="subApplications.customer.logic.*">
+	<mx:columns>
+		<mx:DataGridColumn headerText="顧客コード" dataField="customerCode"           visible="true"                 width="80"/>
+		<mx:DataGridColumn headerText="顧客名称"   dataField="customerName"           visible="{!this.nameLink}"     width="180" textAlign="left" />
+		<mx:DataGridColumn headerText="顧客名称"   dataField="customerName"           visible="{this.nameLink}"      width="180" textAlign="left">
+			<mx:itemRenderer>
+				<mx:Component>
+					<!-- textDecoration追加 @auther maruta -->
+					<mx:Label text="{data.customerName}" textDecoration="{underline}" buttonMode="{linkEnabled}" useHandCursor="{linkEnabled}" mouseChildren="{!linkEnabled}" click="onClick(event);">
+						<mx:Script>
+							<![CDATA[
+								import subApplications.customer.logic.CustomerLogic;
+
+								[Bindable]
+								private var linkEnabled:Boolean = false;
+								
+								//追加 @auther maruta
+								[Bindable]
+								private var underline:String = null;
+								//
+							
+								override public function set data(value:Object):void
+								{
+									super.data = value;
+									if (value && value.checkCustomerHtml()) {
+										linkEnabled = true;
+										//追加 @auther maruta
+										underline = "underline";
+										//
+									}
+									//追加 @auther maruta
+									else{
+										linkEnabled = false;
+										underline = null;
+									}
+									//
+								}
+
+								private function onClick(e:Event):void {
+									if (linkEnabled) {
+										CustomerLogic.openCustomerWindow(super.data.getCustomerHtml());
+									}
+								}
+							]]>
+						</mx:Script>
+					</mx:Label>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerText="顧客略称"   dataField="customerAlias"          visible="true"                 width="80"/>
+		<mx:DataGridColumn headerText="代表者"     dataField="customerRepresentative" visible="true"                 width="100"/>
+		<mx:DataGridColumn headerText="取引開始日" dataField="customerStartDate"      visible="{this.authorisation}" width="100" labelFunction="{LabelUtil.dateLabel}"/>
+		<mx:DataGridColumn headerText="支払サイト" dataField="billPayable"            visible="{this.authorisation}" width="150"/>
+		<mx:DataGridColumn headerText="備考"       dataField="note"                   visible="{this.authorisation}" width="150"/>
+		<mx:DataGridColumn headerText="Webページ"  dataField="customerHtml"           visible="false"                width="0"/>
+	</mx:columns>
+
+
+	<!-- Logicクラスの設定 -->
+	<logic:CustomerLogic id="customerLogic" />
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import subApplications.customer.dto.CustomerDto;
+			//追加 @auther maruta
+			import flash.text.TextField;
+			
+			private var dummy:CustomerDto = new CustomerDto();
+
+			/** 登録 */
+			[Bindable]
+			private var authorisation:Boolean = false;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+
+
+			/** 顧客名称リンク */
+			[Bindable]
+			private var nameLink:Boolean = false;
+			public function set customerNameLink(value:Boolean):void
+			{
+				nameLink = value;
+			}
+			public function get customerNameLink():Boolean
+			{
+				return nameLink;
+			}
+		]]>
+	</mx:Script>
+</mx:DataGrid>

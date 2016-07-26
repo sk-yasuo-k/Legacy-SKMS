@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="282" height="130"
+	xmlns:logic="subApplications.accounting.logic.*"
+	title="複製元の月を指定してください。" >
+
+	<!-- Logicクラスの設定 -->
+	<logic:CommutationCopySelectedMonthLogic id="logic" />
+
+	<!-- 画面表示 -->
+	<mx:Spacer height="1" />
+	<mx:HBox>
+		<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+		<mx:Label text="年" styleName="LargeText"/>
+		<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+		<mx:Label text="月" styleName="LargeText"/>
+	</mx:HBox>
+	<mx:Spacer height="10" />
+	<mx:HBox width="100%">
+	    <mx:Button label="複製" click="logic.onButtonClick_entry(event);" />
+		<mx:Spacer width="10" />
+	    <mx:Button label="戻る" click="logic.onButtonClick_close(event);" />
+	</mx:HBox>
+	<mx:Spacer width="100%" />
+	
+</PopUpWindow>

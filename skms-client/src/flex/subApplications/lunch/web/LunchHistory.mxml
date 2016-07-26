@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:logic="subApplications.lunch.logic.*">
+
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getLunchHistoryList" 
+					result="lunchHistoryLogic.onResult_getLunchHistoryList(event)" 
+					fault="lunchHistoryLogic.onFault_getLunchHistoryList(event)" />
+		<mx:method name="getLunchHistory" 
+					result="lunchHistoryLogic.onResult_getLunchHistory(event)" 
+					fault="lunchHistoryLogic.onFault_getLunchHistory(event)" />			
+		<mx:method name="deleteOrder"
+					result="lunchHistoryLogic.onResult_deleteOrder(event)" 
+					fault="lunchHistoryLogic.onFault_deleteOrder(event)" />																	
+	</mx:RemoteObject>
+
+	<logic:LunchHistoryLogic id="lunchHistoryLogic" />
+
+	<mx:Panel title="あなたの注文履歴">
+		<mx:Panel title="注文確定前">
+			<mx:DataGrid id="order" click="lunchHistoryLogic.onClick_DataGrid(event)">
+				<mx:columns>
+					<mx:DataGridColumn headerText="削除" width="50" dataField="checkBox" sortable="false" textAlign="center" id="checkColumn"
+						itemRenderer="subApplications.generalAffair.workingConditions.web.components.CheckBoxDataGridItemRenderer"/>
+					<mx:DataGridColumn headerText="注文日" dataField="orderDate" labelFunction="{LabelUtil.dateLabel}" width="90">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="注文名" dataField ="orderMenuName" width="250">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="個数" dataField ="number" width="50">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>					
+									
+					<mx:DataGridColumn headerText="金額" dataField="orderPrice" labelFunction="{LabelUtil.currencyLabel}" width="50" textAlign="right">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+                	</mx:DataGridColumn>	
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%">
+				<mx:HBox width="100%" horizontalAlign="left" >
+					<mx:Button label="削除" click="lunchHistoryLogic.onClick_deleteOrderHistory(event)"/>
+				</mx:HBox>
+				<mx:HBox width="100%" horizontalAlign="right" >
+					<mx:Text text="合計金額" />
+					<mx:Text text="0" id="orderPrice" />
+				</mx:HBox>
+			</mx:HBox>	
+		</mx:Panel>
+		<mx:Panel title="注文確定済み">
+			<mx:HBox>
+				<mx:LinkButton id="previousMonth" label="前の月" click="lunchHistoryLogic.onClick_linkPreviousMonth(event)" enabled="false"/>
+				<mx:VBox height="100%" verticalAlign="middle">
+					<mx:Text text="XXXX年YY月" fontSize="12" fontWeight="bold" id="date"/>	
+				</mx:VBox>						
+				<mx:LinkButton id="nextMonth" label="次の月" click="lunchHistoryLogic.onClick_linkNextMonth(event)" enabled="false"/>						
+			</mx:HBox>
+			<mx:DataGrid id="orderHistory">
+				<mx:columns>
+					<mx:DataGridColumn headerText="注文日" dataField="orderDate" labelFunction="{LabelUtil.dateLabel}" width="90">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>					
+					<mx:DataGridColumn headerText="注文名" dataField ="orderMenuName" width="250">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>					
+					<mx:DataGridColumn headerText="個数" dataField ="number" width="50">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>					
+					<mx:DataGridColumn headerText="金額" dataField="orderPrice" labelFunction="{LabelUtil.currencyLabel}" width="50" textAlign="right">
+						<mx:headerRenderer>
+                			<mx:Component>
+                				<mx:Label textAlign="center"/>
+                			</mx:Component>
+                		</mx:headerRenderer>
+					</mx:DataGridColumn>					
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" horizontalAlign="right" >
+				<mx:Text text="合計金額" />
+				<mx:Text text="0" id="orderPriceHistory" />
+			</mx:HBox>
+			</mx:Panel>
+	</mx:Panel>	
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			import mx.controls.CheckBox;
+			
+			public function refreshList():void
+			{
+				lunchHistoryLogic.getLunchHistoryList();
+			}
+		]]>
+	</mx:Script>	
+</mx:Canvas>

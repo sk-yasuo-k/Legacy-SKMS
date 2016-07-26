@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" >
+	<mx:columns>
+		<mx:DataGridColumn headerText="氏名"       dataField="staffName"          width="100"/>
+		<mx:DataGridColumn headerText="役職"       dataField="projectPositionAlias" width="70"/>
+		<mx:DataGridColumn headerText="開始実績日" dataField="actualStartDate"    width="100" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualStartDateSort}"/>
+		<mx:DataGridColumn headerText="完了実績日" dataField="actualFinishDate"   width="100" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualFinishDateSort}"/>
+	</mx:columns>
+	<mx:Script>
+		<![CDATA[
+			import subApplications.project.logic.ProjectLogic;
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+</mx:DataGrid>

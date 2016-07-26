@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+		
+		   	import flash.display.Graphics;
+   			import mx.collections.ArrayCollection;
+			import mx.controls.DataGrid;
+   			import mx.controls.Label;
+   			import mx.controls.dataGridClasses.*;
+   			
+   			private const COLOR_WARNING:Number = 0xFF9696;
+   			private var _isColor:Boolean;
+			
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		{
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+
+			var grid:DataGrid = DataGrid(DataGridListData(listData).owner);
+			var	gridData:DataGridListData = listData as DataGridListData;
+			var g:Graphics = graphics;
+			g.clear();
+
+			switch (gridData.dataField) {
+				// 開始時刻
+				case "startTime":
+					if (!data.checkSubmit_startTime(false)) {
+						setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+					}
+					break;
+
+				// 終了時刻
+				case "quittingTime":
+					if (!data.checkSubmit_quittingTime(false)) {
+						setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+					}
+					break;
+					
+				// 私用時間
+				case "privateHours":
+					if (!data.checkSubmit_privateHours()) {
+						setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+					}
+					break;
+					
+				// 休憩時間
+				case "recessHours":
+					if (!data.checkSubmit_recessHours()) {
+						setColorPattern(g, unscaledWidth, unscaledHeight, COLOR_WARNING);
+					}
+					break;
+					
+			}
+		}			
+			
+		private function setColorPattern(g:Graphics, unscaledWidth:Number, unscaledHeight:Number, color:Number):void
+		{
+			g.beginFill(color);
+			g.drawRect(0, 0, unscaledWidth, unscaledHeight);
+			g.endFill();
+		}
+		
+		
+		public function set isColor(flg:Boolean):void
+		{
+			_isColor = flg;
+		} 
+			
+			
+
+		]]>
+	</mx:Script>
+</mx:Label>
+
+
+
+

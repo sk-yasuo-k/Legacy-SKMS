@@ -1,0 +1,1998 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*">
+	<mx:Metadata>
+		[Event(name="loadComplete" ,type="flash.events.Event")]
+		[Event(name="changeInputData" ,type="flash.events.Event")]
+		
+		[Event(name="completeSubmit" ,type="flash.events.Event")]
+		[Event(name="completeSubmitCancel" ,type="flash.events.Event")]
+		[Event(name="completeApproval" ,type="flash.events.Event")]
+		[Event(name="completeApprovalCancel" ,type="flash.events.Event")]
+		[Event(name="completeApprovalReject" ,type="flash.events.Event")]
+		
+		[Event(name="optimisticLockSubmit" ,type="flash.events.Event")]
+		[Event(name="optimisticLockSubmitCancel" ,type="flash.events.Event")]
+		[Event(name="optimisticLockApproval" ,type="flash.events.Event")]
+		[Event(name="optimisticLockApprovalCancel" ,type="flash.events.Event")]
+		[Event(name="optimisticLockApprovalReject" ,type="flash.events.Event")]
+		
+		[Event(name="faultUpdate" ,type="flash.events.Event")]
+		[Event(name="faultSubmit" ,type="flash.events.Event")]
+		[Event(name="faultSubmitCancel" ,type="flash.events.Event")]
+		[Event(name="faultApproval" ,type="flash.events.Event")]
+		[Event(name="faultApprovalCancel" ,type="flash.events.Event")]
+		[Event(name="faultApprovalReject" ,type="flash.events.Event")]
+		
+	</mx:Metadata>
+	<mx:VDividedBox  width="100%" height="100%">
+		<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		id="grdWorkingHours"
+		creationComplete="onCreationComplete_grdWorkingHours(event)"
+		itemFocusIn="onItemFocusIn_grdWorkingHours(event)"
+		itemFocusOut="onItemFocusOut_grdWorkingHours(event)"
+		itemEditEnd="onItemEditEnd_grdWorkingHours(event)"
+		variableRowHeight="true"
+		editable="true"
+	    sortableColumns="false"
+	    wordWrap="true"
+		>
+	
+		<mx:columns>
+			<mx:DataGridColumn
+				editable="false"
+				width="80"
+				headerText="日　付"
+				textAlign="center">
+				<mx:itemRenderer>
+				<mx:Component>
+				<mx:Label width="100%" height="100%"
+				color="{data.backgroundColor}"
+				textAlign="center"
+				styleName="{data.styleName}"
+				toolTip="{data.holidayName}" 
+				text="{dateLabel(data.workingDate, data.holidayName)}">
+				<mx:Script>
+					<![CDATA[
+						import mx.formatters.DateFormatter;
+					/**
+					 * 日付フォーマット処理.
+					 *
+					 * @param data DataGridの選択されたデータ項目.
+					 * @param column DataGridの列オブジェクト.
+					 * @return フォーマット済みのデータ項目.
+					 */
+					protected function dateLabel(date:Date, holidayName:String):String
+					{
+						var df:DateFormatter = new DateFormatter();
+						df.formatString = "MM/DD (EEE)";
+						if (!date)	return "";
+						// フォーマット変換する.
+						var retStr:String = df.format(date);
+		
+//						if (holidayName != null) {
+//							retStr += "\r" + "(" + holidayName + ")";
+//						}
+				        return retStr;
+				    }
+					]]>
+				</mx:Script>
+				</mx:Label>
+				</mx:Component>
+				</mx:itemRenderer>
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="70"
+				headerText="時差時刻"
+				dataField="staggeredStartTime"
+				itemEditor="components.TimeComboBox"
+				editorDataField="timeValue"
+				labelFunction="{timeLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="70"
+				headerText="開始時刻"
+				dataField="startTime"
+				itemEditor="components.TimeComboBox"
+				itemRenderer="components.TimeItemRenderer"
+				editorDataField="timeValue"
+				labelFunction="{timeLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="70"
+				headerText="終了時刻"
+				dataField="quittingTime"
+				itemEditor="components.TimeComboBox"
+				itemRenderer="components.TimeItemRenderer"
+				editorDataField="timeValue"
+				labelFunction="{timeLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				editable="false"
+				width="70"
+				headerText="差引時間"
+				dataField="balanceHours"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="70"
+				headerText="私用時間"
+				dataField="privateHours"
+				itemRenderer="components.TimeItemRenderer"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				editable="false"
+				width="70"
+				headerText="勤務時間"
+				dataField="workingHours"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				editable="true"
+				width="70"
+				headerText="休憩時間"
+				dataField="recessHours"
+				itemRenderer="components.TimeItemRenderer"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				editable="false"
+				width="70"
+				headerText="実動時間"
+				dataField="realWorkingHours"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="50"
+				headerText="休日出勤"
+				dataField="holidayWorkType"
+				itemEditor="components.HolidayWorkTypeComboBox"
+				editorDataField="holidayWorkType"
+				labelFunction="{holidayWorkTypeLabel}"
+				textAlign="center">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				editable="false"
+				width="50"
+				headerText="深夜勤務"
+				dataField="nightWorkFlg"
+				itemEditor="mx.controls.CheckBox"
+				editorDataField="selected"
+				labelFunction="{flagLabel}"
+				textAlign="center">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="70"
+				headerText="勤休内容"
+				dataField="absenceCode"
+				itemEditor="components.AbsenceCodeComboBox"
+				editorDataField="absenceCode"
+				labelFunction="{absenceCodeLabel}"
+				textAlign="center">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+	
+			<mx:DataGridColumn
+				editable="false"
+				width="50"
+				headerText="控除数"
+				dataField="deductionCount"
+				labelFunction="{hoursLabel}"
+				textAlign="right">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn
+				width="100"
+				headerText="備考"
+				dataField="note"
+				textAlign="left">
+				<mx:headerRenderer>
+				<mx:Component>
+				<mx:Label textAlign="center"/>
+				</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+		</mx:DataGrid>
+
+		<mx:HDividedBox width="100%" height="120">
+			<mx:VBox width="550" height="100%">
+				<mx:Spacer height="100%"/>
+				<mx:Grid id="grdWorkingHoursTotal" width="100%" horizontalGap="0" verticalGap="0">
+					<mx:GridRow width="100%">
+						<mx:GridItem rowSpan="2" verticalAlign="middle" backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="合計"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="差引時間"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="私用時間"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="勤務時間"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="休憩時間"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="実働時間"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="控除数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="欠勤日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="無断欠勤日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="深夜"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="balanceHoursTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="privateHoursTotal" text=" "/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="workingHoursTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="recessHoursTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="realWorkingHoursTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="deductionCountTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="absenceCountTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="absenceWithoutLeaveCountTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="nightWorkCountTotal"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+		
+				<mx:HBox width="100%">
+				<mx:Grid id="grdHoliday" horizontalGap="0" verticalGap="0">
+					<mx:GridRow width="100%">
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text=""/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="繰越日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="消滅日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="今月発生日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="今月使用日数"/>
+						</mx:GridItem>
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="今月残日数"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="有給"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="lastPaidVacationTotal" text=" "/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="lostPaidVacationTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="givenPaidVacationTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="takenPaidVacationTotal"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="currentPaidVacationTotal"/>
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow width="100%">
+						<mx:GridItem backgroundColor="#D9E0E5" borderStyle="solid">
+						<mx:Text text="代休"/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="lastCompensatoryDayOffTotal" text=" "/>
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="lostCompensatoryDayOffTotal" />
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="givenCompensatoryDayOffTotal" />
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="takenCompensatoryDayOffTotal" />
+						</mx:GridItem>
+						<mx:GridItem borderStyle="solid" horizontalAlign="right">
+						<mx:Text id="currentCompensatoryDayOffTotal"/>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+				</mx:HBox>
+			</mx:VBox>
+			<!-- 勤務管理表手続き履歴一覧 -->
+			<mx:VBox width="40%" height="100%">
+				<mx:HBox>
+					<mx:Label text="手続きの履歴"  styleName="LargeText"/>
+				</mx:HBox>
+				
+				<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+				id="grdWorkingHoursHistory"
+				editable="false"
+				allowMultipleSelection="false"
+				sortableColumns="false"
+				verticalScrollPolicy="on"
+				rowHeight="24"
+				variableRowHeight="true"
+				wordWrap="true"
+				>
+			
+				<mx:columns>
+					<mx:DataGridColumn
+						editable="false"
+						width="150"
+						headerText="日時"
+						dataField="registrationTime"
+						labelFunction="{dateTimeLabel}"
+						textAlign="left">
+						<mx:headerRenderer>
+						<mx:Component>
+						<mx:Label textAlign="center"/>
+						</mx:Component>
+						</mx:headerRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn
+						width="250"
+						headerText="内容"
+						dataField="comment"
+						labelFunction="{commentLabel}"
+						textAlign="left">
+						<mx:headerRenderer>
+						<mx:Component>
+						<mx:Label textAlign="center"/>
+						</mx:Component>
+						</mx:headerRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:HDividedBox>
+	</mx:VDividedBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="workingHoursService" showBusyCursor="true">
+		<mx:method name="getWorkingHoursMonthly"
+			result="onResult_getWorkingHoursMonthly(event)"
+			fault="onFault_remoteObject(event)"
+		/>
+		<mx:method name="getAbsenceCodeList"
+			result="onResult_getAbsenceCodeList(event)"
+			fault="onFault_remoteObject(event)"
+		/>
+		<mx:method name="getHolidayWorkTypeList"
+			result="onResult_getHolidayWorkTypeList(event)"
+			fault="onFault_remoteObject(event)"
+		/>
+		<mx:method name="updateWorkingHoursMonthly"
+			result="onResult_updateWorkingHoursMonthly(event)"
+			fault="onFault_updateWorkingHoursMonthly(event)"
+		/>
+		<mx:method name="insertWorkingHoursMonthly"
+			result="onResult_insertWorkingHoursMonthly(event)"
+			fault="onFault_insertWorkingHoursMonthly(event)"
+		/>
+		<mx:method name="insertWorkingHoursHistory"
+			result="onResult_updateWorkingHoursMonthly(event)"
+			fault="onFault_insertWorkingHoursMonthly(event)"
+		/>
+		<mx:method name="submitWorkingHours"
+			result="onResult_submitWorkingHours(event)"
+			fault="onFault_submitWorkingHours(event)"
+		/>
+		<mx:method name="submitCancelWorkingHours"
+			result="onResult_submitCancelWorkingHours(event)"
+			fault="onFault_submitCancelWorkingHours(event)"
+		/>
+		<mx:method name="approvalWorkingHours"
+			result="onResult_approvalWorkingHours(event)"
+			fault="onFault_approvalWorkingHours(event)"
+		/>
+		<mx:method name="approvalCancelWorkingHours"
+			result="onResult_approvalCancelWorkingHours(event)"
+			fault="onFault_approvalCancelWorkingHours(event)"
+		/>
+		<mx:method name="approvalRejectWorkingHours"
+			result="onResult_approvalRejectWorkingHours(event)"
+			fault="onFault_approvalRejectWorkingHours(event)"
+		/>
+	</mx:RemoteObject>
+	
+	<mx:Script>
+		<![CDATA[
+			import subApplications.system.dto.StaffSettingDto;
+			import mx.controls.CheckBox;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.dataGridClasses.DataGridItemRenderer;
+			import enum.WorkingHoursActionId;
+			import subApplications.generalAffair.web.WorkingHoursEntryWithdraw;
+			import subApplications.generalAffair.logic.WorkingHoursEntryWithdrawLogic;
+			import enum.ProjectPositionId;
+			import enum.WorkingHoursStatusId;
+			import subApplications.generalAffair.dto.MWorkingHoursStatusDto;
+			import mx.utils.StringUtil;
+			import subApplications.generalAffair.dto.WorkingHoursHistoryDto;
+			import dto.StaffDto;
+			import mx.core.Application;
+			import subApplications.generalAffair.dto.WorkingHoursMonthlyDto;
+			import subApplications.generalAffair.web.WorkingHoursEntry;
+			import mx.controls.ComboBox;
+			import subApplications.generalAffair.dto.WorkingHoursDailyDto;
+			import mx.controls.TextInput;
+			import mx.events.DataGridEvent;
+			import mx.events.CollectionEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.events.FlexEvent;
+			import mx.formatters.NumberFormatter;
+			import mx.formatters.DateFormatter;
+			import mx.collections.ArrayCollection;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+		    
+
+			/** デフォルト行の背景色リスト */
+			private var _defaultColors:Array;
+			/** 入力エラー行の背景色 */
+			private const _WORKING_HOURS_ERROR:Number = 0xffe6e6;
+			/** エラー件数 */
+			private var _errorCount:Array = new Array(31);
+			
+			/** 編集前値 */
+			private var _oldValue:String;
+			
+
+			
+			private var _staffId:int;
+			private var _workingMonthCode:String;
+			
+			// 編集可否
+			private var _editable:Boolean = false;
+			// 勤務時間(月別)
+			private var _workingHoursMonthly:WorkingHoursMonthlyDto;
+			
+			// 勤休コード一覧
+			private var _absenceCodeList:ArrayCollection;
+
+			// 休日出勤タイプ一覧
+			private var _holidayWorkTypeList:ArrayCollection;
+
+			// 休日一覧
+			private var _holidayList:ArrayCollection;
+			
+			// 時差勤務開始時刻選択肢
+			private var _staggeredStartTimeChoices:ArrayCollection;
+			// 開始時刻選択肢
+			private var _startTimeChoices:ArrayCollection;
+			// 終了時刻選択肢
+			private var _quittingTimeChoices:ArrayCollection;
+
+			// RPCエラー受信イベント
+			private var _faultEvent:FaultEvent;
+		    /**
+		     * RPCエラーを取得します
+		     */     
+		    public function get faultEvent():FaultEvent
+		    {
+		        return _faultEvent;
+		    }
+			
+			/**
+			 * 編集可否プロパティ setter.
+			 *
+			 * @param value Boolean	編集可否
+			 */
+			public function set editable(value:Boolean):void
+			{
+				_editable = value;
+				if (grdWorkingHours != null) {
+					grdWorkingHours.editable = _editable;
+				}
+			}
+	
+			/**
+			 * 登録可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @return value Boolean	登録可否
+			 */
+			public function enabledEntry(registrant:StaffDto):Boolean
+			{
+				
+				// 手続き履歴が存在しない場合
+				if (_workingHoursMonthly.workingHoursHistories == null
+					|| _workingHoursMonthly.workingHoursHistories.length == 0) {
+						
+					// 来月以降であれば登録不可
+					var baseDate:Date = new Date();
+					baseDate.month = baseDate.month + 1;
+					baseDate.date = 1;
+					var year:int = parseInt(_workingHoursMonthly.workingMonthCode.substring(0, 4));
+					var month:int = parseInt(_workingHoursMonthly.workingMonthCode.substring(4, 6));
+					var targetDate:Date = new Date(year,month,1,0,0,0,0);
+					if(targetDate > baseDate) return false;
+					return true;
+				}
+
+				// 作成状態ならば登録可能
+				if (_workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId
+					== WorkingHoursStatusId.ENTERED) {
+					return true;
+				}
+
+				// 差し戻し状態ならば登録可能
+				if (_workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId
+					== WorkingHoursStatusId.REJECTED) {
+					return true;
+				}
+
+				return false;
+			}
+	
+			/**
+			 * 提出可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @return value Boolean	提出可否
+			 */
+			public function enabledSubmit(registrant:StaffDto):Boolean
+			{
+				if (!_workingHoursMonthly) return false;
+				// 入力エラーがある場合は提出不可能
+				for each (var err:int in _errorCount) {
+					if (err != 0) return false;
+				}
+				
+				
+				// 手続き履歴が存在しないならば提出不可能
+				if (_workingHoursMonthly.workingHoursHistories == null
+					|| _workingHoursMonthly.workingHoursHistories.length == 0) {
+					return false;
+				}
+
+				// 作成状態ならば提出可能
+				if (_workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId
+					== WorkingHoursStatusId.ENTERED) {
+					return true;
+				}
+
+				// 差し戻し状態ならば提出可能
+				if (_workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId
+					== WorkingHoursStatusId.REJECTED) {
+					return true;
+				}
+
+				return false;
+			}
+	
+			/**
+			 * 提出取り下げ可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @return value Boolean	提出取り下げ可否
+			 */
+			public function enabledSubmitCancel(registrant:StaffDto):Boolean
+			{
+				if (!_workingHoursMonthly) return false;
+				// 手続き履歴が存在しないならば提出不可能
+				if (_workingHoursMonthly.workingHoursHistories == null
+					|| _workingHoursMonthly.workingHoursHistories.length == 0) {
+					return false;
+				}
+
+				// 提出済状態ならば提出取り下げ可能
+				if (_workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId
+					== WorkingHoursStatusId.SUBMITTED) {
+					return true;
+				}
+
+				return false;
+			}
+	
+			/**
+			 * 承認可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @param projectPositionId	SL以下のプロジェクト役職
+			 * @return value Boolean	承認可否
+			 */
+			public function enabledApproval(registrant:StaffDto, projectPositionId:int):Boolean
+			{
+				if (!_workingHoursMonthly || !_workingHoursMonthly.workingHoursHistories) return false;
+				
+				var workingHoursStatusId:int
+					= _workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId;
+
+				// 総務部長ならば
+				if (registrant.isDepartmentHeadGA()) {
+					// 提出済みまたはTN/SL/PL/PM承認済みならば承認可能
+					if (workingHoursStatusId == WorkingHoursStatusId.SUBMITTED
+						|| workingHoursStatusId == WorkingHoursStatusId.TN_APPROVED
+						|| workingHoursStatusId == WorkingHoursStatusId.SL_APPROVED
+						|| workingHoursStatusId == WorkingHoursStatusId.PL_APPROVED
+						|| workingHoursStatusId == WorkingHoursStatusId.PM_APPROVED) {
+						return true;
+					}
+				} else {
+					if (!projectPositionId) {
+						// PMならば
+						if (registrant.isProjectPositionPM()) {
+							projectPositionId = ProjectPositionId.PM;
+						}
+					}
+					
+					switch (projectPositionId) {
+						case ProjectPositionId.PM:	// PM
+							// PL承認済みらば承認可能
+							if (workingHoursStatusId == WorkingHoursStatusId.PL_APPROVED) {
+								return true;
+							}
+						case ProjectPositionId.PL:	// PL
+							// SL承認済みらば承認可能
+							if (workingHoursStatusId == WorkingHoursStatusId.SL_APPROVED) {
+								return true;
+							}
+						case ProjectPositionId.SL:	// SL
+							// TN承認済みらば承認可能
+							if (workingHoursStatusId == WorkingHoursStatusId.TN_APPROVED) {
+								return true;
+							}
+						case ProjectPositionId.TN:	// TN
+							// 提出済みならば承認可能
+							if (workingHoursStatusId == WorkingHoursStatusId.SUBMITTED) {
+								return true;
+							}
+							break;
+					}
+				}
+				return false;
+			}
+	
+			/**
+			 * 承認取り消し可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @param projectPositionId	SL以下のプロジェクト役職
+			 * @return value Boolean	承認取り消し可否
+			 */
+			public function enabledApprovalCancel(registrant:StaffDto, projectPositionId:int):Boolean
+			{
+				if (!_workingHoursMonthly || !_workingHoursMonthly.workingHoursHistories) return false;
+				var workingHoursStatusId:int
+					= _workingHoursMonthly.workingHoursHistories.getItemAt(0).workingHoursStatusId;
+
+				// 総務部長ならば
+				if (registrant.isDepartmentHeadGA()) {
+					// 総務承認済みならば承認取り消し可能
+					if (workingHoursStatusId == WorkingHoursStatusId.GA_APPROVED) {
+						return true;
+					}
+				} else {
+				
+					if (!projectPositionId) {
+						// PMならば
+						if (registrant.isProjectPositionPM()) {
+							projectPositionId = ProjectPositionId.PM;
+						}
+					}
+					
+					switch (projectPositionId) {
+						case ProjectPositionId.PM:	// PM
+							// PM承認済みならば承認取り消し可能
+							if (workingHoursStatusId == WorkingHoursStatusId.PM_APPROVED) {
+								return true;
+							}
+							break;
+						case ProjectPositionId.PL:	// PL
+							// PL承認済みならば承認取り消し可能
+							if (workingHoursStatusId == WorkingHoursStatusId.PL_APPROVED) {
+								return true;
+							}
+							break;
+						case ProjectPositionId.SL:	// SL
+							// SL承認済みならば承認取り消し可能
+							if (workingHoursStatusId == WorkingHoursStatusId.SL_APPROVED) {
+								return true;
+							}
+							break;
+						case ProjectPositionId.TN:	// TN
+							// YN承認済みならば承認取り消し可能
+							if (workingHoursStatusId == WorkingHoursStatusId.TN_APPROVED) {
+								return true;
+							}
+							break;
+					}
+				}
+				return false;
+			}
+	
+			/**
+			 * 却下(差し戻し)可否判定.
+			 *
+			 * @param registrant 		登録者情報
+			 * @param projectPositionId	SL以下のプロジェクト役職
+			 * @return value Boolean	却下(差し戻し)可否
+			 */
+			public function enabledApprovalReject(registrant:StaffDto, projectPositionId:int):Boolean
+			{
+				// 承認可否判定と同じ
+				return enabledApproval(registrant, projectPositionId);
+			}
+	
+			/**
+			 * 勤務時間データのクリア.
+			 *
+			 */
+			public function clear():void
+			{
+				grdWorkingHours.dataProvider = null;
+				grdWorkingHoursHistory.dataProvider = null;
+				
+				balanceHoursTotal.text = "　";
+				privateHoursTotal.text = "　";
+				workingHoursTotal.text = "";
+				recessHoursTotal.text = "";
+				realWorkingHoursTotal.text = "";
+				deductionCountTotal.text = "";
+				absenceCountTotal.text = "";
+				absenceWithoutLeaveCountTotal.text = "";
+				nightWorkCountTotal.text = "";
+				
+				lastPaidVacationTotal.text = "　";
+				givenPaidVacationTotal.text = "";
+				lostPaidVacationTotal.text = "";
+				takenPaidVacationTotal.text = "";
+				currentPaidVacationTotal.text = "";
+				
+				lastCompensatoryDayOffTotal.text = "　";
+				givenCompensatoryDayOffTotal.text = "";
+				lostCompensatoryDayOffTotal.text = "";
+				takenCompensatoryDayOffTotal.text = "";
+				currentCompensatoryDayOffTotal.text = "";
+				
+				// 背景色の初期化
+//				if(!_defaultColors){
+//					// 初期値のカラーパターンを記憶
+//					_defaultColors = grdWorkingHours.getStyle("alternatingItemColors");
+//				}
+//				var colors:Array = new Array();
+//				colors.push(_defaultColors[0]);
+//				colors.push(_defaultColors[1]);
+//				grdWorkingHours.setStyle("alternatingItemColors", colors);
+
+			}
+
+			/**
+			 * 勤務時間データの読み込み.
+			 *
+			 * @param staffId 			社員ID
+			 * @param workingMonthCode	勤務月コード
+			 */
+			public function load(staffId:int, workingMonthCode:String):void
+			{
+				_staffId = staffId;
+				_workingMonthCode = workingMonthCode;
+				if (grdWorkingHours != null) {
+					// 勤務時間詳細データの取得
+					srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+				}
+			}
+	
+			/**
+			 * 勤務管理表の保存.
+			 *
+			 */
+			public function save(registrant:StaffDto):void
+			{
+				if (grdWorkingHours != null) {
+					// 登録者のセット
+					_workingHoursMonthly.registrantId = registrant.staffId;
+					// 勤務時間データの更新
+					srv.getOperation("updateWorkingHoursMonthly").send(_workingHoursMonthly);
+				}
+			}
+	
+	
+			/**
+			 * 勤務管理表の提出.
+			 *
+			 */
+			public function submit(registrant:StaffDto, comment:String):void
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = getWorkHoursHistoryBase(registrant);
+				// 勤務管理表手続き状態IDに「提出」をセット
+				whhDto.workingHoursStatusId = WorkingHoursStatusId.SUBMITTED;
+				whhDto.workingHoursActionId = WorkingHoursActionId.SUBMIT;
+				// 勤務時間データの更新
+				srv.getOperation("submitWorkingHours").send(registrant, _workingHoursMonthly, whhDto);
+			}
+	
+			/**
+			 * 勤務管理表手続き履歴の基本データ作成.
+			 *
+			 */
+			protected function getWorkHoursHistoryBase(registrant:StaffDto):WorkingHoursHistoryDto
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = new WorkingHoursHistoryDto();
+				// 社員IDのセット
+				whhDto.staffId = _workingHoursMonthly.staffId;
+				// 勤務月のセット
+				whhDto.workingMonthCode = _workingHoursMonthly.workingMonthCode;
+				// 登録者IDのセット
+				whhDto.registrantId = registrant.staffId;
+				// 登録者氏名のセット
+				whhDto.registrantName = registrant.staffName.fullName;
+				// 更新回数のセット
+				whhDto.updateCount =
+					_workingHoursMonthly.workingHoursHistories != null
+						&& _workingHoursMonthly.workingHoursHistories.length > 0 ?
+							_workingHoursMonthly.workingHoursHistories.getItemAt(0).updateCount + 1 : 1;
+
+				return whhDto;				
+			}
+			
+			/**
+			 * 勤務管理表の提出取り消し.
+			 *
+			 */
+			public function submitCancel(registrant:StaffDto, comment:String):void
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = getWorkHoursHistoryBase(registrant);
+				// 勤務管理表手続き状態IDに「作成」をセット
+				whhDto.workingHoursStatusId = WorkingHoursStatusId.ENTERED;
+				whhDto.workingHoursActionId = WorkingHoursActionId.SUBMIT_CANCEL;
+				// コメントのセット
+				whhDto.comment = comment;
+				
+				// 勤務時間データの更新
+				srv.getOperation("submitCancelWorkingHours").send(registrant, _workingHoursMonthly, whhDto);
+			}
+	
+			/**
+			 * 勤務管理表の承認.
+			 *
+			 */
+			public function approval(registrant:StaffDto, projectPositionId:int, comment:String):void
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = getWorkHoursHistoryBase(registrant);
+
+				// 総務部長ならば
+				if (registrant.isDepartmentHeadGA()) {
+					// 勤務管理表手続き状態IDに「総務承認」をセット
+					whhDto.workingHoursStatusId = WorkingHoursStatusId.GA_APPROVED;
+					whhDto.workingHoursActionId = WorkingHoursActionId.GA_APPROVAL;
+				} else {
+					if (!projectPositionId) {
+						// PMならば
+						if (registrant.isProjectPositionPM()) {
+							projectPositionId = ProjectPositionId.PM;
+						}
+					}
+					switch (projectPositionId) {
+						case ProjectPositionId.PM:	// PM
+							// 勤務管理表手続き状態IDに「PM承認」をセット
+							whhDto.workingHoursStatusId = WorkingHoursStatusId.PM_APPROVED;
+							whhDto.workingHoursActionId = WorkingHoursActionId.PM_APPROVAL;
+							break;
+						case ProjectPositionId.PL:	// PL
+							// 勤務管理表手続き状態IDに「PL承認」をセット
+							whhDto.workingHoursStatusId = WorkingHoursStatusId.PL_APPROVED;
+							whhDto.workingHoursActionId = WorkingHoursActionId.PL_APPROVAL;
+							break;
+						case ProjectPositionId.SL:	// SL
+							// 勤務管理表手続き状態IDに「PL承認」をセット
+							whhDto.workingHoursStatusId = WorkingHoursStatusId.SL_APPROVED;
+							whhDto.workingHoursActionId = WorkingHoursActionId.SL_APPROVAL;
+							break;
+						case ProjectPositionId.TN:	// TN
+							// 勤務管理表手続き状態IDに「PL承認」をセット
+							whhDto.workingHoursStatusId = WorkingHoursStatusId.TN_APPROVED;
+							whhDto.workingHoursActionId = WorkingHoursActionId.TN_APPROVAL;
+							break;
+					}
+					
+				}
+				// 勤務時間データの更新
+				srv.getOperation("approvalWorkingHours").send(registrant, _workingHoursMonthly, whhDto);
+			}
+	
+			/**
+			 * 勤務管理表の承認取り消し.
+			 *
+			 */
+			public function approvalCancel(registrant:StaffDto, projectPositionId:int, comment:String):void
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = getWorkHoursHistoryBase(registrant);
+
+				var approvalActionId:int;
+				// 総務部長ならば
+				if (registrant.isDepartmentHeadGA()) {
+					whhDto.workingHoursActionId = WorkingHoursActionId.GA_APPROVAL_CANCEL;
+					approvalActionId = WorkingHoursActionId.GA_APPROVAL;
+				} else {
+					if (!projectPositionId) {
+						// PMならば
+						if (registrant.isProjectPositionPM()) {
+							projectPositionId = ProjectPositionId.PM;
+						}
+					}
+					switch (projectPositionId) {
+						case ProjectPositionId.PM:	// PM
+							whhDto.workingHoursActionId = WorkingHoursActionId.PM_APPROVAL_CANCEL;
+							approvalActionId = WorkingHoursActionId.PM_APPROVAL;
+							break;
+						case ProjectPositionId.PL:	// PL
+							whhDto.workingHoursActionId = WorkingHoursActionId.PL_APPROVAL_CANCEL;
+							approvalActionId = WorkingHoursActionId.PL_APPROVAL;
+							break;
+						case ProjectPositionId.SL:	// SL
+							whhDto.workingHoursActionId = WorkingHoursActionId.SL_APPROVAL_CANCEL;
+							approvalActionId = WorkingHoursActionId.SL_APPROVAL;
+							break;
+						case ProjectPositionId.TN:	// TN
+							whhDto.workingHoursActionId = WorkingHoursActionId.TN_APPROVAL_CANCEL;
+							approvalActionId = WorkingHoursActionId.TN_APPROVAL;
+							break;
+					}
+				}
+				var cancel:Boolean = false;
+				for each (var workingHoursHistory:WorkingHoursHistoryDto in _workingHoursMonthly.workingHoursHistories) {
+					if (workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.GA_APPROVED
+						|| workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.PM_APPROVED
+						|| workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.PL_APPROVED
+						|| workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.SL_APPROVED
+						|| workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.TN_APPROVED
+						|| workingHoursHistory.workingHoursStatusId == WorkingHoursStatusId.SUBMITTED) {
+						if (cancel) {
+							// 勤務管理表手続き状態IDに直前の状態をセット
+							whhDto.workingHoursStatusId = workingHoursHistory.workingHoursStatusId;
+							break;
+						} else {
+							if (workingHoursHistory.workingHoursActionId == approvalActionId) {
+								cancel = true;
+							}
+						}
+					}
+				}
+
+				// コメントのセット
+				whhDto.comment = comment;
+				// 勤務時間データの更新
+				srv.getOperation("approvalCancelWorkingHours").send(registrant, _workingHoursMonthly, whhDto);
+
+			}
+	
+			/**
+			 * 勤務管理表の差し戻し.
+			 *
+			 */
+			public function approvalReject(registrant:StaffDto, projectPositionId:int, comment:String):void
+			{
+				// 勤務管理表手続履歴の生成
+				var whhDto:WorkingHoursHistoryDto = getWorkHoursHistoryBase(registrant);
+
+				// 勤務管理表手続き状態IDに「差し戻し」をセット
+				whhDto.workingHoursStatusId = WorkingHoursStatusId.REJECTED;
+
+				// 総務部長ならば
+				if (registrant.isDepartmentHeadGA()) {
+					whhDto.workingHoursActionId = WorkingHoursActionId.GA_APPROVAL_REJECT;
+				} else {
+					if (!projectPositionId) {
+						// PMならば
+						if (registrant.isProjectPositionPM()) {
+							projectPositionId = ProjectPositionId.PM;
+						}
+					}
+					switch (projectPositionId) {
+						case ProjectPositionId.PM:	// PM
+							whhDto.workingHoursActionId = WorkingHoursActionId.PM_APPROVAL_REJECT;
+							break;
+						case ProjectPositionId.PL:	// PL
+							whhDto.workingHoursActionId = WorkingHoursActionId.PL_APPROVAL_REJECT;
+							break;
+						case ProjectPositionId.SL:	// SL
+							whhDto.workingHoursActionId = WorkingHoursActionId.SL_APPROVAL_REJECT;
+							break;
+						case ProjectPositionId.TN:	// TN
+							whhDto.workingHoursActionId = WorkingHoursActionId.TN_APPROVAL_REJECT;
+							break;
+					}
+				}
+				// コメントのセット
+				whhDto.comment = comment;
+				// 勤務時間データの更新
+				srv.getOperation("approvalRejectWorkingHours").send(registrant, _workingHoursMonthly, whhDto);
+			}
+	
+			/**
+			 * 勤務管理表データグリッド生成完了イベントハンドラ.
+			 *
+			 * @param e FlexEvent
+			 */
+		    protected function onCreationComplete_grdWorkingHours(e:FlexEvent):void
+			{
+				// 編集可否プロパティのセット
+				grdWorkingHours.editable = _editable;
+				// 勤休コードデータの取得
+		    	srv.getOperation("getAbsenceCodeList").send();
+		    	
+				// 休日出勤タイプデータの取得
+		    	srv.getOperation("getHolidayWorkTypeList").send();
+		    	
+				var staffSetting:StaffSettingDto = Application.application.indexLogic.loginStaff.staffSetting;
+				var timeArray:Array;
+
+				// 時差勤務開始時刻選択肢作成
+				if (staffSetting.staggeredStartTimeChoices != null) {
+					timeArray = staffSetting.staggeredStartTimeChoices.split(",");
+				} else {
+					timeArray = new Array();
+				}
+				_staggeredStartTimeChoices = new ArrayCollection(timeArray);
+				_staggeredStartTimeChoices.addItemAt("", 0);
+		    	
+				// 開始時刻選択肢作成
+				if (staffSetting.startTimeChoices != null) {
+					timeArray = staffSetting.startTimeChoices.split(",");
+				} else {
+					timeArray = new Array();
+				}
+				_startTimeChoices = new ArrayCollection(timeArray);
+				_startTimeChoices.addItemAt("", 0);
+		    	
+				// 終了時刻選択肢作成
+				if (staffSetting.quittingTimeChoices != null) {
+					timeArray = staffSetting.quittingTimeChoices.split(",");
+				} else {
+					timeArray = new Array();
+				}
+				_quittingTimeChoices = new ArrayCollection(timeArray);
+				_quittingTimeChoices.addItemAt("", 0);
+		    	
+		    }
+		    
+			/**
+			 * 勤務管理表データグリッドアイテムフォーカスインイベントハンドラ.
+			 *
+			 * @param e DataGridEvent
+			 */
+			protected function onItemFocusIn_grdWorkingHours(e:DataGridEvent):void
+			{
+				var dg:DataGrid = e.currentTarget as DataGrid;
+				var whDto:WorkingHoursDailyDto = dg.selectedItem as WorkingHoursDailyDto;
+				var staffSetting:StaffSettingDto = Application.application.indexLogic.loginStaff.staffSetting;
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "JJ:NN";
+				_oldValue = "";
+
+				// 時間コンボボックスならば
+				if (dg.itemEditorInstance && dg.itemEditorInstance is TimeComboBox) {
+					var col:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+					var editor:TimeComboBox = dg.itemEditorInstance as TimeComboBox;
+					var cell:Object = dg.selectedItem.hasOwnProperty(col.dataField) ? dg.selectedItem[col.dataField] : "";
+					// 変更前の値を記憶します
+					if (cell != null) _oldValue = df.format(cell).toString();
+
+					switch (col.dataField) {
+						case "staggeredStartTime":
+							editor.dataProvider = _staggeredStartTimeChoices;
+							if (cell) {
+								editor.text = df.format(cell);
+								editor.selectedItem = df.format(cell);
+							} else {
+								if (staffSetting.defaultStaggeredStartTime != null) {
+									editor.selectedItem = staffSetting.defaultStaggeredStartTime;
+								}
+							}
+							break;
+						// 開始時刻
+						case "startTime":
+							editor.dataProvider = _startTimeChoices;
+							if (cell) {
+								editor.text = df.format(cell);
+								editor.selectedItem = df.format(cell);
+							} else {
+								if (staffSetting.defaultStartTime != null) {
+									editor.selectedItem = staffSetting.defaultStartTime;
+								}
+							}
+							break;
+						// 終了時刻
+						case "quittingTime":
+							editor.dataProvider = _quittingTimeChoices;
+							if (cell) {
+								editor.text = df.format(cell);
+								editor.selectedItem = df.format(cell);
+							} else {
+								if (staffSetting.defaultQuittingTime != null) {
+									editor.selectedItem = staffSetting.defaultQuittingTime;
+								}
+							}
+							break;
+					}
+					
+				// 勤休内容コンボボックスならば
+				} else if (dg.itemEditorInstance && dg.itemEditorInstance is AbsenceCodeComboBox) {
+					var col2:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+					var editor2: AbsenceCodeComboBox= dg.itemEditorInstance as AbsenceCodeComboBox;
+					var cell2:Object = dg.selectedItem.hasOwnProperty(col2.dataField) ? dg.selectedItem[col2.dataField] : "";
+					if (cell2 != null) _oldValue = cell2.toString();
+					switch (col2.dataField) {
+						// 勤休内容
+						case "absenceCode":
+							editor2.dataProvider = _absenceCodeList;
+							editor2.labelField = "absenceName";
+							for each(var abs:Object in _absenceCodeList) {
+								if (cell2 == abs.absenceCode) {
+									editor2.selectedItem = abs;
+									break;
+								}
+							}
+							break;
+					}
+				// 休日出勤コンボボックスならば
+				} else if (dg.itemEditorInstance && dg.itemEditorInstance is HolidayWorkTypeComboBox) {
+					var col5:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+					var editor5: HolidayWorkTypeComboBox= dg.itemEditorInstance as HolidayWorkTypeComboBox;
+					var cell5:Object = dg.selectedItem.hasOwnProperty(col5.dataField) ? dg.selectedItem[col5.dataField] : "";
+					if (cell5 != null) _oldValue = cell5.toString();
+					switch (col5.dataField) {
+						// 休日出勤
+						case "holidayWorkType":
+							editor5.dataProvider = _holidayWorkTypeList;
+							editor5.labelField = "holidayWorkName";
+							for each(var hol:Object in _holidayWorkTypeList) {
+								if (cell5 == hol.holidayWorkType) {
+									editor5.selectedItem = hol;
+									break;
+								}
+							}
+							break;
+					}
+				// テキスト入力ならば
+				} else if (dg.itemEditorInstance && dg.itemEditorInstance is TextInput) {
+					var editor3 :TextInput = dg.itemEditorInstance as TextInput;
+					_oldValue = editor3.text;
+				// チェックボックス入力ならば
+				} else if  (dg.itemEditorInstance && dg.itemEditorInstance is CheckBox) {
+					var editor4 :CheckBox = dg.itemEditorInstance as CheckBox;
+					_oldValue = editor4.selected.toString();
+				}
+				
+			}
+	
+			/**
+			 * 勤務管理表データグリッドアイテムフォーカスアウトイベントハンドラ.
+			 *
+			 * @param e DataGridEvent
+			 */
+			protected function onItemFocusOut_grdWorkingHours(e:DataGridEvent):void
+			{
+				var dg:DataGrid = e.currentTarget as DataGrid;
+				var whDto:WorkingHoursDailyDto = dg.selectedItem as WorkingHoursDailyDto;
+
+				var col:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+				var cell:Object = dg.selectedItem.hasOwnProperty(col.dataField) ? dg.selectedItem[col.dataField] : "";
+				var newValue:String = "";
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "JJ:NN";
+				
+				//  時刻コンボボックスならば
+				if (dg.itemEditorInstance && dg.itemEditorInstance is TimeComboBox) {
+					
+					if (cell != null) newValue = df.format(cell).toString();
+
+				// 勤休内容コンボボックスならば
+				} else if (dg.itemEditorInstance && dg.itemEditorInstance is AbsenceCodeComboBox) {
+					if (cell != null) newValue = cell.toString();
+					
+				// テキスト入力ならば
+				} else if (dg.itemEditorInstance && dg.itemEditorInstance is TextInput) {
+					var editor3 :TextInput = dg.itemEditorInstance as TextInput;
+					newValue = editor3.text;
+				
+				// チェックボックス入力ならば
+				} else if  (dg.itemEditorInstance && dg.itemEditorInstance is CheckBox) {
+					var editor4 :CheckBox = dg.itemEditorInstance as CheckBox;
+					newValue = editor4.selected.toString();
+				}
+				
+				// データ変更なしならばこのまま抜ける
+				if(newValue ==_oldValue) return;
+				
+				// 当日勤務時間等計算
+				whDto.calculateDailyTotal();
+				// 月間集計
+				_workingHoursMonthly.calculateMonthlyTotal();
+				// 合計値設定
+				setTotalValue();
+				// 再描画のためのおまじない
+				grdWorkingHours.selectedIndices = grdWorkingHours.selectedIndices;
+
+				// TODO:当該行のみ色替えするメソッドを切り出すべき
+				if (true) {
+					// 現在のカラーパターンを記憶
+//					var colors:Array = grdWorkingHours.getStyle("alternatingItemColors");
+//					grdWorkingHours.setStyle("alternatingItemColors", colors);
+					// 更新できるかどうか確認する.
+					if (whDto.checkSubmit()) {
+						_errorCount[e.rowIndex] = 0;
+//						colors[e.rowIndex] = _defaultColors[e.rowIndex % 2];
+					}
+					else {
+//						colors[e.rowIndex] = _WORKING_HOURS_ERROR;
+						_errorCount[e.rowIndex] = 1;
+					}
+					
+				} else {
+					setColorPattern(grdWorkingHours.dataProvider as ArrayCollection);
+				}
+
+				// イベントを通知する.
+				dispatchEvent(new Event("changeInputData"));
+			}
+			
+			
+			
+	
+			/**
+			 * 勤務管理表データグリッドアイテム編集完了イベントハンドラ.
+			 *
+			 * @param e FlexEvent
+			 */
+		    protected function onItemEditEnd_grdWorkingHours(e:DataGridEvent):void
+			{
+				var dg:DataGrid = e.currentTarget as DataGrid;
+				var whDto:WorkingHoursDailyDto = dg.selectedItem as WorkingHoursDailyDto;
+
+				// 編集中カラムの取得
+				var col:DataGridColumn = e.currentTarget.columns[e.columnIndex];
+				// 時間コンボボックスならば
+				if (dg.itemEditorInstance && dg.itemEditorInstance is TimeComboBox) {
+					
+					// 編集中アイテムエディタの取得
+					var editor:TimeComboBox = dg.itemEditorInstance as TimeComboBox;
+
+					// 入力値が不正ならば初期化する。
+					if (!editor.isValidDate())
+					{
+						editor.selectedIndex = 0;
+						return;
+					}
+
+				// テキストインプットならば
+				} else if(dg.itemEditorInstance && dg.itemEditorInstance is TextInput) {
+					// 私用時間または休憩時間が編集されたならば
+					if (e.dataField == "privateHours" || e.dataField == "recessHours")
+					{
+						// 編集中アイテムエディタの取得
+						var editorText:TextInput = dg.itemEditorInstance as TextInput;
+						
+						// フォーマットする.
+						var nf:NumberFormatter = new NumberFormatter();
+						nf.precision = 2;
+						nf.thousandsSeparatorTo = "";
+						// データを取得する.
+						var hours:Number = Number(editorText.text);
+						var balanceHours:Number = 0;
+						var workingHours:Number = 0;
+						var minRecessHours:Number = 0;
+						
+						// 休憩時間が編集されたならば
+						if (e.dataField == "recessHours"){
+				    		// 開始時刻、終了時刻が入力済みならば
+				    		if (whDto.startTime && whDto.quittingTime) {
+				    			// 差引時間の計算
+				        		balanceHours = (whDto.quittingTime.getTime() - whDto.startTime.getTime())
+					    			/ (60 * 60 * 1000);
+					    		// 私用時間が入力済みならば
+				        		if (whDto.privateHours) {
+				        			// 勤務時間の計算
+				        			workingHours = whDto.balanceHours - whDto.privateHours;
+				        		} else {
+				        			workingHours = whDto.balanceHours;
+				        		}
+				        		
+								// ログイン時に取得した休憩時間の既定値を利用
+								var recessHoursList:ArrayCollection = Application.application.indexLogic.recessHoursList;
+				       			// 休憩時間の計算
+				        		for each(var recessHours:Object in recessHoursList) {
+				        			// 勤務時間が範囲内ならば最低休憩時間を取得する.
+				        			if (recessHours.fromHours <= workingHours
+				        				&& workingHours < recessHours.toHours) {
+				        					minRecessHours = recessHours.recessHours;
+				        				break;
+				        			}
+				        		}
+				    		}
+						}
+
+						// 数値でないまたはマイナス値ならば初期化する.
+						if (isNaN(hours) || hours < 0){
+							editorText.text = e.dataField == "privateHours"? "": minRecessHours.toString();
+							return;
+						}
+						// 24時間を超えるデータの場合は無効.
+						if (hours > 24) {
+							editorText.text = e.dataField == "privateHours"? "": minRecessHours.toString();
+							return;
+						}
+					}
+				}
+		    }
+
+		    /**
+		     * getWorkingHoursMonthly処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_getWorkingHoursMonthly(e:ResultEvent):void
+	        {
+	        	_workingHoursMonthly = e.result as WorkingHoursMonthlyDto;
+	        	for each(var whd:WorkingHoursDailyDto in _workingHoursMonthly.workingHoursDailies) {
+	        		if (whd.holidayName != null) {
+	        			whd.styleName = "DateHoliday";
+	        		} else {
+	        			switch(whd.workingDate.day) {
+	        				case 0:
+			        			whd.styleName = "DateSunday";
+	        					break;
+	        				case 1:
+	        				case 2:
+	        				case 3:
+	        				case 4:
+	        				case 5:
+			        			whd.styleName = "DateWeekday";
+	        					break;
+	        				case 6:
+			        			whd.styleName = "DateSaturday";
+	        					break;
+	        			}
+	        		}
+	        	}
+	        	grdWorkingHours.dataProvider = _workingHoursMonthly.workingHoursDailies as ArrayCollection;
+	        	grdWorkingHoursHistory.dataProvider = _workingHoursMonthly.workingHoursHistories  as ArrayCollection;
+
+				// 背景色の設定	        	
+				setColorPattern( grdWorkingHours.dataProvider as ArrayCollection);
+ 
+ 				// 合計計算
+ 				_workingHoursMonthly.calculateMonthlyTotal();
+	        	// 合計値設定
+	        	setTotalValue();
+
+   				// イベントを通知する.
+				dispatchEvent(new Event("loadComplete"));
+
+			}
+			
+		    /**
+		     * getAbsenceCodeList処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_getAbsenceCodeList(e:ResultEvent):void
+	        {
+	        	_absenceCodeList = e.result as ArrayCollection;
+			}
+			
+		    /**
+		     * getHolidayWorkTypeList処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_getHolidayWorkTypeList(e:ResultEvent):void
+	        {
+	        	_holidayWorkTypeList = e.result as ArrayCollection;
+			}
+			
+		    /**
+		     * insertWorkingHoursMonthly処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        public function onResult_insertWorkingHoursMonthly(e:ResultEvent):void
+	        {
+	        	// 勤務時間詳細データの取得
+	        	srv.getOperation("insertWorkingHoursHistory").send(_workingHoursMonthly, null);
+			}
+			
+		    /**
+		     * updateWorkingHoursMonthly処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        public function onResult_updateWorkingHoursMonthly(e:ResultEvent):void
+	        {
+	        	// 勤務時間詳細データの取得
+	        	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+			}
+			
+		    /**
+		     * submitWorkingHours処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_submitWorkingHours(e:ResultEvent):void
+	        {
+				// 勤務時間詳細データの取得
+		    	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+	        	var ret:Boolean = e.result as Boolean;
+	        	// イベントを通知する.
+	        	if (ret){
+	        		dispatchEvent(new Event("completeSubmit"));
+	        	} else {
+	        		dispatchEvent(new Event("optimisticLockSubmit"));
+	        	}
+	        	
+			}
+			
+		    /**
+		     * submitCancelWorkingHours処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_submitCancelWorkingHours(e:ResultEvent):void
+	        {
+				// 勤務時間詳細データの取得
+		    	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+	        	var ret:Boolean = e.result as Boolean;
+	        	// イベントを通知する.
+	        	if (ret){
+	        		dispatchEvent(new Event("completeSubmitCancel"));
+	        	} else {
+	        		dispatchEvent(new Event("optimisticLockSubmitCancel"));
+	        	}
+			}
+			
+		    /**
+		     * approvalWorkingHours処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_approvalWorkingHours(e:ResultEvent):void
+	        {
+				// 勤務時間詳細データの取得
+		    	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+	        	var ret:Boolean = e.result as Boolean;
+	        	// イベントを通知する.
+	        	if (ret){
+	        		dispatchEvent(new Event("completeApproval"));
+	        	} else {
+	        		dispatchEvent(new Event("optimisticLockApproval"));
+	        	}
+			}
+			
+		    /**
+		     * approvalCancelWorkingHours処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_approvalCancelWorkingHours(e:ResultEvent):void
+	        {
+				// 勤務時間詳細データの取得
+		    	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+	        	var ret:Boolean = e.result as Boolean;
+	        	// イベントを通知する.
+	        	if (ret){
+	        		dispatchEvent(new Event("completeApprovalCancel"));
+	        	} else {
+	        		dispatchEvent(new Event("optimisticLockApprovalCancel"));
+	        	}
+			}
+			
+		    /**
+		     * approvalRejectWorkingHours処理の結果イベント
+		     * 
+		     * @param e ResultEvent
+		     */
+	        protected function onResult_approvalRejectWorkingHours(e:ResultEvent):void
+	        {
+				// 勤務時間詳細データの取得
+		    	srv.getOperation("getWorkingHoursMonthly").send(_staffId, _workingMonthCode);
+		    	var ret:Boolean = e.result as Boolean;
+	        	// イベントを通知する.
+	        	if (ret){
+	        		dispatchEvent(new Event("completeApprovalReject"));
+	        	} else {
+	        		dispatchEvent(new Event("optimisticLockApprovalReject"));
+	        	}
+			}
+			
+		    /**
+		     * updateWorkingHoursMonthly処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_updateWorkingHoursMonthly(e:FaultEvent):void
+	        {
+				// TODO:tomcat起動後最初の1回目に何故かエラーとなるのでとりあえずリカバリ処理
+				srv.getOperation("insertWorkingHoursMonthly").send(_workingHoursMonthly);
+			}
+			
+		    /**
+		     * insertWorkingHoursMonthly処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_insertWorkingHoursMonthly(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+ 	        	dispatchEvent(new Event("faultUpdate"));
+			}
+			
+		    /**
+		     * submitWorkingHours処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_submitWorkingHours(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+ 	        	dispatchEvent(new Event("faultSubmit"));
+			}
+			
+		    /**
+		     * submitCancelWorkingHours処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_submitCancelWorkingHours(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+	        	_faultEvent = _faultEvent;
+ 	        	dispatchEvent(new Event("faultSubmitCancel"));
+			}
+			
+		    /**
+		     * approvalWorkingHours処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_approvalWorkingHours(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+ 	        	dispatchEvent(new Event("faultApproval"));
+			}
+			
+		    /**
+		     * approvalCancelWorkingHours処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_approvalCancelWorkingHours(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+ 	        	dispatchEvent(new Event("faultApprovalCancel"));
+			}
+			
+		    /**
+		     * approvalRejectWorkingHours処理のリモートオブジェクト失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_approvalRejectWorkingHours(e:FaultEvent):void
+	        {
+	        	// イベントを通知する.
+ 	        	dispatchEvent(new Event("faultApprovalReject"));
+			}
+			
+			
+		    /**
+		     * リモートオブジェクト実行の失敗イベント
+		     * 
+		     * @param e FaultEvent
+		     */
+	        protected function onFault_remoteObject(e:FaultEvent):void
+	        {
+			}
+			
+			/**
+			 * 合計エリア設定処理.
+			 *
+			 */
+			protected function setTotalValue():void
+			{
+        		// 小数点以下2桁にフォーマット
+				var nf:NumberFormatter = new NumberFormatter();
+				nf.precision = 2;
+				// 出力ストリングの桁区切り記号はなし
+				nf.thousandsSeparatorTo = "";
+
+				// 差引時間
+				balanceHoursTotal.text = nf.format(_workingHoursMonthly.balanceHours);
+				// 私用時間
+				privateHoursTotal.text = nf.format(_workingHoursMonthly.privateHours);
+				// 勤務時間
+				workingHoursTotal.text = nf.format(_workingHoursMonthly.workingHours);
+				// 休憩時間
+				recessHoursTotal.text = nf.format(_workingHoursMonthly.recessHours);
+				// 実働時間
+				realWorkingHoursTotal.text = nf.format(_workingHoursMonthly.realWorkingHours);
+				// 控除数
+				deductionCountTotal.text = nf.format(_workingHoursMonthly.deductionCount);
+
+				// 欠勤日数
+				absenceCountTotal.text = _workingHoursMonthly.absenceCount.toString();
+				// 無断欠勤日数
+				absenceWithoutLeaveCountTotal.text = _workingHoursMonthly.absenceWithoutLeaveCount.toString();
+				// 深夜勤務日数
+        		nightWorkCountTotal.text = _workingHoursMonthly.nightWorkCount.toString();
+        		
+        		// 有給繰越日数
+        		lastPaidVacationTotal.text = _workingHoursMonthly.lastPaidVacationCount.toString();
+        		// 有給発生日数
+        		givenPaidVacationTotal.text = _workingHoursMonthly.givenPaidVacationCount.toString();
+        		// 有給消滅日数
+        		lostPaidVacationTotal.text = _workingHoursMonthly.lostPaidVacationCount.toString();
+        		// 有給使用日数
+        		takenPaidVacationTotal.text = _workingHoursMonthly.takenPaidVacationCount.toString();
+        		// 有給残日数
+				currentPaidVacationTotal.text = _workingHoursMonthly.currentPaidVacationCount.toString();
+
+        		// 代休繰越日数
+        		lastCompensatoryDayOffTotal.text = _workingHoursMonthly.lastCompensatoryDayOffCount.toString();
+        		// 代休取得日数
+        		givenCompensatoryDayOffTotal.text = _workingHoursMonthly.givenCompensatoryDayOffCount.toString();
+        		// 代休消滅日数
+        		lostCompensatoryDayOffTotal.text = _workingHoursMonthly.lostCompensatoryDayOffCount.toString();
+        		// 代休使用日数
+        		takenCompensatoryDayOffTotal.text = _workingHoursMonthly.takenCompensatoryDayOffCount.toString();
+        		// 代休残日数
+				currentCompensatoryDayOffTotal.text = _workingHoursMonthly.currentCompensatoryDayOffCount.toString();
+			}
+
+			/**
+			 * 日付フォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function dateLabel(data:Object, column:DataGridColumn):String
+			{
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "MM/DD (EEE)";
+				// データを取得する.
+				var date:Date = data[column.dataField] as Date;
+				if (!date)	return "";
+	
+				// フォーマット変換する.
+				var retStr:String = df.format(date);
+
+				var holidayName:String = data["holidayName"] as String;
+				if (holidayName != null) {
+					retStr += "\r" + "(" + holidayName + ")";
+				}
+		        return retStr;
+		    }
+
+			/**
+			 * 日時フォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function dateTimeLabel(data:Object, column:DataGridColumn):String
+			{
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "YYYY/MM/DD JJ:NN";
+				// データを取得する.
+				var date:Date = data[column.dataField] as Date;
+				if (!date)	return "";
+	
+				// フォーマット変換する.
+				var retStr:String = df.format(date);
+				if (retStr == "")  {
+					// エラーのときエラー内容を返す.
+					retStr = df.error + "(" + date + ")";
+				}
+		        return retStr;
+		    }
+	
+			/**
+			 * 時刻フォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function timeLabel(data:Object, column:DataGridColumn):String
+			{
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = "JJ:NN";
+				// データを取得する.
+				var date:Date = data[column.dataField] as Date;
+				if (!date)	return "";
+	
+				// フォーマット変換する.
+				var retStr:String = df.format(date);
+				if (retStr == "")  {
+					// エラーのときエラー内容を返す.
+					retStr = df.error + "(" + date + ")";
+				}
+		        return retStr;
+		    }
+	
+			/**
+			 * 時間フォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function hoursLabel(data:Object, column:DataGridColumn):String
+			{
+				var nf:NumberFormatter = new NumberFormatter();
+				nf.precision = 2;
+				nf.thousandsSeparatorTo = "";
+				// データを取得する.
+				var hours:Number = data[column.dataField] as Number;
+				if (isNaN(hours) || hours == 0) return "";
+	
+		        return nf.format(hours);
+		    }
+		    
+			/**
+			 * 勤休コードフォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function absenceCodeLabel(data:Object, column:DataGridColumn):String
+			{
+				// データを取得する.
+				var absenceCode:Object = data[column.dataField] as Object;
+				if (!absenceCode)	return "";
+	
+				for each(var abs:Object in _absenceCodeList) {
+					if (absenceCode == abs.absenceCode) {
+						return abs.absenceName;
+						break;
+					}
+				}
+				return "";
+			}
+	
+			/**
+			 * 休日出勤タイプフォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function holidayWorkTypeLabel(data:Object, column:DataGridColumn):String
+			{
+				// データを取得する.
+				var holidayWorkType:Object = data[column.dataField] as Object;
+				if (!holidayWorkType)	return "";
+	
+				for each(var hol:Object in _holidayWorkTypeList) {
+					if (holidayWorkType == hol.holidayWorkType) {
+						return hol.holidayWorkName;
+						break;
+					}
+				}
+				return "";
+			}
+	
+			/**
+			 * フラグフォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function flagLabel(data:Object, column:DataGridColumn):String
+			{
+				// データを取得する.
+				var flag:Boolean = data[column.dataField] as Boolean;
+				if (flag) {
+					return "●";
+				} else {
+					return "";
+				}
+		    }
+
+			/**
+			 * コメントフォーマット処理.
+			 *
+			 * @param data DataGridの選択されたデータ項目.
+			 * @param column DataGridの列オブジェクト.
+			 * @return フォーマット済みのデータ項目.
+			 */
+			protected function commentLabel(data:Object, column:DataGridColumn):String
+			{
+				// データを取得する.
+				var whh:WorkingHoursHistoryDto = data as WorkingHoursHistoryDto;
+				var comment:String = whh.workingHoursAction != null ?
+					whh.workingHoursAction.workingHoursActionName : "";
+				switch (whh.workingHoursActionId) {
+					case WorkingHoursActionId.SUBMIT_CANCEL:		// 提出取り消し
+						comment += ":" + whh.comment;
+						break;
+					case WorkingHoursActionId.TN_APPROVAL:			// TN承認
+					case WorkingHoursActionId.SL_APPROVAL:			// SL承認
+					case WorkingHoursActionId.PL_APPROVAL:			// PL承認
+					case WorkingHoursActionId.PM_APPROVAL:			// PM承認
+					case WorkingHoursActionId.GA_APPROVAL:			// 総務承認
+						comment += "(" + whh.registrantName + ")";
+						break
+					case WorkingHoursActionId.TN_APPROVAL_CANCEL:	// TN承認取り消し
+					case WorkingHoursActionId.TN_APPROVAL_REJECT:	// TN差し戻し
+					case WorkingHoursActionId.SL_APPROVAL_CANCEL:	// SL承認取り消し
+					case WorkingHoursActionId.SL_APPROVAL_REJECT:	// SL差し戻し
+					case WorkingHoursActionId.PL_APPROVAL_CANCEL:	// PL承認取り消し
+					case WorkingHoursActionId.PL_APPROVAL_REJECT:	// PL差し戻し
+					case WorkingHoursActionId.PM_APPROVAL_CANCEL:	// PM承認取り消し
+					case WorkingHoursActionId.PM_APPROVAL_REJECT:	// PM差し戻し
+					case WorkingHoursActionId.GA_APPROVAL_CANCEL:	// 総務承認取り消し
+					case WorkingHoursActionId.GA_APPROVAL_REJECT:	// 総務差し戻し
+						comment += "(" + whh.registrantName + "):" + whh.comment;
+						break;
+				}
+				return comment;
+			}
+
+
+
+
+		/**
+	     * 行の背景色用カラーパターンを生成.
+	     *
+	     * @param dg	データグリッド.
+	     * @param data	データプロバイダ.
+	     */
+		private function setColorPattern(data:ArrayCollection):void
+		{
+			if(!_defaultColors){
+				// 初期値のカラーパターンを記憶
+//				_defaultColors = grdWorkingHours.getStyle("alternatingItemColors");
+			}
+			if (!data) return;
+			
+			// 表の行数を取得する.
+			var rowNum:uint = (data.length > grdWorkingHours.rowCount) ? data.length : grdWorkingHours.rowCount;
+
+			for (var j:int = 0; j < _errorCount.length; j++) {
+				_errorCount[j] = 0;
+			}
+//			var colors:Array = new Array();
+			var today:Date = new Date();
+			for (var i:int = 0; i < rowNum; i++) {
+				// 明細データ ＜ 表示行数 のとき.
+				if (i < data.length) {
+					// 1日のデータを取得する.
+					var whDto:WorkingHoursDailyDto = data.getItemAt(i) as WorkingHoursDailyDto;
+
+					// 本日より後の日付の背景色はデフォルト					
+//					if (whDto.workingDate >= today) {
+//						colors.push(_defaultColors[i % 2]);
+					// 更新できるかどうか確認する.
+					if (whDto.checkSubmit()) {
+//						colors.push(_defaultColors[i % 2]);
+					}
+					else {
+//						colors.push(_WORKING_HOURS_ERROR);
+						_errorCount[i] = 1;
+					}
+					
+				}
+				// 明細データ ＞ 表示行数 のとき.
+				else {
+//					colors.push(_defaultColors[i % 2]);
+				}
+				
+			}
+//			grdWorkingHours.setStyle("alternatingItemColors", colors);
+		}
+
+		]]>
+	</mx:Script>
+</mx:VBox>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<comp:PopUpWindow xmlns:comp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	xmlns:logic="subApplications.accounting.logic.*"
+	showCloseButton="true"
+	>
+
+
+	<!-- Logicの設定 -->
+	<logic:TransportMonthlyDetailLogic id="aslogic"/>
+
+
+	<!-- 画面の表示 -->
+	<mx:Form>
+		<!--
+		<mx:FormItem label="集計" direction="vertical" >
+			<mx:Canvas>
+				<mx:Label text="対象" x="0" y="0" /><mx:Label text=":" x="33" y="0" /><mx:Label id="monthlyTarget" x="51" y="0"/>
+				<mx:Label text="期間" x="0" y="26"/><mx:Label text=":" x="33" y="26"/><mx:Label id="monthlyTerm"   x="51" y="26" />
+				<mx:Label text="状態" x="0" y="52"/><mx:Label text=":" x="33" y="52"/><mx:Label id="monthlyStatus" x="51" y="52"/>
+				<mx:Label text="基準" x="0" y="78"/><mx:Label text=":" x="33" y="78"/><mx:Label id="monthlyBase"   x="51" y="78"/>
+			</mx:Canvas>
+		</mx:FormItem>
+
+		<mx:FormItem label="集計対象" direction="vertical" >
+			<mx:Label id="monthlyTarget"/>
+		</mx:FormItem>
+		-->
+
+		<mx:FormItem label="表示" direction="horizontal">
+			<mx:RadioButtonGroup id="rdMonthlyGrp"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_MONTHLY}"      label="月別"     selected="true"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_TERM}"         label="期別"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_TERM_6MONTHS}" label="上下期別"/>
+		</mx:FormItem>
+
+		<mx:HBox id="boxDg" width="415" height="300" visible="false">
+			<dataGrid:TransportationMonthlyDataGrid id="dgMonthly" visible="false" height="100%"
+				horizontalScrollPolicy="auto" verticalScrollPolicy="auto"
+				type="{rdMonthlyGrp.selectedValue as int}"
+				colorLocked="0xF9FCFB"
+				/>
+		</mx:HBox>
+	</mx:Form>
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.accounting.web.custom.TransportationMonthlyDataGrid;
+		]]>
+	</mx:Script>
+</comp:PopUpWindow>

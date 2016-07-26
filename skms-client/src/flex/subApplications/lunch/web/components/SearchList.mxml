@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="createCompletedFunction(event)" 
+	xmlns:components="components.*">
+	<mx:VBox height="100%">
+		<mx:Text text="メニュー検索" fontSize="12" fontWeight="bold"/>
+		<mx:Grid>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text text="カテゴリ" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<components:ComboBoxEx change="changeSearchData(event)" dataField="id" labelField="categoryName" id="categoryComboBox" />
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow>
+				<mx:GridItem>
+					<mx:Text text="メニュー名" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:TextInput
+						id="menuText" change="changeSearchData(event)"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<mx:List height="100%" width="100%" dataProvider="{_menuArray}"
+			id="menuList" />
+	</mx:VBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.PropertyChangeEvent;
+			import mx.events.FlexEvent;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var _menuArray:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var _searchWord:String = "";
+			
+			[Bindable]
+			private var _searchCategory:int = 0;
+			
+			//画面生成終了後
+			public function createCompletedFunction(e:FlexEvent):void
+			{
+				this.menuLabel = "menuName";
+			}
+						
+			//メニューを作成するデータ
+			public function set menuArray(src:ArrayCollection):void
+			{
+				this._menuArray = src;
+				this._menuArray.filterFunction = menuSearch;
+			}
+			
+			//カテゴリコンボボックスを作成するデータ
+			public function set categoryArray(src:ArrayCollection):void
+			{
+				this.categoryComboBox.dataProvider = src;
+			}
+			
+			//メニュー一覧で選択しているアイテム取得
+			public function get selectedItem():Object
+			{
+				return menuList.selectedItem;
+			}
+			
+			//
+			public function menuSearch(obj:Object):Boolean
+			{
+				var result:Boolean = true
+				//カテゴリ未選択・メニュー未入力
+				if( this._searchCategory == 0 && this._searchWord.length == 0){
+					//全表示
+					return true;
+				}
+				//カテゴリのみ選択
+				if(this._searchWord.length == 0){
+					
+					if( obj.menuCategoryId == this._searchCategory ){
+						return true;						
+					}else{
+						return false;
+					}
+				}
+				
+				//メニュー入力
+				if(this._searchCategory == 0){
+
+					if( obj.menuName.indexOf(this._searchWord) >= 0 ){
+						return true;
+					}else{
+						return false;
+					}					
+				}
+				//両方入力
+				if( obj.menuCategoryId == this._searchCategory &&
+						obj.menuName.indexOf(this._searchWord) >= 0){
+					return true;
+				}
+				return false;
+			}
+			
+			//メニューリストで表示するデータフィールド名設定
+			public function set menuLabel(str:String):void
+			{
+				menuList.labelField = str;
+			}
+			
+			public function changeSearchData(e:Event):void
+			{
+				this._searchWord = this.menuText.text;
+				this._searchCategory = parseInt(this.categoryComboBox.selectedData);
+				this._menuArray.refresh();
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

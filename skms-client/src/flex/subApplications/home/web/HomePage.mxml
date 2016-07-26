@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.home.logic.*"
+	xmlns:components="components.*">
+
+	<!-- Logicクラスの設定 -->
+	<logic:HomePageLogic id="logic" />
+
+	<!-- 画面表示 -->
+	<mx:HBox x="10" y="10">
+	<mx:Panel id="pnlWorkingHours" title="勤務管理" layout="absolute" visible="false">
+		<mx:HBox id="hbxSelectDate" styleName="LargeText">
+			<mx:LinkButton id="linkPreviousDate" toolTip="前日" icon="@Embed('images/arrow_previous.gif')"
+				click="logic.onClick_linkPreviousDate(event);"/>
+			<mx:Label id="lblWorkingDate" text="0000年00月00日" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextDate" toolTip="翌日" icon="@Embed('images/arrow_next.gif')"
+				click="logic.onClick_linkNextDate(event);"/>
+		</mx:HBox>
+		<mx:Form id="frmStartTime" width="100%" height="0">
+			<mx:FormItem />
+			<mx:VBox id="hbxHeader">
+				<mx:HBox id="hbxMorning" verticalAlign="bottom">
+					<mx:Image source="@Embed('images/flower.gif')"/>
+					<mx:Label id="lblGoodMorning" text="おはようございます。" styleName="LargeBoldText" color="#2fa50b"/>
+				</mx:HBox>
+				<mx:HBox id="hbxBirthday" verticalAlign="bottom">
+					<mx:Image source="@Embed('images/rose.gif')"/>
+					<mx:Label id="lblBirthday" text="お誕生日おめでとうございます。" styleName="LargeBoldText" color="#f653ca"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:FormItem label="時差開始時刻">
+				<mx:ComboBox id="cmbStaggeredStartTime" width="100" editable="true"
+					 restrict="0-9:"
+					 focusOut="logic.onFocusOut_cmbStaggeredStartTime(event)"/>
+			</mx:FormItem>
+			<mx:FormItem label="開始時刻" required="true" direction="horizontal">
+				<mx:ComboBox id="cmbStartTime" width="100" editable="true"
+					 restrict="0-9:"
+					 focusOut="logic.onFocusOut_cmbStartTime(event)"/>
+					<mx:LinkButton id="linkUpdateStartTime"
+						toolTip="現在時刻で更新"
+						click="logic.onClick_linkUpdateStartTime(event)"
+						icon="@Embed('images/arrow_update.gif')"/>
+			</mx:FormItem>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button id="btnStartTime" label="出社"
+					click="logic.onClick_btnStartTime(event)"/>
+			</mx:HBox>
+		</mx:Form>
+		<mx:Form id="frmQuittingTime" width="100%" height="0">
+			<mx:FormItem />
+			<mx:FormItem label="時差開始時刻">
+				<mx:Label id="lblStaggeredStartTime" width="80"/>
+			</mx:FormItem>
+			<mx:FormItem label="開始時刻">
+				<mx:Label id="lblStartTime" width="80"/>
+			</mx:FormItem>
+			<mx:FormItem label="終了時刻" required="true" direction="horizontal">
+				<mx:ComboBox id="cmbQuittingTime" width="80" editable="true"
+					restrict="0-9:"
+					change="logic.onChange_cmbQuittingTime(event)"
+					focusOut="logic.onFocusOut_cmbQuittingTime(event)"/>
+					<mx:LinkButton id="linkUpdateQuittingTime"
+						toolTip="現在時刻で更新"
+						click="logic.onClick_linkUpdateQuittingTime(event)"
+						icon="@Embed('images/arrow_update.gif')"/>
+			</mx:FormItem>
+			<mx:FormItem label="私用時間">
+				<mx:TextInput id="txtPrivateHours" width="80"
+					restrict="0-9." textAlign="right"
+					focusOut="logic.onFocusOut_txtPrivateHours(event)"/>
+			</mx:FormItem>
+			<mx:FormItem label="休憩時間">
+				<mx:Label id="txtRecessHours" width="80"
+					textAlign="right"/>
+				<!--
+				<mx:TextInput id="txtRecessHours" width="80"
+					restrict="0-9." textAlign="right" editable="false"
+					focusOut="logic.onFocusOut_txtRecessHours(event)"/>
+				-->
+			</mx:FormItem>
+			<mx:FormItem label="実働時間">
+				<mx:Label id="lblRealWorkingHours" width="80"
+					textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="休日出社" id="itmHolidayWork">
+				<components:HolidayWorkTypeComboBox id="cmbHolidayWork" width="80"
+					labelField="holidayWorkName" />
+			</mx:FormItem>
+			<mx:FormItem label="備考">
+				<mx:TextInput id="txtNote" width="140" maxChars="250"/>
+			</mx:FormItem>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:Button id="btnQuiitingTime" label="退社"
+					click="logic.onClick_btnQuittingTime(event)"/>
+			</mx:HBox>
+		</mx:Form>
+		<mx:Form id="frmEnterdHours" width="100%" height="0">
+			<mx:FormItem />
+			<mx:FormItem label="時差開始時刻">
+				<mx:Label id="lblStaggeredStartTime2" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="開始時刻">
+				<mx:Label id="lblStartTime2" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="終了時刻">
+				<mx:Label id="lblQuittingTime" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="私用時間">
+				<mx:Label id="lblPrivateHours" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="休憩時間">
+				<mx:Label id="lblRecessHours" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="実働時間">
+				<mx:Label id="lblRealWorkingHours2" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="休日出勤" id="itmHolidayWork2" >
+				<mx:Label id="lblHolidayWork" width="50" textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="備考">
+				<mx:Text id="lblNote" width="120"/>
+			</mx:FormItem>
+			<mx:VBox id="hbxFooter" width="100%">
+				<mx:HBox width="100%">
+					<mx:Spacer width="100%" />
+					<mx:Label id="lblGoodNight" text="おつかれさまでした。" styleName="LargeBoldText" color="#d76037"/>
+					<mx:Image source="@Embed('images/leaf.gif')"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:Form>
+	</mx:Panel>
+		<mx:VBox>
+			<!--
+			<mx:LinkButton id="linkAnnounce20090518" x="734" y="27" label="2009/08/31 機能追加のお知らせ" color="#EC70F4" fontSize="14"
+				  click="logic.onClick_linkAnnounce(event)"/>
+			-->
+			<!--
+			<mx:HBox>
+				<mx:Label text="住所"/>
+				<mx:TextInput id="txtAddress" width="250"/>
+				<mx:Button id="linkGoogleMap" label="Google Mapで検索" click="logic.onClick_linkGoogleMap(event)" />
+			</mx:HBox>
+			-->
+		</mx:VBox>
+	</mx:HBox>		  
+
+	<!-- Validator -->
+	<mx:StringValidator id="vldrStartTime"  required="true"  source="{this.cmbStartTime}"
+						property="text"
+						invalid="logic.onInvalid_validator(event);"
+						valid="logic.onValid_validator(event);"/>
+	<mx:StringValidator id="vldrStartTime2"  required="true"  source="{this.cmbStartTime}"
+						triggerEvent="change"
+						property="text"
+						invalid="logic.onInvalid_validator(event);"
+						valid="logic.onValid_validator(event);"/>
+	<mx:StringValidator id="vldrQuittingime"  required="true"  source="{this.cmbQuittingTime}"
+						property="text"
+						invalid="logic.onInvalid_validator(event);"
+						valid="logic.onValid_validator(event);"/>
+	<mx:StringValidator id="vldrQuittingime2"  required="true"  source="{this.cmbQuittingTime}"
+						triggerEvent="change"
+						property="text"
+						invalid="logic.onInvalid_validator(event);"
+						valid="logic.onValid_validator(event);"/>
+
+
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="workingHoursService" showBusyCursor="true">
+		<mx:method name="getWorkingHoursMonthly"
+			result="logic.onResult_getWorkingHoursMonthly(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getHolidayWorkTypeList"
+			result="logic.onResult_getHolidayWorkTypeList(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="updateWorkingHoursMonthly"
+			result="logic.onResult_updateWorkingHoursMonthly(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+	</mx:RemoteObject>
+	
+</mx:Module>

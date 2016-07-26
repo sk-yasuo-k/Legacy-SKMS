@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:comp="components.*"
+	>
+
+	<!-- Logic -->
+	<logic:TransportMonthlyLogic id="aslogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" height="95%" width="95%">
+		<!-- タイトル・集計条件 -->
+		<mx:HBox>
+			<mx:Label text="交通費集計" styleName="LargeBoldText" />
+			<mx:HBox>
+				<mx:Button label="集計" id="btnSearch" click="aslogic.onButtonClick_btnSearch(event);"/>
+				<mx:HBox   id="searchOpt" backgroundColor="0xECE3EE" enabled="false">
+					<mx:Spacer width="10"/>
+					<mx:Grid   id="searchGrid">
+						<mx:GridRow ></mx:GridRow>
+						<!-- 集計期間 -->
+						<mx:GridRow>
+							<mx:GridItem horizontalAlign="right"><mx:Text text="集計期間" /></mx:GridItem>
+							<mx:RadioButtonGroup id="rdRangeGrp" change="aslogic.onChange_rdRangeGrp(event);" />
+							<mx:GridItem><mx:RadioButton groupName="rdRangeGrp" value="{TransportMonthlyLogic.RANGE_MONTH}" selected="true" />
+										<comp:EditDateField id="startDate"  change="aslogic.onChange_dateField(event);" selectableRange="{this.finishDate.selectedDate ? {rangeEnd:this.finishDate.selectedDate}  : null}"/>
+										<mx:Text text="～" />
+										<comp:EditDateField id="finishDate" change="aslogic.onChange_dateField(event);" selectableRange="{this.startDate.selectedDate  ? {rangeStart:this.startDate.selectedDate} : null}"/>
+										<mx:Spacer width="10" />
+										<mx:RadioButton groupName="rdRangeGrp" value="{TransportMonthlyLogic.RANGE_TERM}" />
+										<mx:TextInput id="term" maxChars="2" restrict="[0-9]" focusOut="aslogic.onFocusOut_term(event);"/><mx:Label text="期" />
+							</mx:GridItem>
+						</mx:GridRow>
+						<!-- 状態 -->
+						<mx:GridRow>
+							<mx:GridItem horizontalAlign="right"><mx:Text text="状態" /></mx:GridItem>
+							<mx:GridItem ><mx:Repeater id="rpStatusList" dataProvider="" >
+											<mx:CheckBox id="chkStatus" label="{rpStatusList.currentItem.label}" selected="{rpStatusList.currentItem.selected}"
+												selectedField="{rpStatusList.currentItem.data}" enabled="{rpStatusList.currentItem.enabled}"/>
+										</mx:Repeater></mx:GridItem>
+						</mx:GridRow>
+						<!-- 集計基準-->
+						<mx:GridRow>
+							<mx:GridItem horizontalAlign="right"><mx:Text text="集計基準" /></mx:GridItem>
+								<mx:GridItem >
+									<mx:RadioButtonGroup id="rdBaseDateGrp" />
+									<mx:RadioButton groupName="rdBaseDateGrp" value="{TransportMonthlyLogic.BASE_OCCUR_DATE}"      label="発生日で集計"     selected="true"/>
+									<mx:RadioButton groupName="rdBaseDateGrp" value="{TransportMonthlyLogic.BASE_PAY_DATE}"        label="支払日で集計"/>
+									<mx:Spacer width="10" />
+									<mx:CheckBox id="chkProjectMonthly" label="プロジェクト毎に集計" selected="true"/>
+								</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow ></mx:GridRow>
+					</mx:Grid>
+					<mx:Spacer width="10" />
+				</mx:HBox>
+			</mx:HBox>
+		</mx:HBox>
+		<!-- 表示形式 -->
+		<mx:HBox>
+			<mx:Label text="集計結果表示" id="lbMonthlyGrp"/>
+			<mx:RadioButtonGroup id="rdMonthlyGrp"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_MONTHLY}"      label="月別"     selected="true"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_TERM}"         label="期別"/>
+			<mx:RadioButton groupName="rdMonthlyGrp" value="{TransportationMonthlyDataGrid.TYPE_TERM_6MONTHS}" label="上下期別"/>
+			<mx:Canvas id="cnvDetail" visible="false">
+				<mx:Button label="詳細表示" id="btnDetail" x="30" color="#4169E1" click="aslogic.onButtonClick_btnDetail(event);"/>
+				<mx:Label id="detailTarget"  x="112" y="2" styleName="InfoLargeBoldText"/>
+			</mx:Canvas>
+		</mx:HBox>
+		<!-- 集計 -->
+		<mx:HBox id="boxDg" width="100%" height="100%">
+			<dataGrid:TransportationMonthlyDataGrid id="dgMonthly" visible="false" width="100%" height="100%"
+				horizontalScrollPolicy="auto" verticalScrollPolicy="auto"
+				type="{rdMonthlyGrp.selectedValue as int}"
+				colorLocked="0xF9FCFB"
+				detailShow="aslogic.onDetailShow_dgMonthly(event);" detailShowEnabled="true"
+				changeCell="aslogic.onChangeCell_dgMonthly(event);"
+				/>
+		</mx:HBox>
+	</mx:VBox>
+
+
+	<!-- RemoteObject -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true">
+		<mx:method name="getTransportationMonthlyList"  result="aslogic.onResult_getTransportationMonthlyList(event);"
+														fault="aslogic.onFault_getTransportationMonthlyList(event);"/>
+		<mx:method name="getTransportationMonthlyDetailList"  result="aslogic.onResult_getTransportationMonthlyDetailList(event);"
+														fault="aslogic.onFault_getTransportationMonthlyDetailList(event);"/>
+		<mx:method name="getTransportationMonthlyStatusList" result="aslogic.onResult_getTransportationMonthlyStatusList(event);"
+															 fault="aslogic.onFault_getTransportationMonthlyStatusList(event);"/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.accounting.web.custom.TransportationMonthlyDataGrid;
+		]]>
+	</mx:Script>
+</mx:Module>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:columns>
+		<mx:DataGridColumn headerText="日時" dataField="registrationTime" width="150" labelFunction="{LabelUtil.dateTimeLabel}" />
+		<mx:DataGridColumn headerText="内容" dataField="comment" width="250" />
+	</mx:columns>
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+</mx:DataGrid>

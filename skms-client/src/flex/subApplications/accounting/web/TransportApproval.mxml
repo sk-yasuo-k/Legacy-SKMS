@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	xmlns:search="subApplications.accounting.web.*"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:TransportApprovalLogic id="transportApprovalLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%" >
+		<mx:HBox width="100%">
+			<mx:Label text="交通費一覧"  styleName="LargeBoldText"/>
+			<mx:Spacer width="10" />
+			<search:TransportSearch id="transportationSearch"
+				result="transportApprovalLogic.onResult_transportationSearch(event);"
+				fault ="transportApprovalLogic.onFault_transportationSearch(event);"/>
+		</mx:HBox>
+
+		<mx:VDividedBox liveDragging="true" width="100%" height="100%">
+			<mx:HDividedBox width="100%" height="50%">
+				<!-- 交通費申請一覧 -->
+				<mx:VBox width="70%" height="100%">
+					<mx:HBox height="24">
+						<mx:Repeater id="rpLinkList" dataProvider="">
+							<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+								enabled="{rpLinkList.currentItem.enabled}"
+								click="transportApprovalLogic.onClick_linkList(event);" />
+						</mx:Repeater>
+					</mx:HBox>
+					<dataGrid:TransportationDataGrid id="transportationList" width="100%" height="100%"
+						change="transportApprovalLogic.onChange_transportationList(event);"
+						editable="false" allowMultipleSelection="false"
+						verticalScrollPolicy="on"
+						/>
+				</mx:VBox>
+
+				<!-- 交通費申請履歴一覧 -->
+				<mx:VBox width="30%" height="100%">
+					<mx:HBox height="24">
+						<mx:Label text="申請の履歴" styleName="LargeText"/>
+					</mx:HBox>
+					<dataGrid:HistoryDataGrid id="transportationHistory" width="100%" height="100%"
+						editable="false" allowMultipleSelection="false" sortableColumns="false"
+						verticalScrollPolicy="on" variableRowHeight="true"
+						/>
+				</mx:VBox>
+			</mx:HDividedBox>
+
+			<!-- 交通費申請明細一覧 -->
+			<mx:VBox width="100%" height="50%" >
+				<mx:Label text="交通費明細" styleName="LargeText"/>
+				<dataGrid:TransportationDetailDataGrid id="transportationDetail" width="100%" height="100%"
+					editable="false" allowMultipleSelection="false" sortableColumns="false"
+					verticalScrollPolicy="auto"
+					/>
+			</mx:VBox>
+		</mx:VDividedBox>
+	</mx:VBox>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true">
+		<mx:method name="approvalTransportation"
+			result="transportApprovalLogic.onResult_approvalTransportation(event)"
+			fault ="transportApprovalLogic.onFault_approvalTransportation(event)"
+			/>
+		<mx:method name="paymentTransportation"
+			result="transportApprovalLogic.onResult_paymentTransportation(event)"
+			fault ="transportApprovalLogic.onFault_paymentTransportation(event)"
+			/>
+	</mx:RemoteObject>
+
+</mx:Module>

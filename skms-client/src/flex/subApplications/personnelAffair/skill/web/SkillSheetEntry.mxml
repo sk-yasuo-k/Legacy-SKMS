@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.skill.logic.*"
+	xmlns:cmp="components.*"
+	close="skillSheetEntryLogic.onClose_SkillSheetEntryDlg(event)">
+	
+	<!--Logicクラスの設定-->
+	<logic:SkillSheetEntryLogic id="skillSheetEntryLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="skillSheetEntryService" destination="skillSheetEntryService">
+		<mx:method name="getProjectKindList"
+					result="skillSheetEntryLogic.onResult_getProjectKindList(event)"
+					fault="skillSheetEntryLogic.onFault_getInformation(event)" />
+		<mx:method name="getProjectPhaseList"
+					result="skillSheetEntryLogic.onResult_getProjectPhaseList(event)"
+					fault="skillSheetEntryLogic.onFault_getInformation(event)" />
+		<mx:method name="getProjectPositionList"
+					result="skillSheetEntryLogic.onResult_getProjectPositionList(event)"
+					fault="skillSheetEntryLogic.onFault_getInformation(event)" />
+	</mx:RemoteObject>
+	
+	<!--画面の設定-->
+	<mx:VBox>
+		<mx:HBox width="100%" height="100%">
+			<mx:Spacer width="10"/>
+			<mx:VBox height="100%">
+				<mx:HBox>					
+					<mx:Button label="プロジェクト検索"  fontSize="12" fontWeight="bold" click="skillSheetEntryLogic.onClick_project(event);"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="プロジェクトコード" fontSize="12" fontWeight="bold"/>
+					<mx:TextInput id="projectCode" text="" fontSize="12"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="プロジェクト名" fontSize="12" fontWeight="bold"/>
+					<mx:TextInput id="projectName" text="" fontSize="12"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="区分"  fontSize="12" fontWeight="bold"/>
+					<cmp:ComboBoxEx id="kindList" dataProvider="" fontSize="12"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="期間" fontSize="12" fontWeight="bold"/>
+					<mx:HBox>
+						<cmp:EditDateField id="joinDate" />
+						<mx:Text text="～" fontSize="12"/>
+						<cmp:EditDateField id="retireDate" />
+					</mx:HBox>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="ハード" fontSize="12" fontWeight="bold"/>
+					<mx:TextInput id="hardware" text="" fontSize="12"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="OS" fontSize="12" fontWeight="bold"/>
+					<mx:TextInput id="os" text="" fontSize="12"/>
+				</mx:HBox>			
+				<mx:HBox>
+					<mx:Text width="110" text="言語" fontWeight="bold"/>
+					<mx:TextInput id="language" text="" fontSize="12"/>
+				</mx:HBox>
+				<mx:HBox height="100%">
+					<mx:Text width="110" text="担当した内容" fontSize="12" fontWeight="bold"/>
+					<mx:TextArea id="content" text="" fontSize="12" height="110" width="285"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox height="100%">
+				<mx:HBox>
+					<mx:Text text=" " fontSize="12"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+				<mx:HBox height="100%">
+					<mx:Text width="110" text="作業フェーズ" fontSize="12" fontWeight="bold"/>
+					<cmp:ListEx id="phaseList" height="100%" allowMultipleSelection="true" fontSize="12" horizontalScrollPolicy="auto"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="参加形態" fontSize="12" fontWeight="bold"/>
+					<!--<cmp:ComboBoxEx id="positionList" fontSize="12"/>-->
+					<cmp:ListEx id="positionList" height="100%" allowMultipleSelection="true" fontSize="12" horizontalScrollPolicy="auto"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text width="110" text="キーワード" fontSize="12" fontWeight="bold"/>
+					<mx:TextInput id="keyword" text="" fontSize="12"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Spacer width="10"/>
+			<mx:Button label="登録" click="skillSheetEntryLogic.onClick_btnOk(event)"/>
+			<mx:Button label="戻る" click="skillSheetEntryLogic.onClick_btnCancel(event)"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<!-- Script -->
+	<mx:Script>
+		<![CDATA[
+			import subApplications.personnelAffair.skill.dto.StaffSkillSheetDto;
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

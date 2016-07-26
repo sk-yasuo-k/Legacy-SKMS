@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.project.logic.*"
+	showCloseButton="true"
+	title="プロジェクト選択" >
+
+	<!-- Logicクラスの設定 -->
+	<logic:ProjectSelectLogic id="projectSelectLogic" />
+
+	<mx:HBox>
+		<mx:Spacer width="5"/>
+		<mx:VBox>
+			<mx:VDividedBox width="100%" height="400">
+				<mx:VBox  width="100%" height="50%">
+					<mx:Label text="所属しているプロジェクトから選ぶ"/>
+					<!--itemClock追加(編集) @auther watanuki-->
+					<mx:DataGrid id="belongProjectList" width="100%" height="100%"
+					itemClick="projectSelectLogic.onItemClick_belongProjectList(event);" variableRowHeight="true" wordWrap="true">
+						<mx:columns>
+							<mx:DataGridColumn headerText="プロジェクトコード" dataField="projectCode"  width="100"/>
+							<mx:DataGridColumn headerText="プロジェクト名" dataField="projectName" width="150"/>
+							<!--追加 @auther watanuki-->
+							<mx:DataGridColumn headerText="開始実績日" dataField="actualStartDate" width="100" labelFunction="LabelUtil.dateLabel"/>
+							<mx:DataGridColumn headerText="終了実績日" dataField="actualFinishDate" width="100" labelFunction="LabelUtil.dateLabel"/>
+							
+							<mx:DataGridColumn headerText="備考" dataField="note" width="400"/>
+						</mx:columns>
+					</mx:DataGrid>
+					<!--
+					<mx:Button label="その他のプロジェクトから選ぶ"/>
+					-->
+				</mx:VBox>
+				<mx:VBox  height="50%">
+					<mx:Spacer height="1"/>
+					<mx:Label text="全社的業務から選ぶ"/>
+					<mx:DataGrid id="wholeBusinessList" width="100%" height="100%"
+						itemClick="projectSelectLogic.onItemClick_wholeBusinessList(event);">
+						<mx:columns>
+							<mx:DataGridColumn headerText="業務コード" dataField="projectCode" width="70"/>
+							<mx:DataGridColumn headerText="業務名" dataField="projectName"  width="150"/>
+							<!--追加 @auther watanuki-->
+							<mx:DataGridColumn headerText="開始実績日" dataField="actualStartDate" width="100" labelFunction="LabelUtil.dateLabel"/>
+							<mx:DataGridColumn headerText="終了実績日" dataField="actualFinishDate" width="100" labelFunction="LabelUtil.dateLabel"/>
+							
+							<mx:DataGridColumn headerText="備考" dataField="note" width="430"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:VDividedBox>
+			<mx:HBox width="100%">
+				<mx:Button label="選択" id="btnOk" click="projectSelectLogic.onButtonClick_ok(event);" enabled="false"/>
+				<mx:Button label="戻る" id="btnCancel" click="projectSelectLogic.onButtonClick_cancel(event);" />
+				<mx:Spacer width="100%" />
+				<mx:LinkButton id="help" label="ヘルプ" click="projectSelectLogic.onClick_help(event);" styleName="SmallText" />
+			</mx:HBox>
+			<mx:Spacer height="1"/>
+		</mx:VBox>
+		<mx:Spacer width="5"/>
+	</mx:HBox>
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="wholeBusinessService" showBusyCursor="true">
+		<mx:method name="getWholeBusinessList"
+			result="projectSelectLogic.onResult_getWholeBusinessList(event)"
+			fault="projectSelectLogic.onFault_getWholeBusinessList(event)"
+			/>
+	</mx:RemoteObject>
+
+	<mx:RemoteObject id="srv2" destination="transportationService" showBusyCursor="true">
+		<mx:method name="getBelongProjectList"
+			result="projectSelectLogic.onResult_getBelongProjectList(event)"
+			fault ="projectSelectLogic.onFault_getBelongProjectList(event)"
+			/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			//追加 @auther watanuki
+			import subApplications.project.logic.ProjectLogic;
+			import utils.LabelUtil;
+			
+			public function get entryProject():Object
+			{
+				return projectSelectLogic.entryProject;
+			}
+		]]>
+	</mx:Script>
+</PopUpWindow>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:columns>
+		<mx:DataGridColumn headerText="状態"               width="70" dataField="overheadStatusName"/>
+		<mx:DataGridColumn headerText="申請ID"             width="50" dataField="overheadId"/>
+		<mx:DataGridColumn headerText="申請者"             width="90" dataField="staffName" visible="{this._isApproval}"/>
+		<mx:DataGridColumn headerText="プロジェクトコード" width="90"  dataField="projectCode"/>
+		<mx:DataGridColumn headerText="プロジェクト名"     width="160" dataField="projectName"/>
+		<mx:DataGridColumn headerText="金額"               width="80" dataField="overheadDetails" labelFunction="{LabelUtil.totalExpenseLabel}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:Label textAlign="right" />
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+	</mx:columns>
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.accounting.logic.AccountingLogic;
+			import utils.LabelUtil;
+
+			/** 動作モード */
+			[Bindable]
+			private var _isRequest:Boolean = false;
+			public function get request():Boolean
+			{
+				return _isRequest;
+			}
+			[Bindable]
+			private var _isApproval:Boolean = false;
+			public function get approval():Boolean
+			{
+				return _isApproval;
+			}
+			public function set actionMode(value:String):void
+			{
+				_isRequest  = false;
+				_isApproval = false;
+				switch (value) {
+					case AccountingLogic.ACTION_VIEW_APPROVAL:
+					case AccountingLogic.ACTION_VIEW_APPROVAL_AF:
+						_isApproval = true;
+						break;
+					case AccountingLogic.ACTION_VIEW_REQUEST:
+						_isRequest  = true;
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:DataGrid>

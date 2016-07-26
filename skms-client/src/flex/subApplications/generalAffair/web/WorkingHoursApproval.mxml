@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*" xmlns:cmp="components.*">
+
+	<!-- Logicクラスの設定 -->
+	<logic:WorkingHoursApprovalLogic id="logic" />
+
+	<mx:VBox x="5" y="0" width="99%" height="99%" >
+		<mx:Label text="勤務管理表承認" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前月" icon="@Embed('images/arrow_previous.gif')"
+				click="logic.onClick_linkPreviousMonth(event);"/>
+			<mx:Label id="lblWorkingMonth" text="0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月" icon="@Embed('images/arrow_next.gif')"
+				click="logic.onClick_linkNextMonth(event);"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:LinkButton id="linkShowDateSetting" label="表示条件の指定..."
+					click="logic.onClick_linkShowDateSetting(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideDateSetting" width="100%" height="0">
+				<mx:Grid backgroundColor="0xECE3EE">
+					<mx:GridRow/>
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:LinkButton id="linkHideDateSetting" label="閉じる"
+								click="logic.onClick_linkHideDateSetting(event);"/>
+						</mx:GridItem>
+						<mx:GridItem>
+							<mx:Label text="勤務月" styleName="LargeText"/>
+							<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+							<mx:Label text="年" styleName="LargeText"/>
+							<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+							<mx:Label text="月" styleName="LargeText"/>
+							<mx:Button id="btnRefresh" label="表示"
+								click="logic.onClick_btnRefresh(event)"/>
+						</mx:GridItem>
+					</mx:GridRow>
+
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:CheckBox id="chkSubordinateOnly" label="部下のみ" selected="true" visible="true"/>
+						</mx:GridItem>
+					</mx:GridRow>
+
+					<mx:GridRow>
+						<mx:GridItem/>
+						<mx:GridItem/>
+						<mx:GridItem>
+							<mx:Text text="状態" />
+							<mx:Repeater id="rpStatusList" dataProvider="">
+								<mx:CheckBox id="chkStatus" label="{rpStatusList.currentItem.label}" selected="{rpStatusList.currentItem.selected}"
+									selectedField="{rpStatusList.currentItem.data}" enabled="{rpStatusList.currentItem.enabled}"/>
+							</mx:Repeater>
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox id="hboxLinkList" width="100%">
+			<mx:Repeater id="rpLinkList" dataProvider="">
+				<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+					enabled="{rpLinkList.currentItem.enabled}"
+					click="logic.onClick_linkList(event);" />
+			</mx:Repeater>
+		</mx:HBox>
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:VBox width="150" height="100%">
+				<mx:DataGrid id="grdWorkingHoursStatus" width="100%" height="100%"
+					 change="logic.onChange_grdWorkingHoursStatus(event)">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" width="50" dataField="staffId">
+							<mx:itemRenderer>
+							<mx:Component>
+							<mx:Label text="{data.staffName.fullName}"/>
+							</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn headerText="状態" width="50" dataField="workingHoursStatusId">
+							<mx:itemRenderer>
+							<mx:Component>
+							<mx:Label text="{data.workingHoursStatus.workingHoursStatusName}"
+								 color="{data.workingHoursStatus.workingHoursStatusColor}" />
+							</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VBox width="85%" height="100%">
+				<mx:Label id="lblStaffName" styleName="LargeText"/>
+				<cmp:WorkingHoursTable
+					id="tblWorkingHours"
+					editable="false"
+					width="100%"
+					height="100%"
+					loadComplete="logic.onLoadComplete_tblWorkingHours(event);"
+					completeApproval="logic.onCompleteApproval_tblWorkingHours(event);"
+					completeApprovalCancel="logic.onCompleteApproval_tblWorkingHours(event);"
+					completeApprovalReject="logic.onCompleteApproval_tblWorkingHours(event);"
+					optimisticLockApproval="logic.onOptimisticLockApproval_tblWorkingHours(event);"
+					optimisticLockApprovalCancel="logic.onOptimisticLockApprovalCancel_tblWorkingHours(event);"
+					optimisticLockApprovalReject="logic.onOptimisticLockApprovalReject_tblWorkingHours(event);"
+					faultApproval="logic.onFaultApproval_tblWorkingHours(event);"
+					faultApprovalCancel="logic.onFaultApprovalCancel_tblWorkingHours(event);"
+					faultApprovalReject="logic.onFaultApprovalReject_tblWorkingHours(event);"
+					/>
+			</mx:VBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+	
+	
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="workingHoursService" showBusyCursor="true">
+		<mx:method name="getSubordinateCurrentWorkingHoursStatus"
+			result="logic.onResult_getSubordinateCurrentWorkingHoursStatus(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getCurrentWorkingHoursStatus"
+			result="logic.onResult_getCurrentWorkingHoursStatus(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getWorkingHoursStatusList"
+			result="logic.onResult_getWorkingHoursStatusList(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+		<mx:method name="getStaffProjectPositionId"
+			result="logic.onResult_getStaffProjectPositionId(event)"
+			fault="logic.onFault_remoteObject(event)"
+		/>
+	</mx:RemoteObject>
+
+
+
+
+	
+</mx:Module>

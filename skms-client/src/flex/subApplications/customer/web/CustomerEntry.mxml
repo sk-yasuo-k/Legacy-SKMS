@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.customer.logic.*"
+	title="取引先情報">
+
+	<!-- Logicクラスの設定 -->
+	<logic:CustomerEntryLogic id="customerEntryLogic" />
+
+	<!-- 画面表示 -->
+	<mx:Form id="form">
+		<mx:FormItem label="顧客区分 :" required="true" direction="horizontal" visible="true">
+				<mx:RadioButtonGroup id="customerTypeGrp" change="customerEntryLogic.onChange_customerTypeGrp(event);" enabled="{this.authorisation}"/>
+				<mx:RadioButton groupName="customerTypeGrp" value="C" label="メーカー／ベンダー" errorString="{this.customerType.errorString}"  enabled="{this.authorisation}"/>
+				<mx:RadioButton groupName="customerTypeGrp" value="E" label="ユーザ" errorString="{this.customerType.errorString}"  enabled="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="顧客コード :" required="false" direction="horizontal" visible="true">
+				<mx:Canvas>
+					<mx:Label id="customerType" visible="false" text="{this.customerTypeGrp.selectedValue ? this.customerTypeGrp.selectedValue : ''}"/>
+					<mx:Label id="customerNo"   visible="false" text=""/>
+					<mx:Label id="customerCode" visible="true"  text="{this.customerType.text + this.customerNo.text}"/>
+				</mx:Canvas>
+		</mx:FormItem>
+
+		<mx:FormItem label="顧客名称 :" required="true" direction="horizontal" visible="true">
+				<mx:TextInput id="customerName" maxChars="128" width="190" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="略称 :" required="false" >
+						<mx:TextInput id="customerAlias" maxChars="8" width="80" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="代表者 姓（漢字）:" required="false" direction="horizontal" visible="true">
+				<mx:TextInput id="lastName" maxChars="16" width="80" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="名（漢字）:" required="false" >
+					<mx:TextInput id="firstName" maxChars="16" width="80" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="代表者 姓（かな）:" required="false" direction="horizontal" visible="true">
+				<mx:TextInput id="lastNameKana" maxChars="32" width="80" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				<mx:FormItem label="名（かな）:" required="false" >
+					<mx:TextInput id="firstNameKana" maxChars="32" width="80" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+		</mx:FormItem>
+
+		<mx:FormItem label="Webページ :" required="false" direction="horizontal" visible="true">
+			<mx:TextInput id="customerHtml" maxChars="64" width="237" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:FormItem label="取引開始日 :" required="false" direction="horizontal" visible="true" id="formStartDate">
+			<mx:Canvas>
+				<cmp:EditDateField id="customerStartDate" valueCommit="customerEntryLogic.onValidateCheck(event);" visible="{this.authorisation}" />
+				<mx:TextInput editable="false" text="{this.customerStartDate.text}" width="{this.customerStartDate.width}" visible="{!this.authorisation}"/>
+			</mx:Canvas>
+		</mx:FormItem>
+
+		<!-- 支払サイトは 登録権限有無に応じて表示するかどうかを決める -->
+
+		<mx:FormItem label="担当者 :" required="false" direction="vertical" visible="true" id="formCustomerMembers">
+			<!-- 担当者リストの折り返し制御がうまくできないため Logic で制御する -->
+		</mx:FormItem>
+
+		<mx:FormItem label="備考 :" required="false" direction="horizontal" visible="true">
+			<mx:TextArea id="note" maxChars="128" width="350" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+		</mx:FormItem>
+
+		<mx:Spacer width="8" />
+
+		<mx:Canvas>
+			<mx:Button label="登録" click="customerEntryLogic.onButtonClick_entry_confirm(event);" id="btnEntry" visible="{this.authorisation}" />
+			<mx:Button label="戻る" click="customerEntryLogic.onButtonClick_close(event);" visible="{this.authorisation?(this.nextpage?false:true):false}" x="{btnEntry.width + 10}"/>
+			<mx:Button label="次の取引先情報へ" click="customerEntryLogic.onButtonClick_next_confirm(event);" visible="{this.authorisation?(this.nextpage?true:false):false}" id="btnNext" x="{btnEntry.width + 10}"/>
+			<mx:Button label="終了"             click="customerEntryLogic.onButtonClick_stop_confirm(event);" visible="{this.authorisation?(this.nextpage?true:false):false}" x="{btnNext.x + btnNext.width + 10}"/>
+			<mx:Button label="戻る" click="customerEntryLogic.onButtonClick_close(event);" visible="{!this.authorisation}"/>
+			<mx:LinkButton id="help"  label="ヘルプ" click="customerEntryLogic.onButtonClick_help(event);"  styleName="SmallText" x="{this.note.x + this.note.width - this.help.width}" />
+		</mx:Canvas>
+	</mx:Form>
+
+	<cmp:states>
+		<mx:State name="stsAuthorize">
+			<mx:AddChild relativeTo="{this.formStartDate}" position="after" creationPolicy="all">
+				<mx:FormItem label="支払サイト :" required="false" direction="horizontal" visible="{this.authorisation}">
+					<mx:TextInput id="billPayable" maxChars="64" width="237" valueCommit="customerEntryLogic.onValidateCheck(event);" editable="{this.authorisation}"/>
+				</mx:FormItem>
+			</mx:AddChild>
+		</mx:State>
+	</cmp:states>
+
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:StringValidator id="validatorCustomerType"  source="{this.customerType}"  required="true"  property="text" triggerEvent="" minLength="1" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorCustomerNo"    source="{this.customerNo}"    required="true"  property="text" triggerEvent="" minLength="2" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorCustomerName"  source="{this.customerName}"  required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 顧客略称はチェックしない -->
+		<!-- 代表者はチェックしない
+		<mx:StringValidator id="validatorLastName"      source="{this.lastName}"      required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorFirstName"     source="{this.firstName}"     required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorLastNameKana"  source="{this.lastNameKana}"  required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		<mx:StringValidator id="validatorFirstNameKana" source="{this.firstNameKana}" required="true"  property="text" triggerEvent="" enabled="{this.authorisation}"/>
+		-->
+		<!-- Webページはチェックしない -->
+		<mx:DateValidator   id="validatorStartDate" source="{this.customerStartDate}" required="false" property="text" inputFormat="YYYY/MM/DD" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 支払サイトはチェックしない -->
+		<!-- 担当者はチェックしない -->
+		<!-- 備考はチェックしない -->
+	</mx:Array>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="customerService" showBusyCursor="true">
+		<mx:method name="createCustomer"
+			result="customerEntryLogic.onResult_createCustomer(event)"
+			fault="customerEntryLogic.onFault_createCustomer(event)"
+			/>
+		<mx:method name="getCustomerCode"
+			result="customerEntryLogic.onResult_getCustomerCode(event)"
+			fault="customerEntryLogic.onFault_getCustomerCode(event)"
+			/>
+	</mx:RemoteObject>
+
+
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = true;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+				if (authorisation) {
+					this.currentState = "stsAuthorize"
+				}
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+
+
+			/**
+			 * 複数の取引先情報登録.
+			 */
+			 [Bindable]
+			 private var nextpage:Boolean = false;
+			 public function set batchentry(value:Boolean):void
+			 {
+			 	nextpage = value;
+			 }
+			 public function get batchentry():Boolean
+			 {
+			 	return nextpage;
+			 }
+		]]>
+	</mx:Script>
+</cmp:PopUpWindow>

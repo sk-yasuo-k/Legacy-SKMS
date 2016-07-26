@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.personnelAffair.logic.*"
+	close="logic.onClose_departmentChangeDlg(event)"
+	title="部署の異動"
+	>
+	<!-- Logicクラスの設定 -->
+	<logic:DepartmentChangeDlgLogic id="logic" />
+
+	<mx:VBox width="100%" height="100%">
+		<mx:Form width="100%">
+			<mx:FormItem label="社員名">
+				<mx:Label id="lblStaffName" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmChangeDate" label="異動日">
+				<mx:DateField id="dtfChangeDate" editable="true" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmDepartment" label="部署">
+				<mx:ComboBox />
+			</mx:FormItem>
+			<mx:FormItem id="fitmDepartmentHead" label="部長">
+				<mx:CheckBox label="就任(当該社員が部長の場合は「退任」と表示する)"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button id="btnOk" label="OK" click="logic.onClick_btnOk(event)"/>
+			<mx:Button id="btnCancel" label="キャンセル" click="logic.onClick_btnCancel(event)"/>
+			<mx:Spacer width="1"/>
+		</mx:HBox>
+		<mx:Spacer height="1"/>
+	</mx:VBox>
+</mx:TitleWindow>

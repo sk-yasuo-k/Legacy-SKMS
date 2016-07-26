@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:custom="subApplications.accounting.web.custom.*"
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:OverheadRequestLogic id="aslogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%">
+		<mx:HBox width="100%">
+			<mx:Label text="諸経費一覧" styleName="LargeBoldText" />
+			<mx:Spacer width="10" />
+			<custom:OverheadSearch id="overheadSearch"
+				requesting="aslogic.onRequestingOverheads(event);"
+				result="aslogic.onResult_getRequestOverheads(event);"
+				fault="aslogic.onFault_getRequestOverheads(event);"/>
+		</mx:HBox>
+
+		<mx:VDividedBox liveDragging="true" width="100%" height="100%">
+			<mx:HDividedBox width="100%" height="40%">
+				<!-- 諸経費申請一覧 -->
+				<mx:VBox width="70%" height="100%">
+					<mx:HBox height="24">
+						<mx:Repeater id="rpLinkList" dataProvider="">
+							<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+								enabled="{rpLinkList.currentItem.enabled}"
+								click="aslogic.onClick_linkList(event);" />
+						</mx:Repeater>
+					</mx:HBox>
+					<custom:OverheadDataGrid id="overheadList" width="100%" height="100%"
+						change="aslogic.onChangeDataGrid_overheadList(event);"
+						/>
+				</mx:VBox>
+
+				<!-- 諸経費申請履歴一覧 -->
+				<mx:VBox width="30%" height="100%">
+					<mx:HBox height="24">
+						<mx:Label text="申請の履歴"  styleName="LargeText"/>
+					</mx:HBox>
+					<custom:HistoryDataGrid id="overheadHistory" width="100%" height="100%"
+						editable="false" allowMultipleSelection="false" sortableColumns="false"
+						verticalScrollPolicy="on"  rowHeight="24" variableRowHeight="true"
+						/>
+				</mx:VBox>
+			</mx:HDividedBox>
+
+			<!-- 諸経費申請明細一覧 -->
+			<mx:VBox width="100%" height="60%" >
+				<mx:Label text="諸経費明細"  styleName="LargeText"/>
+				<custom:OverheadDetailDataGrid id="overheadDetail" width="100%" height="100%"
+					editable="false" allowMultipleSelection="true" sortableColumns="false"
+					verticalScrollPolicy="auto"  rowHeight="24"
+					visibleReceipt="true" authorizeApproval="{this._authorizeApproval}"
+					/>
+			</mx:VBox>
+		</mx:VDividedBox>
+
+	</mx:VBox>
+
+	<mx:RemoteObject id="srv" destination="overheadService" showBusyCursor="true">
+		<mx:method name="deleteOverhead" result="aslogic.onResult_deleteOverhead(event);"
+										 fault="aslogic.onFault_deleteOverhead(event);"
+		/>
+		<mx:method name="copyOverhead" result="aslogic.onResult_copyOverhead(event);"
+									   fault="aslogic.onFault_copyOverhead(event);"
+		/>
+		<mx:method name="acceptOverhead"  result="aslogic.onResult_acceptOverhead(event)"
+										  fault="aslogic.onFault_acceptOverhead(event)"
+		/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.accounting.logic.AccountingLogic;
+			/**
+			 * 承認権限（PM or 総務）の設定.
+			 *
+			 * @param value 権限.
+			 */
+			[Bindable]
+			private var _authorizeApproval:Boolean = false;
+			public function set authorizeApproval(value:Boolean):void
+			{
+				_authorizeApproval = value;
+			}
+			public function get authorizeApproval():Boolean
+			{
+				return _authorizeApproval;
+			}
+
+			/** 動作モード */
+			[Bindable]
+			private var _actionMode:String = AccountingLogic.ACTION_VIEW_REQUEST;
+			public function get actionMode():String
+			{
+				return _actionMode;
+			}
+
+		]]>
+	</mx:Script>
+</mx:Module>

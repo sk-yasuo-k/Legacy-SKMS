@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:columns>
+		<mx:DataGridColumn headerText="担当者"     dataField="fullName" dataTipField="fullNameKana" visible="true"/>
+		<mx:DataGridColumn headerText="部署"       dataField="department" visible="true"/>
+		<mx:DataGridColumn headerText="役職"       dataField="position" visible="true"/>
+		<mx:DataGridColumn headerText="電話"       dataField="telephone" visible="true"/>
+		<mx:DataGridColumn headerText="FAX"        dataField="fax" visible="true"/>
+		<mx:DataGridColumn headerText="携帯電話"   dataField="telephone2" visible="{this.authorisation}"/>
+		<mx:DataGridColumn headerText="Email"      dataField="email" visible="true"/>
+		<mx:DataGridColumn headerText="住所"       dataField="address" visible="true"/>
+		<mx:DataGridColumn headerText="備考"       dataField="note" visible="{this.authorisation}"/>
+	</mx:columns>
+
+
+	<mx:Script>
+		<![CDATA[
+			import subApplications.customer.dto.CustomerMemberDto;
+			private var dummy:CustomerMemberDto = new CustomerMemberDto();
+
+			/** 登録権限 */
+			[Bindable]
+			private var authorisation:Boolean = false;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		]]>
+	</mx:Script>
+</mx:DataGrid>

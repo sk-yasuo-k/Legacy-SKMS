@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*" xmlns:cmp="components.*">
+	
+	<!-- Logicクラスの設定 -->
+	<logic:WorkingHoursEntryLogic id="logic" />
+
+	<mx:VBox x="5" y="0" width="99%" height="99%" >
+		<mx:Label text="勤務管理表" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton id="linkPreviousMonth" toolTip="前月" icon="@Embed('images/arrow_previous.gif')"
+				click="logic.onClick_linkPreviousMonth(event);"/>
+			<mx:Label id="lblWorkingMonth" text="0000年00月" styleName="LargeText"/>
+			<mx:LinkButton id="linkNextMonth" toolTip="翌月" icon="@Embed('images/arrow_next.gif')"
+				click="logic.onClick_linkNextMonth(event);"/>
+			<mx:VBox id="vbxShowDateSetting" width="100%" height="100%">
+				<mx:LinkButton id="linkShowDateSetting" label="指定月にジャンプ..."
+					click="logic.onClick_linkShowDateSetting(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideDateSetting" width="100%" height="0">
+				<mx:VBox backgroundColor="0xECE3EE">
+					<mx:Spacer height="1" />
+					<mx:HBox>
+						<mx:Spacer width="1" />
+						<mx:LinkButton id="linkHideDateSetting" label="閉じる"
+							click="logic.onClick_linkHideDateSetting(event);"/>
+						<mx:Label text="勤務月" styleName="LargeText"/>
+						<mx:NumericStepper id="stpYear" minimum="2007" stepSize="1" maximum="2099"/>
+						<mx:Label text="年" styleName="LargeText"/>
+						<mx:NumericStepper id="stpMonth" minimum="1" maximum="12" stepSize="1"/>
+						<mx:Label text="月" styleName="LargeText"/>
+						<mx:Button id="btnRefresh" label="表示"
+							click="logic.onClick_btnRefresh(event)"/>
+						<mx:Spacer width="1" />
+					</mx:HBox>
+					<mx:Spacer height="1" />
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Repeater id="rpLinkList" dataProvider="">
+				<mx:LinkButton id="linkList" label="{rpLinkList.currentItem.label}"
+					enabled="{rpLinkList.currentItem.enabled}"
+					click="logic.onClick_linkList(event);" />
+			</mx:Repeater>
+		</mx:HBox>
+
+		<cmp:WorkingHoursTable
+			id="tblWorkingHours"
+			editable="true"
+			width="100%"
+			height="100%"
+			loadComplete="logic.onLoadComplete_tblWorkingHours(event);"
+			changeInputData="logic.onChangeInputData_tblWorkingHours(event);"
+			optimisticLockSubmit = "logic.onOptimisticLockSubmit_tblWorkingHours(event);"
+			optimisticLockSubmitCancel = "logic.onOptimisticLockSubmitCancel_tblWorkingHours(event);"
+		    faultUpdate="logic.onFaultUpdate_tblWorkingHours(event);"
+			faultSubmit="logic.onFaultSubmit_tblWorkingHours(event);"
+			faultSubmitCancel="logic.onFaultSubmitCancel_tblWorkingHours(event);"
+		/>
+	</mx:VBox>
+
+</mx:Module>

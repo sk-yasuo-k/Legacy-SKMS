@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="createCompletedFunction(event)"
+	xmlns:cmp="components.*" currentState="noPicture">
+	<mx:states>
+		<mx:State name="noPicture">
+			<mx:RemoveChild target="{photo}"/>				
+		</mx:State>
+		<mx:State name="picture">
+			<mx:RemoveChild target="{noPhoto}"/>				
+		</mx:State>		
+	</mx:states>
+	
+	<mx:VBox height="100%" width="100%" horizontalAlign="center">			
+		<mx:Canvas height="150" width="200"	backgroundColor="#ccccff" id="Picture">
+			<mx:Image height="150" width="200" id="photo" source="{data.photo}" scaleContent="true" autoLoad="false" />
+			<mx:Text id="noPhoto" text="No Image" fontSize="15" x="30" y="60" fontWeight="bold"/>
+		</mx:Canvas>	
+		<mx:Text text="{data.menuName}" fontSize="13" fontWeight="bold" />
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Text text="基本価格"/>
+			<mx:Text text="{priceFormat(data.price)}"/>
+		</mx:HBox>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.collections.ArrayCollection;
+			
+			//画面生成終了後
+			public function createCompletedFunction(e:FlexEvent):void
+			{
+				if(data.photo != null){
+					this.currentState = "picture";
+				}
+				this.photo.load();
+			}			
+			
+			public function optionPriceLabel(item:Object):String
+			{
+				var price:String = "";
+        		if (item.price >= 0) {
+        			price = "(+" + item.price + "円)";
+        		} else if(item.price < 0) {
+        			price = "(-" + item.price + "円)";
+        		}
+            	return item.label + " " + price;
+			}
+			
+			public function priceFormat(item:Object):String
+			{				
+				return item.toString() + "円"	
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>

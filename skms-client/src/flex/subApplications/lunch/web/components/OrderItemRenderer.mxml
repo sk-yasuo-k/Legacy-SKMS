@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:VBox>
+		<mx:Text text="{data.menuName}"/>
+		<mx:Repeater
+			id="options" dataProvider="{data.options}">
+			<mx:Text
+				text="{options.currentItem.optionName}" />
+		</mx:Repeater>
+		<mx:HBox>
+			<mx:Text text="合計金額" />
+			<mx:Text styleName="price" text="{data.price}円"/>	
+		</mx:HBox>
+		
+		<mx:HBox>
+			<mx:Text text="キャンセル期限：" />
+			<mx:Text text="{data.limit}" />			
+		</mx:HBox>
+		<mx:Button label="キャンセル" />
+	</mx:VBox>
+</mx:Canvas>

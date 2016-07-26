@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 alternatingItemColors="[0xffffff,0xffffff]"
+	 editable="true">
+       <mx:Script>
+           <![CDATA[
+           	import mx.utils.StringUtil;
+			import mx.formatters.DateFormatter;
+           	import mx.events.DropdownEvent;
+           	
+			import mx.controls.DataGrid;
+   			import mx.controls.Label;
+   			import mx.controls.dataGridClasses.*;
+   			import subApplications.generalAffair.dto.WorkingHoursDailyDto;
+           	
+		    private var _timeValue:Date;
+		    private var _timeText:String;
+
+  
+			/**
+			 * Date型時刻データ取得処理.
+			 *
+			 * @return Date型の時刻データ.
+			 */
+		    public function get timeValue():Date
+		    {
+		    	var grid:DataGrid = DataGrid(DataGridListData(listData).owner);
+		    	var	gridData:DataGridListData = listData as DataGridListData;
+		    	var whDto:WorkingHoursDailyDto = grid.selectedItem as WorkingHoursDailyDto;
+
+				_timeValue = null;
+				if (StringUtil.trim(text).length > 0) {
+			    	var sDate:Array = text.split(":");
+			    	if (sDate.length == 1 || sDate.length == 2) {
+			    		var n1:Number = parseInt(sDate[0]);
+			    		var n2:Number = 0;
+			    		if (sDate.length == 2) {
+				    		n2 = parseInt(sDate[1]);
+			    		}
+			    		if (!isNaN(n1) && !isNaN(n2) && n1 <= 33) {
+			    			n1 = n1 % 24;
+				    		_timeValue = new Date(whDto.workingDate.fullYear,
+				    			whDto.workingDate.month, whDto.workingDate.date, n1, n2, 0, 0);
+							// 開始時刻より前の日付になる場合は次の日とみなす。
+							if (gridData.dataField == "startTime"
+								&& whDto.quittingTime != null) {
+								if (_timeValue >= whDto.quittingTime) {
+									whDto.quittingTime.setTime(whDto.quittingTime.getTime()
+										+ (24 * 60 * 60 * 1000));
+								}
+							}
+							if (gridData.dataField == "quittingTime"
+								&& whDto.startTime != null) {
+								if (whDto.startTime >= _timeValue) {
+									_timeValue.setTime(_timeValue.getTime()
+										+ (24 * 60 * 60 * 1000));
+								}						
+							}
+			    		}
+			    	}
+		    	}
+		        return _timeValue;
+		    }
+
+			/**
+			 * データチェック処理.
+			 *
+			 * @return 入力値正常/不正.
+			 */
+		    public function isValidDate():Boolean
+		    {
+		    	if (StringUtil.trim(text).length != 0) {
+					// データを取得する.
+					var date:Date = timeValue;
+					// 時刻でない場合は不正とする
+					if (!date)	return false;
+		    		// 15分区切りでない場合は不正とする
+		    		if (date.getMinutes() % 15 != 0) 
+		    			return false;
+		    	}
+		    	return true;
+		    }
+           ]]>
+       </mx:Script>
+</mx:ComboBox>

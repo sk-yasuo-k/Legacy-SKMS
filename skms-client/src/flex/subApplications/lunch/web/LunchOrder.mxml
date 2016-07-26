@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="100%" 
+	xmlns:components="components.*"
+	xmlns:logic="subApplications.lunch.logic.*">
+
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getShopList" 
+					result="lunchOrderLogic.onResult_getShopList(event)" 
+					fault="lunchOrderLogic.onFault_getShopList(event)" />
+		<mx:method name="getMenuCategory" 
+					result="lunchOrderLogic.onResult_getMenuCategory(event)" 
+					fault="lunchOrderLogic.onFault_getMenuCategory(event)" />						
+		<mx:method name="getMenuList" 
+					result="lunchOrderLogic.onResult_getShopMenuList(event)" 
+					fault="lunchOrderLogic.onFault_getShopMenuList(event)" />
+	</mx:RemoteObject>
+	
+	<logic:LunchOrderLogic id="lunchOrderLogic" />
+	
+	<mx:VBox height="100%" width="100%" >
+		<mx:HBox height="100%" width="100%" >
+			<mx:Panel title="注文" height="100%" width="400">
+				<mx:HBox height="100%" width="100%">
+				<mx:Spacer/>
+				<mx:VBox height="100%" width="100%">
+					<mx:HBox>
+						<mx:Text text="店舗選択" />
+						<components:ComboBoxEx id="shopList" labelField="shopName" change="lunchOrderLogic.onChange_shopList(event)"/>									
+					</mx:HBox>
+					<mx:Text text="メニュー検索" fontWeight="bold"/>
+					<mx:Grid>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="カテゴリ" />		
+							</mx:GridItem>
+							<mx:GridItem>
+								<components:ComboBoxEx id="searchComboBox" labelField="categoryDisplayName" change="lunchOrderLogic.onChange_categoryList(event)"/>																
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="メニュー名" />										
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:TextInput
+									id="searchText" change="lunchOrderLogic.onChange_search()"/>						
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>						
+					<mx:DataGrid id="menuList" labelField="menuName" click="lunchOrderLogic.onClick_menuList(event)" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn headerText="メニュー" width="250" dataField="menuName" textAlign="left" editable="false">
+						  		<mx:headerRenderer>
+			                		<mx:Component>
+			                			<mx:Label textAlign="center"/>
+			                		</mx:Component>
+			                	</mx:headerRenderer>
+							</mx:DataGridColumn>							
+							<mx:DataGridColumn headerText="基本価格" width="80" dataField="price" textAlign="right" editable="false">
+						  		<mx:headerRenderer>
+			                		<mx:Component>
+			                			<mx:Label textAlign="center"/>
+			                		</mx:Component>
+			                	</mx:headerRenderer>
+							</mx:DataGridColumn>														
+						</mx:columns>
+					</mx:DataGrid>
+					<mx:Spacer/>
+				</mx:VBox>
+				</mx:HBox>
+			</mx:Panel>										
+		</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

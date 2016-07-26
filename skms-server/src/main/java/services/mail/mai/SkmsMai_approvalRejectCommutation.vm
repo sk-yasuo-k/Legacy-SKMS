@@ -1,0 +1,22 @@
+Subject: 【SKMS:通勤費】通勤費${data.approvalType}差し戻しのお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.approvalName}さんが通勤費を差し戻しました。
+通勤費は提出前の状態に戻りました。
+#if(${data.toName} == ${data.applicantName})
+修正後に再度「申請」してください。
+#end
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請者　　　　　　 ： ${data.applicantName}
+◆通勤月　　　　　　 ： ${data.commutationYear}年${data.commutationMonth}月
+◆金額　　　　　　　 ： ${data.payment}
+◆差し戻し理由　　　 ： ${data.reason}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

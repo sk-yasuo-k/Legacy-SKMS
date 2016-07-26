@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" width="100%" 
+	xmlns:components="subApplications.lunch.web.components.*" 
+	xmlns:logic="subApplications.lunch.logic.*">
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getMMenuList" 
+					result="registerShopMenuLogic.onResult_getMMenuList(event)" 
+					fault="registerShopMenuLogic.onFault_getMMenuList(event)" />
+	</mx:RemoteObject>
+
+	<logic:RegisterShopMenuLogic id="registerShopMenuLogic" />	
+	
+	<mx:Panel title="店別ショップ提供メニュー登録" height="100%" width="100%">
+		<mx:HBox height="100%" width="100%">
+			<mx:Panel title="既存メニュー" height="100%" >
+				<mx:HBox>
+					<mx:Text text="店名" />
+					<mx:ComboBox
+						id="shopComboBox" />
+				</mx:HBox>
+				<components:SearchList height="100%" />
+				<mx:Button label="削除" />
+			</mx:Panel>
+			<mx:Panel title="店別ショップ提供メニュー登録・更新" >
+				<mx:HBox>					
+					<mx:Grid>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="メニュー名" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:Text width="100%"
+									id="menuName" />
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="値段" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:Text width="100%"
+									id="price" />
+								<mx:Text text="円" />
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="提供開始日時" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:DateField 
+									id="startDate" />
+							</mx:GridItem>
+						</mx:GridRow>
+						<mx:GridRow>
+							<mx:GridItem>
+								<mx:Text text="提供終了日時" />
+							</mx:GridItem>
+							<mx:GridItem>
+								<mx:DateField 
+									id="finishDate" />
+							</mx:GridItem>
+						</mx:GridRow>
+					</mx:Grid>
+				</mx:HBox>
+				<mx:HBox horizontalAlign="right" width="100%">					
+					<mx:Button label="新規" />
+					<mx:Button label="更新" />
+				</mx:HBox>				
+			</mx:Panel>
+			<mx:Panel title="登録済全メニュー" height="100%">
+				<components:SearchList height="100%" />
+			</mx:Panel>			
+		</mx:HBox>
+	</mx:Panel>
+</mx:Module>

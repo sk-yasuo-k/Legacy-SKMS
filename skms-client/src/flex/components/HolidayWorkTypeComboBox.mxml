@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 creationComplete="onCreateComplete(event)"
+	 alternatingItemColors="[0xffffff,0xffffff]"
+	 editable="false">
+
+       <mx:Script>
+           <![CDATA[
+           	import mx.collections.ArrayCollection;
+           	import mx.rpc.events.ResultEvent;
+           	import mx.rpc.events.FaultEvent;
+           	import mx.events.FlexEvent;
+
+			/**
+			 * 生成完了イベントハンドラ.
+			 *
+			 * @param e FlexEvent
+			 */
+		    public function onCreateComplete(e:FlexEvent):void
+		    {
+		    }
+
+			/**
+			 * 休日勤務タイプ取得処理.
+			 *
+			 * @return 休日勤務タイプ.
+			 */
+		    public function get holidayWorkType():int
+		    {
+		    	return this.selectedItem.holidayWorkType;
+		    }
+
+		    ]]>
+       </mx:Script>
+</mx:ComboBox>

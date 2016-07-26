@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" 
+	xmlns:cmp="components.*" xmlns:logic="subApplications.lunch.logic.*">
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="lunchService" destination="lunchService">
+		<mx:method name="getOptionList" 
+					result="registerOptionLogic.onResult_getOptionList(event)" 
+					fault="registerOptionLogic.onFault_getOptionList(event)" />
+		<mx:method name="updateOptionData"
+					result="registerOptionLogic.onResult_updateOptionData(event)" 
+					fault="registerOptionLogic.onFault_updateOptionData(event)" />
+		<mx:method name="insertOptionData"
+					result="registerOptionLogic.onResult_insertOptionData(event)" 
+					fault="registerOptionLogic.onFault_insertOptionData(event)" />	
+		<mx:method name="deleteOptionData"
+					result="registerOptionLogic.onResult_deleteOptionData(event)" 
+					fault="registerOptionLogic.onFault_deleteOptionData(event)" />															
+	</mx:RemoteObject>
+
+	<logic:RegisterOptionLogic id="registerOptionLogic" />
+
+	<mx:Panel title="オプション管理" height="100%">
+		<mx:HBox height="100%" width="100%">
+			<mx:Panel title="既存オプション"  height="100%">			
+				<mx:VBox height="100%">
+					<mx:HBox>
+						<mx:Text text="検索" />
+							<mx:TextInput id="search" change="registerOptionLogic.onChange_search()"/>
+					</mx:HBox>
+					<mx:List id="optionList" labelField="optionName" width="100%" height="100%"
+						itemClick="registerOptionLogic.onClick_optionList(event)"/>
+					<mx:Button id="deleteOption" label="削除" enabled="false" click="registerOptionLogic.onClick_optionDelete(event)"/>								
+				</mx:VBox>
+			</mx:Panel>
+			<mx:Panel title="オプション新規登録・更新">
+				<mx:Grid>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="オプション名(管理用)" />
+						</mx:GridItem>
+						<mx:GridItem>							
+							<mx:TextInput id="optionName" />
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="オプション名(メニュー表示)" />
+						</mx:GridItem>
+						<mx:GridItem>							
+							<mx:TextInput id="displayName" />
+						</mx:GridItem>
+					</mx:GridRow>					
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="オプションコード" />
+						</mx:GridItem>
+						<mx:GridItem>							
+							<mx:TextInput id="code" />
+						</mx:GridItem>
+					</mx:GridRow>
+					<mx:GridRow>
+						<mx:GridItem>
+							<mx:Text text="値段" />
+						</mx:GridItem>
+						<mx:GridItem>							
+							<mx:TextInput id="price" />
+						</mx:GridItem>
+					</mx:GridRow>
+				</mx:Grid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<mx:Button label="新規" click="registerOptionLogic.onClick_optionInsert(event)"/>
+					<mx:Button label="更新" id="updateOption" enabled="false" click="registerOptionLogic.onClick_optionUpdate(event)"/>										
+				</mx:HBox>
+			</mx:Panel>
+		</mx:HBox>		
+	</mx:Panel>
+</mx:Module>

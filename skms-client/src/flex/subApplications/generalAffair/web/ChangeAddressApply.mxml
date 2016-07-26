@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.generalAffair.logic.*"
+	xmlns:dataGrid="subApplications.generalAffair.web.custom.*"
+	xmlns:edit="components.*"
+	>
+	<mx:Script>
+		<![CDATA[
+			import logic.Logic;
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+	
+	<!-- Logicクラスの設定 -->
+	<logic:ChangeAddressApplyLogic id="changeAddressApplyLogic" />
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="95%" height="95%" >
+		<mx:HBox width="100%">
+			<mx:Label text="住所変更"  styleName="LargeBoldText" fontWeight="bold" fontSize="12"/>
+			<mx:Spacer width="10" />
+		</mx:HBox>
+		<mx:HDividedBox height="100%">
+			<!-- 現住所 -->
+			<mx:VDividedBox height="100%">
+				<!-- 現住所表示 -->
+				<mx:VBox width="100%">
+					<mx:HBox width="100%">
+					<mx:Label text="現住所" styleName="LargeText" fontWeight="bold" fontSize="11"/>
+						<mx:Spacer width="0"/>
+						<mx:LinkButton label="変更" id="ChangeLinkButton" fontSize="12"
+								click="changeAddressApplyLogic.onClick_linkList_change(event)"/>
+					</mx:HBox>
+					<mx:Form borderStyle="solid">
+						<mx:FormItem label="引越日">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+								<mx:Text id="moveDate" width="100" height="19"/>
+							</mx:Form>
+						</mx:FormItem>
+						<mx:FormItem label="郵便番号" direction="horizontal">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">						
+								<mx:Text id="postalCode1" width="40" height="19"/>
+							</mx:Form>	
+							<mx:FormItem label="-">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">						
+								<mx:Text id="postalCode2" width="40" height="19"/>
+							</mx:Form>	
+							</mx:FormItem>
+						</mx:FormItem>
+						<mx:FormItem label="都道府県">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">						
+								<mx:Text id="prefectureName" width="100" height="19"/>
+							</mx:Form>	
+						</mx:FormItem>
+						<mx:FormItem label="市区町村番地" direction="horizontal" id="AddressNow">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0"
+								paddingLeft="0" paddingRight="0">												
+								<mx:Text id="ward" width="260" height="19"/>
+							</mx:Form>		
+							</mx:FormItem>
+						<mx:FormItem label="ビル">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">																		
+								<mx:Text id="houseNumber" width="260" height="19"/>
+							</mx:Form>			
+						</mx:FormItem>
+						<mx:FormItem label="市区町村(フリガナ)">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">						
+								<mx:Text id="wardKana" width="260" height="19"/>
+							</mx:Form>											
+						</mx:FormItem>
+						<mx:FormItem label="ビル(フリガナ)">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">												
+								<mx:Text id="houseNumberKana" width="260" height="19"/>
+							</mx:Form>																			
+						</mx:FormItem>
+						<mx:FormItem label="自宅電話番号" direction="horizontal">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">																		
+								<mx:Text id="homePhoneNo1" width="40" height="19"/>
+							</mx:Form>			
+							<mx:FormItem label="-">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+									<mx:Text id="homePhoneNo2" width="40" height="19"/>
+							</mx:Form>
+							</mx:FormItem>
+							<mx:FormItem label="-">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+								<mx:Text id="homePhoneNo3" width="40" height="19"/>
+							</mx:Form>	
+							</mx:FormItem>
+						</mx:FormItem>
+						<mx:FormItem label="表札名" direction="horizontal">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+								<mx:Text id="nameplate" width="70" height="19"/>
+							</mx:Form>		
+							<!-- 世帯主か非世帯主かを表示する -->
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+								<mx:Text id="householder" width="70" height="19"/>
+							</mx:Form>		
+						</mx:FormItem>
+						<mx:FormItem label="連絡のとりやすい社員">
+							<mx:Form borderStyle="solid" 
+								paddingTop="0" paddingBottom="0" 
+								paddingLeft="0" paddingRight="0">
+								<mx:Text id="associateStaff" width="200" height="19"/>
+							</mx:Form>			
+						</mx:FormItem>					
+					</mx:Form>
+				</mx:VBox>
+				
+				<!-- 現住所の申請履歴 -->
+				<mx:VBox height="100%" width="100%">
+					<mx:HBox height="24">
+						<mx:Label text="申請の履歴" styleName="LargeText" fontSize="12"/>
+					</mx:HBox>
+					<mx:HBox height="100%">
+						<mx:DataGrid id="staffAddressList" width="100%" height="100%">	
+							<mx:columns>
+								<mx:DataGridColumn headerText="日時" dataField="historyRegistrationTime" labelFunction="{LabelUtil.dateTimeLabel}" width="130"/>
+								<mx:DataGridColumn headerText="内容" dataField="addressActionName" width="102"/>
+							</mx:columns>
+						</mx:DataGrid>							
+					</mx:HBox>							
+				</mx:VBox>
+			</mx:VDividedBox>				
+
+			<!-- 新住所 -->
+			<mx:VDividedBox height="100%" id="NewAddressArea" visible="false">
+				<!-- 新住所表示 -->	
+				<mx:VBox width="100%" id="NewAddress">
+					<mx:HBox height="24" borderStyle="none">
+						<mx:Label text="新住所" styleName="LargeText" fontWeight="bold" fontSize="11"/>
+						<mx:Spacer/>
+
+						<mx:LinkButton id="copyAddress" label="現住所のコピー"
+							enabled="false"
+							click="changeAddressApplyLogic.onClick_linkList_copy_address();" />
+							
+						<mx:LinkButton id="preserve" label="保存"
+							enabled="true"
+							click="changeAddressApplyLogic.onClick_linkList_preserve();" />
+							
+						<mx:LinkButton id="presentConfirm" label="提出"
+							enabled="false"
+							click="changeAddressApplyLogic.onClick_linkList_present_confirm();" />														
+
+						<mx:LinkButton id="cancelConfirm" label="提出取り消し"
+							enabled="false"
+							click="changeAddressApplyLogic.onClick_linkList_cancel_confirm();" />
+					</mx:HBox>
+					<mx:Form borderStyle="solid">
+						<mx:FormItem label="引越日">
+							<edit:EditDateField id="newMoveDate"/>
+						</mx:FormItem>
+						<mx:FormItem label="郵便番号" direction="horizontal">
+							<mx:TextInput  id="newPostalCode1" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="3"/>
+							<mx:FormItem label="-">
+								<mx:TextInput  id="newPostalCode2" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+							</mx:FormItem>
+							<mx:Button label="検索" click="changeAddressApplyLogic.onClick_linkPostalCode(event)" />
+						</mx:FormItem>
+						<mx:FormItem label="都道府県">
+							<edit:ComboBoxEx id="newPrefectureList" width="100"/>
+						</mx:FormItem>
+						<mx:FormItem label="市区町村番地" direction="horizontal" id="AddressNew">
+							<mx:TextInput id="newWard" width="260" imeMode="JAPANESE_HIRAGANA"/>
+							<mx:Button label="地図" click="changeAddressApplyLogic.onClick_linkGoogleMap(event)" />
+						</mx:FormItem>
+						<mx:FormItem label="ビル">
+							<mx:TextInput id="newHouseNumber" width="260" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:FormItem>
+						<mx:FormItem label="市区町村(フリガナ)">
+							<mx:TextInput id="newWardKana" width="260" imeMode="JAPANESE_KATAKANA_HALF"/>
+						</mx:FormItem>
+						<mx:FormItem label="ビル(フリガナ)">
+							<mx:TextInput id="newHouseNumberKana" width="260" imeMode="JAPANESE_KATAKANA_HALF"/>
+						</mx:FormItem>
+						<mx:FormItem label="自宅電話番号" direction="horizontal">
+							<mx:TextInput id="newHomePhoneNo1" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+							<mx:FormItem label="-">
+								<mx:TextInput id="newHomePhoneNo2" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+							</mx:FormItem>
+							<mx:FormItem label="-">
+								<mx:TextInput id="newHomePhoneNo3" width="40" imeMode="ALPHANUMERIC_HALF" restrict="[0-9]" maxChars="4"/>
+							</mx:FormItem>
+						</mx:FormItem>
+						<mx:FormItem label="表札名" direction="horizontal">
+							<mx:TextInput id="newNameplate" width="70" imeMode="JAPANESE_HIRAGANA"/>
+							<mx:FormItem label="世帯主">
+								<mx:CheckBox id="newHouseholder" selected="false"/>
+							</mx:FormItem>
+						</mx:FormItem>
+						<mx:FormItem label="連絡のとりやすい社員">
+							<mx:TextInput id="newAssociateStaff" width="200" imeMode="JAPANESE_HIRAGANA"/>
+						</mx:FormItem>					
+					</mx:Form>
+				</mx:VBox>
+				
+				<!-- 新住所の申請履歴 -->
+				<mx:VBox height="100%" width="100%">
+					<mx:HBox height="24">
+						<mx:Label text="申請の履歴"  styleName="LargeText" fontSize="12"/>
+					</mx:HBox>
+					<mx:HBox height="100%">
+						<mx:DataGrid id="newStaffAddressList" width="100%" height="100%">
+							<mx:columns>
+								<mx:DataGridColumn headerText="日時" dataField="historyRegistrationTime" labelFunction="{LabelUtil.dateTimeLabel}" width="130"/>
+								<mx:DataGridColumn headerText="内容" dataField="addressActionName" width="102"/>
+							</mx:columns>
+						</mx:DataGrid>							
+					</mx:HBox>							
+				</mx:VBox>
+			</mx:VDividedBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+	
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="changeAddressApplyService" showBusyCursor="true">	
+
+		<!-- 都道府県コンボボックスを表示する -->
+		<mx:method name="getMPrefecture"
+			result="changeAddressApplyLogic.onResult_getMPrefecture(event)"
+			fault="changeAddressApplyLogic.onFault_getMPrefecture(event)"
+		/>
+		
+		<!-- 現住所を表示する -->
+		<mx:method name="getStaffAddress"
+			result="changeAddressApplyLogic.onResult_getStaffAddress(event)"
+			fault="changeAddressApplyLogic.onFault_getStaffAddress(event)"
+		/>
+				
+		<!-- 新住所を申請する -->
+		<mx:method name="getNewStaffAddress"
+			result="changeAddressApplyLogic.onResult_getNewStaffAddress(event)"
+			fault="changeAddressApplyLogic.onFault_getNewStaffAddress(event)"
+		/>
+		
+		<!-- 住所を更新する(保存ボタン押下) -->
+		<mx:method name="renewStaffAddress"
+			result="changeAddressApplyLogic.onResult_renewStaffAddress(event)"
+			fault="changeAddressApplyLogic.onFault_renewStaffAddress(event)"
+		/>
+
+		<!-- 履歴を更新する -->
+		<mx:method name="insertStaffAddressHistory"
+			result="changeAddressApplyLogic.onResult_renewStaffAddressHistory(event)"
+			fault="changeAddressApplyLogic.onFault_renewStaffAddressHistory(event)"
+		/>		
+	</mx:RemoteObject>
+	
+	<!-- 郵便番号の自動取得 -->
+	<mx:HTTPService id="zip_service"
+	    url="http://api.aoikujira.com/zip/zip.php"
+	    method="GET" 
+	    resultFormat="e4x"
+	    result="changeAddressApplyLogic.zip_service_onResult(event)"
+	    fault="changeAddressApplyLogic.zip_service_onFault(event)">
+	    <mx:request>
+	        <zn>{newPostalCode1.text + newPostalCode2.text}</zn>
+	     </mx:request>
+	 </mx:HTTPService>
+
+	
+</mx:Module>

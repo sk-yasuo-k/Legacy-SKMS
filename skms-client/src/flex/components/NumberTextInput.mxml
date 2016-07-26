@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml"
+	focusOut="onFocusOut(event);">
+
+	<mx:Script>
+		<![CDATA[
+			import com.googlecode.kanaxs.Kana;
+			import mx.utils.ObjectUtil;
+			import mx.utils.StringUtil;
+			private function onFocusOut(event:Event):void
+			{
+				var cnv:String = "";
+				var hankaku:String = Kana.toHankakuCase(this.text);
+				hankaku = StringUtil.trim(hankaku);
+				if (hankaku.length > 0) {
+					var number:Number = Number(hankaku);
+					if (!isNaN(number)) {
+						var flg:Boolean = true;
+
+						// 範囲チェック.
+						if (_disabledRange) {
+							if (_disabledRange.hasOwnProperty("rangeStart")) {
+								if (!(Number(_disabledRange.rangeStart) <= number)) {
+									flg = false;
+								}
+							}
+							if (_disabledRange.hasOwnProperty("rangeEnd")) {
+								if (!(number <= _disabledRange.rangeEnd)) {
+									flg = false;
+								}
+							}
+						}
+
+						// データチェック.
+						for each (var item:Object in _disabledItems) {
+							if (ObjectUtil.compare(number, Number(item)) == 0 ) {
+								flg = false;
+								break;
+							}
+						}
+
+						if (flg) {
+							cnv = hankaku;
+						}
+					}
+				}
+				this.text = cnv;
+			}
+
+
+			private var _disabledItems:Array;
+			public function set disabledItems(value:Array):void
+			{
+				_disabledItems = value;
+			}
+
+			private var _disabledRange:Object;
+			public function set disabledRange(value:Object):void
+			{
+				if (value) {
+					if (value.hasOwnProperty("rangeStart") || value.hasOwnProperty("rangeEnd")) {
+						_disabledRange = value;
+						return;
+					}
+				}
+				_disabledRange = null;
+			}
+		]]>
+	</mx:Script>
+</mx:TextInput>

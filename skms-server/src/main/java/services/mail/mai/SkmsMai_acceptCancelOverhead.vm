@@ -1,0 +1,21 @@
+Subject: 【SKMS:諸経費】諸経費受領取り消しのお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.applicantName}さんが諸経費受領を取り消しました。
+諸経費は受領前の状態に戻りました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆申請ID　　　　　　 ： ${data.overheadId}
+◆申請者　　　　　　 ： ${data.applicantName}
+◆プロジェクトコード ： ${data.projectCode}
+◆プロジェクト名　　 ： ${data.projectName}
+◆金額　　　　　　　 ： ${data.expense}
+◆理由　　　　　　　 ： ${data.reason}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

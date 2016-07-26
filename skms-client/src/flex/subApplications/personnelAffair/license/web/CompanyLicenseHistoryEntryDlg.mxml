@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.license.logic.*"
+	xmlns:edit="components.*"
+	close="CompanyLicenseHistoryEntryDlgLogic.onClose_companyLicenseHistoryEntryDlg(event)"
+>
+	
+	<!-- Logicクラスの設定 -->
+	<logic:CompanyLicenseHistoryEntryDlgLogic id="CompanyLicenseHistoryEntryDlgLogic" />
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="companyLicenseService" destination="companyLicenseService">
+		<!-- 資格手当取得履歴の取得する -->
+		<mx:method name="getPrivateMPayLicenceList"
+					result="CompanyLicenseHistoryEntryDlgLogic.onResult_showPrivateMPayLicenceList(event)" 
+					fault="CompanyLicenseHistoryEntryDlgLogic.onFault_remotePrivateMPayLicenceList(event)" />
+	</mx:RemoteObject>
+	
+	<mx:Script>
+		<![CDATA[
+			import utils.LabelUtil;
+		]]>
+	</mx:Script>
+	
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Spacer width="20" />
+		<mx:HBox width="50%">
+			<mx:Spacer width="5" />
+			<mx:VBox id="vbxShowDateSetting" width="5%" height="5%">
+				<mx:Label text="更新履歴" styleName="LargeBoldText"/>
+			</mx:VBox>
+			<mx:VBox width="5%" height="5%">
+				<mx:Label id="historyName" text="" styleName="LargeBoldText"/>
+			</mx:VBox>
+			<mx:VBox width="5%" height="5%">
+				<mx:ComboBox id="searchComboBox" prompt="全期" change="CompanyLicenseHistoryEntryDlgLogic.onClick_searchComboBox(event)" width="70"/>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:DataGrid id="licencePayHistory" editable="false" width="1100" textAlign="center" headerHeight="37">
+			  <mx:columns>
+			  	<mx:DataGridColumn headerText="更新日時" dataField="registrationTime" labelFunction ="{LabelUtil.dateLabel}" width="70">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>								  	
+				<mx:DataGridColumn headerText="資格{'\n'}【等級】" dataField="basicPayClassNoName" width="40" textAlign="center"/>							
+			    <mx:DataGridColumn headerText="資格{'\n'}【号】" dataField="basicPayRankNo" width="35" textAlign="center"/>							    
+				<mx:DataGridColumn headerText="基本給" dataField="basicPayMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				<mx:DataGridColumn headerText="職務手当{'\n'}【等級】" dataField="managerialClassNo" width="50" textAlign="center"/>								
+				<mx:DataGridColumn headerText="職務手当" dataField="managerialMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				<mx:DataGridColumn headerText="主務手当{'\n'}【等級】" dataField="competentClassNo" width="50" textAlign="center"/>
+				<mx:DataGridColumn headerText="主務手当" dataField="competentMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>													
+				<mx:DataGridColumn headerText="技能手当{'\n'}【等級】" dataField="technicalSkillClassNo" width="50" textAlign="center"/>						
+				<mx:DataGridColumn headerText="技能手当" dataField="technicalSkillMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>													
+				<mx:DataGridColumn headerText="資格手当名" dataField="informationPayName" width="70" textAlign="center"/>							
+				<mx:DataGridColumn headerText="資格手当" dataField="informationPayMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				<mx:DataGridColumn headerText="住宅手当名" dataField="housingName" width="75" textAlign="center"/>								
+				<mx:DataGridColumn headerText="住宅手当" dataField="housingPayMonthlySum" width="50" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				<mx:DataGridColumn headerText="超過勤務手当" dataField="exceedServiceSalary" width="80" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+				<mx:DataGridColumn headerText="給与総額" dataField="totalAllowance" width="60" labelFunction="{LabelUtil.currencyLabel}" textAlign="right">
+			  		<mx:headerRenderer>
+                		<mx:Component>
+                			<mx:Label textAlign="center"/>
+                		</mx:Component>
+                	</mx:headerRenderer>
+				</mx:DataGridColumn>									
+			 </mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%">
+		<mx:Spacer width="5" />		
+			<mx:VBox width="10%">
+				<mx:Button id="btnClose" label="閉じる" click="CompanyLicenseHistoryEntryDlgLogic.onClick_btnClose(event)"/>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

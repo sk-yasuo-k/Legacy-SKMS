@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopUpWindow xmlns="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.project.logic.*"
+	xmlns:form="subApplications.project.web.custom.*"
+	xmlns:comp="components.*"
+	title="プロジェクト情報">
+
+	<!-- Logicクラスの設定 -->
+	<logic:ProjectEntryLogic  id="projectEntryLogic" />
+
+	<!-- 画面表示 -->
+	<mx:VBox x="10" y="10" width="{tabnavi.width + 10}" >
+		<!-- 請求書ボタン -->
+		<mx:HBox visible="{this.authorisation}" width="{this.authorisation?explicitWidth:0}" height="{this.authorisation?explicitHeight:0}">
+			<mx:LinkButton id="linkNew"    label="請求書を作成する" enabled="false" click="projectEntryLogic.onButtonClick_linkNew(event);"/>
+			<mx:LinkButton id="linkCopy"   label="請求書を複製する" enabled="false" click="projectEntryLogic.onButtonClick_linkCopy(event);"/>
+			<mx:LinkButton id="linkDelete" label="請求書を削除する" enabled="false" click="projectEntryLogic.onButtonClick_linkDelete_confirm(event);"/>
+		</mx:HBox>
+
+		<!-- プロジェクト情報 -->
+		<mx:TabNavigator id="tabnavi" change="projectEntryLogic.onTabChange_tabnavi(event);" width="{this.authorisation?836:674}" height="432">
+			<mx:Form id="formBase" name="baseInfo" label="基本情報" >
+				<!-- Define Row 1. -->
+				<mx:FormItem label="プロジェクトコード" required="true" direction="horizontal">
+						<mx:TextInput id="projectCode"      maxChars="12" editable="{this.authorisation}" restrict="[0-9,A-Z,\-]" focusOut="projectEntryLogic.onFocusOut_projectCode(event);"/>
+						<mx:FormItem label="プロジェクト名"     required="true">
+							<mx:TextInput id="projectName"      maxChars="128"  editable="{this.authorisation}" />
+						</mx:FormItem>
+				</mx:FormItem>
+
+				<!-- Define Row 2. -->
+				<mx:FormItem label="客先名"        required="true" direction="horizontal">
+						<mx:Canvas>
+							<mx:TextInput visible="{!this.authorisation}" text="{this.projectCustomerName.text}" editable="false" />
+							<mx:ComboBox id="projectCustomerName" visible="{this.authorisation}"
+								labelFunction="projectEntryLogic.setCustomerLabel" change="projectEntryLogic.onChange_projectCustomerName(event);"
+								dataProvider="{null}" width="398" />
+						</mx:Canvas>
+				</mx:FormItem>
+
+				<!-- Define Row 3. -->
+				<mx:FormItem label="客先注文番号"         required="false" direction="horizontal">
+						<mx:TextInput id="projectOrderNo" maxChars="128"  editable="{this.authorisation}" />
+						<mx:FormItem label="客先注文名"         required="false">
+							<mx:TextInput id="projectOrderName" maxChars="128"  editable="{this.authorisation}" />
+						</mx:FormItem>
+				</mx:FormItem>
+
+				<!-- Define Row 4. -->
+				<mx:FormItem label="開始予定日"         required="true" direction="horizontal">
+						<mx:Canvas>
+							<comp:EditDateField visible="{this.authorisation}"  id="planedStartDate"  focusOut="projectEntryLogic.onFocusOut_dateField2(event);" open="projectEntryLogic.onOpen_dateField2(event);"/>
+							<mx:TextInput visible="{!this.authorisation}" text="{planedStartDate.text}" width="{planedStartDate.width}" editable="false" />
+						</mx:Canvas>
+						<mx:FormItem label="完了予定日"         required="true">
+							<mx:Canvas>
+								<comp:EditDateField visible="{this.authorisation}"  id="planedFinishDate" focusOut="projectEntryLogic.onFocusOut_dateField2(event);" open="projectEntryLogic.onOpen_dateField2(event);"/>
+								<mx:TextInput visible="{!this.authorisation}" text="{planedFinishDate.text}" width="{planedFinishDate.width}" editable="false" />
+							</mx:Canvas>
+						</mx:FormItem>
+						<mx:Canvas>
+							<mx:Button visible="{this.authorisation}" label="予定日をプロジェクトメンバに反映する" skin="{null}" color="#4682B4" click="projectEntryLogic.onButtonClick_planedDateEntry(event);"/>
+						</mx:Canvas>
+				</mx:FormItem>
+
+				<!-- Define Row 5. -->
+				<mx:FormItem label="開始実績日"         required="false" direction="horizontal">
+						<mx:Canvas>
+							<comp:EditDateField visible="{this.authorisation}"  id="actualStartDate"  focusOut="projectEntryLogic.onFocusOut_dateField2(event);" open="projectEntryLogic.onOpen_dateField2(event);"/>
+							<mx:TextInput visible="{!this.authorisation}" text="{actualStartDate.text}" width="{actualStartDate.width}" editable="false" />
+						</mx:Canvas>
+						<mx:FormItem label="完了実績日"         required="false">
+							<mx:Canvas>
+								<comp:EditDateField visible="{this.authorisation}"  id="actualFinishDate" focusOut="projectEntryLogic.onFocusOut_dateField2(event);" open="projectEntryLogic.onOpen_dateField2(event);"/>
+								<mx:TextInput visible="{!this.authorisation}" text="{actualFinishDate.text}" width="{actualFinishDate.width}" editable="false" />
+							</mx:Canvas>
+						</mx:FormItem>
+						<mx:Canvas>
+							<mx:Button visible="{this.authorisation}" label="実績日をプロジェクトメンバに反映する" skin="{null}" color="#4682B4" click="projectEntryLogic.onButtonClick_actualDateEntry(event);"/>
+						</mx:Canvas>
+				</mx:FormItem>
+
+				<!-- Define Row 6. -->
+				<mx:FormItem label="プロジェクトメンバ" required="false" direction="horizontal">
+						<!-- プロジェクトメンバ -->
+						<mx:DataGrid id="projectMemberList" rowHeight="24" sortableColumns="false"
+							editable="{this.authorisation}" verticalScrollPolicy="on"
+							itemFocusIn="projectEntryLogic.onItemFocusIn_projectMemberList(event);"
+							itemFocusOut="projectEntryLogic.onItemFocusOut_projectMemberList2(event);"
+							dragEnabled="{this.authorisation}" dropEnabled="{this.authorisation}" dragMoveEnabled="{this.authorisation}" allowMultipleSelection="true"
+							dragEnter="projectEntryLogic.onDragEnter_projectMemberList(event);"
+							dragOver="projectEntryLogic.onDragOver_projectMemberList(event);"
+							dragDrop="projectEntryLogic.onDragDrop_projectMemberList(event);"
+							dragComplete="projectEntryLogic.onDragComplete_projectMemberList(event);"
+							>
+							<mx:columns>
+								<mx:DataGridColumn headerText="氏名"       dataField="staffName"            width="90"  editable="false" />
+								<mx:DataGridColumn headerText="役職"       dataField="projectPositionAlias" width="57"  editable="true"  itemEditor="mx.controls.ComboBox"     editorDataField="selectedLabel" />
+								<mx:DataGridColumn headerText="開始予定日" dataField="planedStartDate"      width="90"  editable="true"  editorDataField="editedDate" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.planedStartDateSort}" >
+									<mx:itemEditor>
+										<mx:Component>
+											<comp:EditDateField selectableRange="{range}" >
+											<mx:Script>
+												<![CDATA[
+													import subApplications.project.logic.ProjectEntryLogic;
+													[Bindable]
+													private var projectEntryLogic:ProjectEntryLogic;
+													[Bindable]
+													private var range:Object = null;
+													override public function set data(value:Object):void
+													{
+														super.data = value;
+														if (this.outerDocument && this.outerDocument.projectEntryLogic) {
+															projectEntryLogic = this.outerDocument.projectEntryLogic;
+															range = projectEntryLogic.getItemEditor_selectableRange2("planedStartDate", value);
+														}
+													}
+												]]>
+											</mx:Script>
+											</comp:EditDateField>
+										</mx:Component>
+									</mx:itemEditor>
+								</mx:DataGridColumn>
+								<mx:DataGridColumn headerText="完了予定日" dataField="planedFinishDate"     width="90"  editable="true"  editorDataField="editedDate" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.planedFinishDateSort}" >
+									<mx:itemEditor>
+										<mx:Component>
+											<comp:EditDateField selectableRange="{range}" >
+											<mx:Script>
+												<![CDATA[
+													import subApplications.project.logic.ProjectEntryLogic;
+													[Bindable]
+													private var projectEntryLogic:ProjectEntryLogic;
+													[Bindable]
+													private var range:Object = null;
+													override public function set data(value:Object):void
+													{
+														super.data = value;
+														if (this.outerDocument && this.outerDocument.projectEntryLogic) {
+															projectEntryLogic = this.outerDocument.projectEntryLogic;
+															range = projectEntryLogic.getItemEditor_selectableRange2("planedFinishDate", value);
+														}
+													}
+												]]>
+											</mx:Script>
+											</comp:EditDateField>
+										</mx:Component>
+									</mx:itemEditor>
+								</mx:DataGridColumn>
+								<mx:DataGridColumn headerText="開始実績日" dataField="actualStartDate"      width="90"  editable="true"  editorDataField="editedDate" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualStartDateSort}"  >
+									<mx:itemEditor>
+										<mx:Component>
+											<comp:EditDateField selectableRange="{range}" >
+											<mx:Script>
+												<![CDATA[
+													import subApplications.project.logic.ProjectEntryLogic;
+													[Bindable]
+													private var projectEntryLogic:ProjectEntryLogic;
+													[Bindable]
+													private var range:Object = null;
+													override public function set data(value:Object):void
+													{
+														super.data = value;
+														if (this.outerDocument && this.outerDocument.projectEntryLogic) {
+															projectEntryLogic = this.outerDocument.projectEntryLogic;
+															range = projectEntryLogic.getItemEditor_selectableRange2("actualStartDate", value);
+														}
+													}
+												]]>
+											</mx:Script>
+											</comp:EditDateField>
+										</mx:Component>
+									</mx:itemEditor>
+								</mx:DataGridColumn>
+								<mx:DataGridColumn headerText="完了実績日" dataField="actualFinishDate"     width="90"  editable="true"  editorDataField="editedDate" labelFunction="{LabelUtil.dateLabel}" sortCompareFunction="{ProjectLogic.actualFinishDateSort}" >
+									<mx:itemEditor>
+										<mx:Component>
+											<comp:EditDateField selectableRange="{range}" >
+											<mx:Script>
+												<![CDATA[
+													import subApplications.project.logic.ProjectEntryLogic;
+													[Bindable]
+													private var projectEntryLogic:ProjectEntryLogic;
+													[Bindable]
+													private var range:Object = null;
+													override public function set data(value:Object):void
+													{
+														super.data = value;
+														if (this.outerDocument && this.outerDocument.projectEntryLogic) {
+															projectEntryLogic = this.outerDocument.projectEntryLogic;
+															range = projectEntryLogic.getItemEditor_selectableRange2("actualFinishDate", value);
+														}
+													}
+												]]>
+											</mx:Script>
+											</comp:EditDateField>
+										</mx:Component>
+									</mx:itemEditor>
+								</mx:DataGridColumn>
+							</mx:columns>
+						</mx:DataGrid>
+
+						<!-- プロジェクトメンバ追加/削除は 登録権限有無に応じて表示するかどうかを決める -->
+				</mx:FormItem>
+
+				<!-- Define Row 7. -->
+				<mx:FormItem label="備考" required="false">
+					<mx:TextArea  id="note"             maxChars="256"  editable="{this.authorisation}" wordWrap="true" width="480"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:TabNavigator>
+
+		<!-- 登録・戻るボタン -->
+		<mx:Canvas>
+			<mx:Button label="登録" click="projectEntryLogic.onButtonClick_entry_confirm(event);" id="btnEntry" visible="{this.authorisation}" />
+			<mx:Button label="戻る" click="projectEntryLogic.onButtonClick_close(event);" visible="{this.authorisation}" x="{this.btnEntry.width + 10}"/>
+			<mx:Button label="戻る" click="projectEntryLogic.onButtonClick_close(event);" visible="{!this.authorisation}"/>
+			<mx:LinkButton id="help"  label="ヘルプ" click="projectEntryLogic.onButtonClick_help(event);"  styleName="SmallText" visible="{this.authorisation}"  x="{this.tabnavi.width - this.help.width}" />
+			<mx:LinkButton id="help2" label="ヘルプ" click="projectEntryLogic.onButtonClick_help2(event);" styleName="SmallText" visible="{!this.authorisation}" x="{this.tabnavi.width - this.help.width}" />
+		</mx:Canvas>
+		<mx:Spacer height="5" />
+	</mx:VBox>
+
+	<!-- 条件表示 -->
+	<states>
+		<mx:State name="stsAuthorize">
+			<mx:AddChild relativeTo="{this.projectMemberList}" position="after" creationPolicy="all">
+						<!-- プロジェクトメンバ追加/削除 -->
+						<mx:Canvas id="projectStaffArea" visible="{this.authorisation}" >
+
+							<mx:Button x="10" y="20" label="&lt;&lt;" fontSize="9" click="projectEntryLogic.onButtonClick_fromProjectStaffToProjectMember(event);"/>
+							<mx:Button x="10" y="60" label="&gt;&gt;" fontSize="9" click="projectEntryLogic.onButtonClick_fromProjectMemberToProjectStaff(event);"/>
+
+							<mx:DataGrid id="projectStaffList" x="{10 + 42 + 6 + 10}"
+								rowHeight="24" sortableColumns="false" verticalScrollPolicy="on"
+								dragEnabled="true" dropEnabled="true" dragMoveEnabled="true" allowMultipleSelection="true"
+								dragEnter="projectEntryLogic.onDragEnter_projectStaffList(event);"
+								dragOver="projectEntryLogic.onDragOver_projectStaffList(event);"
+								dragDrop="projectEntryLogic.onDragDrop_projectStaffList(event);"
+								dragComplete="projectEntryLogic.onDragComplete_projectStaffList(event);" >
+								<mx:columns>
+									<mx:DataGridColumn headerText="社員氏名" dataField="staffName" width="80"  editable="false" />
+								</mx:columns>
+							</mx:DataGrid>
+						</mx:Canvas>
+			</mx:AddChild>
+		</mx:State>
+	</states>
+
+
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<mx:StringValidator enabled="{this.authorisation}" source="{this.projectCode}"         required="true"  property="text" maxLength="12" minLength="8"/>
+		<mx:StringValidator enabled="{this.authorisation}" source="{this.projectName}"         required="true"  property="text" maxLength="128"/>
+		<mx:Validator       enabled="{this.authorisation}" source="{this.projectCustomerName}" required="true"  property="selectedLabel"/>
+		<mx:StringValidator enabled="{this.authorisation}" source="{this.projectOrderName}"    required="false" property="text" maxLength="128"/>
+		<mx:Validator       enabled="{this.authorisation}" source="{this.planedStartDate}"     required="true"  property="selectedDate" />
+		<mx:Validator       enabled="{this.authorisation}" source="{this.planedFinishDate}"    required="true"  property="selectedDate" />
+		<mx:Validator       enabled="{this.authorisation}" source="{this.actualStartDate}"     required="false" property="selectedDate" />
+		<mx:Validator       enabled="{this.authorisation}" source="{this.actualFinishDate}"    required="false" property="selectedDate" />
+		<mx:StringValidator enabled="{this.authorisation}" source="{this.note}"                required="false" property="text" maxLength="256"/>
+		<!-- DataGrid の validator は focus中 に赤枠表示され常時赤枠表示されないため control にエラーメッセージを設定し常時赤枠表示させる -->
+	</mx:Array>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="projectService" showBusyCursor="true">
+		<mx:method name="createProject"
+			result="projectEntryLogic.onResult_createProject(event)"
+			fault="projectEntryLogic.onFault_createProject(event)"
+			/>
+		<mx:method name="getCustomerList"
+			result="projectEntryLogic.onResult_getCustomerList(event)"
+			fault="projectEntryLogic.onFault_getCustomerList(event)"
+			/>
+		<mx:method name="getProjectStaffList"
+			result="projectEntryLogic.onResult_getProjectStaffList(event)"
+			fault="projectEntryLogic.onFault_getProjectStaffList(event)"
+			/>
+		<mx:method name="getProjectPositionList"
+			result="projectEntryLogic.onResult_getProjectPositionList(event)"
+			fault="projectEntryLogic.onFault_getProjectPositionList(event)"
+			/>
+		<mx:method name="getBankList"
+			result="projectEntryLogic.onResult_getBankList(event);"
+			fault="projectEntryLogic.onFault_getBankList(event);"
+			/>
+	</mx:RemoteObject>
+
+
+	<!-- スクリプト -->
+	<mx:Script>
+		<![CDATA[
+			import subApplications.project.logic.ProjectLogic;
+			import utils.LabelUtil;
+			/** プロジェクト登録権限 */
+			[Bindable]
+			private var authorisation:Boolean = false;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+				if (authorisation) {
+					this.currentState = "stsAuthorize"
+				}
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		]]>
+	</mx:Script>
+</PopUpWindow>

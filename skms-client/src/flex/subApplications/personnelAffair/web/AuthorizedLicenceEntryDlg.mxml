@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.personnelAffair.logic.*"
+	xmlns:edit="components.*"
+	close="logic.onClose_authorizedLicenceEntryDlg(event)"
+	valueCommit="logic.onValidateCheck(event);"
+	title="認定資格登録"
+	>
+	<!-- Logicクラスの設定 -->
+	<logic:AuthorizedLicenceEntryDlgLogic id="logic" />
+	
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="authorizedLicenceService" destination="authorizedLicenceService">
+		<!-- 認定資格情報を追加する -->
+		<mx:method name="insertAuthorizedLicence"
+					result="logic.onResult_JoinLicense(event)" 
+					fault="logic.onFault_failureSave(event)" />
+		<!-- 認定資格情報を更新する -->
+		<mx:method name="updateAuthorizedLicence"
+					result="logic.onResult_JoinLicense(event)" 
+					fault="logic.onFault_failureSave(event)" />															
+	</mx:RemoteObject>
+
+	<mx:VBox width="100%" height="100%">
+		<mx:Form width="100%">
+			<mx:FormItem label="社員名">
+				<mx:Label id="lblStaffName" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmWorkStatusDate" label="資格取得日">
+				<mx:DateField id="dtfWorkStatusDate" editable="true" width="100%" valueCommit="logic.onValidateCheck(event);"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmCategory" label="カテゴリ">
+				<edit:ComboBoxEx id="cmbCategory" labelField="categoryName" dataField="categoryId" change="logic.onChange_licenseLabel(event)" valueCommit="logic.onValidateCheck(event);" width="100%"/>
+			</mx:FormItem>
+			<mx:FormItem id="fitmLicenceName" label="資格名">
+				<edit:ComboBoxEx id="cmbLicence" labelField="licenceName" dataField="licenceId" valueCommit="logic.onValidateCheck(event);" width="100%"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button id="btnOk" label="OK" click="logic.onClick_btnOk(event)" visible="{this.authorisation}"/>
+			<mx:Button id="btnCancel" label="キャンセル" click="logic.onClick_btnCancel(event)"/>
+			<mx:Spacer width="1"/>
+		</mx:HBox>
+		<mx:Spacer height="1"/>
+	</mx:VBox>
+	<!-- validator -->
+	<mx:Array id="validateItems">
+		<!-- 取得日はチェックする -->
+		<mx:StringValidator id="validatorDateField" source="{this.dtfWorkStatusDate}" required="true" property="selectedDate" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- カテゴリ名はチェックする -->
+		<mx:StringValidator id="validatorSex" source="{this.cmbCategory}" required="true"  property="selectedItem" triggerEvent="" enabled="{this.authorisation}"/>
+		<!-- 資格名はチェックする -->
+		<mx:StringValidator id="validatorBloodGroup" source="{this.cmbLicence}" required="true"  property="selectedItem" triggerEvent="" enabled="{this.authorisation}"/>
+	</mx:Array>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import utils.LabelUtil;
+			/**
+			 * 登録権限.
+			 */
+			[Bindable]
+			private var authorisation:Boolean = true;
+			public function set authorize(value:Boolean):void
+			{
+				authorisation = value;
+				if (authorisation) {
+					this.currentState = "stsAuthorize"
+				}
+			}
+			public function get authorize():Boolean
+			{
+				return authorisation;
+			}
+		
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

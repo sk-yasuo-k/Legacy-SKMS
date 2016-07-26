@@ -1,0 +1,42 @@
+Subject: 【SKMS:勤務管理】勤務管理表${data.approvalType}承認取り消しのお知らせ
+
+${data.toName}さん
+━━━━━━━━━……‥・
+
+${data.approvalName}さんが勤務管理表の承認を取り消しました。
+勤務管理表は${data.approvalType}承認前の状態に戻りました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+◆提出者　　　　　　 ： ${data.applicantName}
+◆勤務月　　　　　　 ： ${data.workingYear}年${data.workingMonth}月
+
+◆差引時間　　　　　 ： ${data.balanceHours} H
+◆私用時間　　　　　 ： ${data.privateHours} H
+◆勤務時間　　　　　 ： ${data.workingHours} H
+◆休憩時間　　　　　 ： ${data.recessHours} H
+◆実働時間　　　　　 ： ${data.realWorkingHours} H
+
+◆控除数　　　　　　 ： ${data.deductionCount}
+◆欠勤日数　　　　　 ： ${data.absenceCount}日
+◆無断欠勤日数　　　 ： ${data.absenceWithoutLeaveCount}日
+◆深夜勤務日数　　　 ： ${data.nightWorkCount}日
+
+◆有給繰越日数　　　 ： ${data.lastPaidVacationCount}日
+◆有給消滅日数　　　 ： ${data.lostPaidVacationCount}日
+◆有給発生日数　　　 ： ${data.givenPaidVacationCount}日
+◆有給使用日数　　　 ： ${data.takenPaidVacationCount}日
+◆有給今月残日数　　 ： ${data.currentPaidVacationCount}日
+
+◆代休繰越日数　　　 ： ${data.lastCompensatoryDayOffCount}日
+◆代休消滅日数　　　 ： ${data.lostCompensatoryDayOffCount}日
+◆代休発生日数　　　 ： ${data.givenCompensatoryDayOffCount}日
+◆代休使用日数　　　 ： ${data.takenCompensatoryDayOffCount}日
+◆代休今月残日数　　 ： ${data.currentCompensatoryDayOffCount}日
+
+◆取り消し理由　　　 ： ${data.reason}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━……‥・・
+
+□詳細はグループウェアで確認してください。
+  https://www.sfk-carp.jp/wiz/
+
+※このメールに対する返信は不要です。

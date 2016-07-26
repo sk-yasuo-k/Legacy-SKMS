@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:logic="subApplications.customer.logic.*"
+	xmlns:logicC="subApplications.customer.logic.custom.*"
+	>
+
+	<!-- Logicの設定 -->
+	<logicC:CustomerSearchLogic id="customerSearchLogic" />
+
+	<!-- 画面表示 -->
+	<mx:Button label="検索" id="btnSearch" click="customerSearchLogic.onClick_btnSearch(event);"/>
+	<mx:HBox id="searchOpt">
+		<mx:Button id="swSearch" toggle="true" change="customerSearchLogic.onChange_swSearch(event);" skin="{null}" color="#4169E1" styleName="LargeText"/>
+
+		<mx:Grid   id="searchGrid" width="0" height="0">
+			<mx:GridRow />
+			<!-- Define Row 1. -->
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="顧客区分" />
+				</mx:GridItem>
+				<mx:GridItem colSpan="3">
+					<mx:CheckBox id="chkMaker" selected="true" label="メーカー/ベンダー" selectedField="C"/>
+					<mx:CheckBox id="chkUser"  selected="true" label="エンドユーザ"      selectedField="E"/>
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 2. -->
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="顧客コード" />
+				</mx:GridItem>
+				<mx:GridItem colSpan="3">
+					<mx:TextInput id="customerCode" maxChars="3" restrict="[C,E,0-9]" />
+				</mx:GridItem>
+			</mx:GridRow>
+
+			<!-- Define Row 3. -->
+			<mx:GridRow>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="顧客名称" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:TextInput id="fullName" maxChars="32" />
+				</mx:GridItem>
+				<mx:GridItem horizontalAlign="right">
+					<mx:Text text="顧客略称" />
+				</mx:GridItem>
+				<mx:GridItem>
+					<mx:TextInput id="aliasName" maxChars="8" width="80"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow />
+		</mx:Grid>
+		<mx:Spacer width="10" />
+	</mx:HBox>
+
+	<!-- metaデータの設定 -->
+	<mx:Metadata>
+		[Event(name="result", type="mx.rpc.events.ResultEvent")]
+		[Event(name="fault",  type="mx.rpc.events.FaultEvent")]
+	</mx:Metadata>
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="customerService" showBusyCursor="true" fault="customerSearchLogic.onFault(event);">
+		<mx:method name="getCustomerList"
+			result="customerSearchLogic.onResult_getCustomerList(event)"
+			/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			/**
+			 * 顧客リストの取得.
+			 */
+			public function getCustomerList():void
+			{
+				customerSearchLogic.getCustomerList();
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

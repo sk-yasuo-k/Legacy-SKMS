@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:logic="subApplications.accounting.logic.*"
+	title=""
+	>
+
+	<!-- Logicクラスの設定 -->
+	<logic:CommutationEntryWithdrawLogic id="commutationEntryWithdrawLogic" />
+
+
+
+	<!-- 画面表示 -->
+	<mx:Form >
+		<mx:FormItem id="reasonName" required="true">
+		    <mx:TextArea id="reason" width="350" maxChars="1024" change="this.validator.validate()"/>
+		</mx:FormItem>
+
+		<mx:Spacer width="10" />
+
+		<mx:HBox >
+			<mx:Button label="" click="commutationEntryWithdrawLogic.onButtonClick_entry(event);" id="btnEntry"/>
+			<mx:Button label="戻る" click="commutationEntryWithdrawLogic.onButtonClick_close(event);" />
+		</mx:HBox>
+	</mx:Form>
+
+	<!-- Validator -->
+	<mx:StringValidator id="validator"  required="true"  source="{this.reason}" property="text"
+						invalid="commutationEntryWithdrawLogic.onInvalid_validator(event);"
+						valid="commutationEntryWithdrawLogic.onValid_validator(event);"/>
+
+</cmp:PopUpWindow>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInitialize()">
+	<mx:Spacer height="30"/>
+	<mx:HBox>
+		<mx:Spacer width="20"/>
+		<mx:Label text="{this.msg}" color="#ffffff"/>
+		<mx:Spacer width="20"/>
+	</mx:HBox>
+	<mx:Spacer height="30"/>
+
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			private var msg:String = "";
+			public function set message(value:String):void
+			{
+				msg = value;
+			}
+
+			private function onInitialize():void
+			{
+				var css:CSSStyleDeclaration = StyleManager.getStyleDeclaration("Alert");
+				this.setStyle("backgroundColor", css.getStyle("backgroundColor"));
+				this.setStyle("color"          , css.getStyle("color"));
+				this.setStyle("cornerRadius",    css.getStyle("cornerRadius"));
+				this.alpha = 0.9;
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>

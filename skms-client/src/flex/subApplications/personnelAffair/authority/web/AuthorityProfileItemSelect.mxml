@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.authority.logic.*">
+
+	<!--Logicクラスの設定-->
+	<logic:AuthorityProfileItemSelectLogic id="authorityProfileItemSelectLogic"/>
+	
+	<!--RemoteObjectの設定-->
+	<mx:RemoteObject id="displayItemsShowService" destination="displayItemsShowService">
+		<mx:method name="getDisplayItemsShow"
+					result="authorityProfileItemSelectLogic.onResult_getDisplayItemsShow(event)" 
+					fault="authorityProfileItemSelectLogic.onFault_getDisplayItemsShow(event)" />
+		<mx:method name="updatelistData"
+					result="authorityProfileItemSelectLogic.onResult_updatelistData(event)" 
+					fault="authorityProfileItemSelectLogic.onFault_updatelistData(event)" />										
+	</mx:RemoteObject>	
+
+	<!-- 画面表示 -->
+	<mx:VBox width="65%" height="95%" >
+		<mx:Spacer width="10" height="10"/>
+		<mx:HBox width="100%" height="100%">
+		<mx:Spacer width="10" height="10"/>
+			<mx:VBox width="100" height="100%">
+				<mx:Label text="役職" width="100%" fontSize="12" textAlign="center"/>
+				<mx:List id="positionList" width="100%" height="100%" maxHeight="120" 
+					itemClick="authorityProfileItemSelectLogic.onClick_positionList(event)"/>				
+			</mx:VBox>
+			<mx:Spacer width="20" height="20"/>
+			<mx:VBox width="140" height="100%">
+				<mx:Label text="表示項目" width="100%" fontSize="12" textAlign="center"/>
+				<mx:List id="trueList" width="100%" height="100%" dragEnabled="true" dragMoveEnabled="true" dropEnabled="true"
+					allowMultipleSelection="true" dragEnter="authorityProfileItemSelectLogic.onDragEnter_trueListChoices(event)"
+					dragOver="authorityProfileItemSelectLogic.onDragOver_listChoices(event)" 
+					dragDrop="authorityProfileItemSelectLogic.onDragDrop_listChoices(event)"/>
+			</mx:VBox>
+			<mx:VBox height="100%" verticalAlign="middle">	
+					<mx:Button label="＞" width="100" click="authorityProfileItemSelectLogic.onClick_toFalse(event)"/>
+					<mx:Spacer width="20" height="20"/>
+					<mx:Button label="＜" width="100" click="authorityProfileItemSelectLogic.onClick_toTrue(event)"/>
+			</mx:VBox>
+			<mx:VBox width="140" height="100%">
+				<mx:Label text="非表示項目" width="100%" fontSize="12" textAlign="center"/>	
+				<mx:List id="falseList" width="100%" height="100%" dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" 
+					allowMultipleSelection="true" dragEnter="authorityProfileItemSelectLogic.onDragEnter_falseListChoices(event)"
+					dragOver="authorityProfileItemSelectLogic.onDragOver_listChoices(event)" 
+					dragDrop="authorityProfileItemSelectLogic.onDragDrop_listChoices(event)"/>
+			</mx:VBox>				
+		</mx:HBox>
+		<mx:HBox width="550" horizontalAlign="right">
+			<mx:Button id="cancel" label="取り消し" width="100" click="authorityProfileItemSelectLogic.onClick_cancel(event)" enabled="false"/>
+			<mx:Button id="apply" label="適用" width="100" click="authorityProfileItemSelectLogic.onClick_apply(event)" enabled="false"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:Module>

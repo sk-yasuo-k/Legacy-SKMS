@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cmp:PopUpWindow xmlns:cmp="components.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.accounting.logic.*"
+	xmlns:dataGrid="subApplications.accounting.web.custom.*"
+	visible="false"
+	title="交通費申請">
+
+	<!-- Logicクラスの設定 -->
+	<logic:TransportApplyLogic id="transportApplyLogic" />
+
+
+	<!-- 画面表示 -->
+	<mx:HBox>
+		<mx:Spacer width="10" />
+		<mx:VBox width="858" height="450">
+			<mx:Spacer width="10" />
+
+			<mx:HBox fontSize="12" fontWeight="bold" width="100%">
+				<mx:Text text="プロジェクト"  />
+				<mx:Text text=":"/>
+				<mx:Text id="project" />
+				<mx:Spacer width="100%"/>
+				<mx:Text text="合計金額" />
+				<mx:Text text=":"/>
+				<mx:Text id="transportationExpense" />
+			</mx:HBox>
+
+			<dataGrid:TransportationDetailDataGrid id="transportationDetail" width="100%" height="100%" rowHeight="24"
+				editable="true" allowMultipleSelection="true" sortableColumns="false"
+				setBackgroundColor="transportApplyLogic.onSetBackgroundColor_transportationDetail(event);"
+				calculatedExpense="transportApplyLogic.onCalculatedExpense_transportationDetail(event);"
+				/>
+
+			<mx:HBox >
+				<mx:Button label="申請" click="transportApplyLogic.onButtonClick_entry_confirm(event);" id="btnEntry" />
+				<mx:Button label="戻る" click="transportApplyLogic.onButtonClick_close(event);" />
+			</mx:HBox>
+
+			<mx:Spacer width="10" />
+		</mx:VBox>
+		<mx:Spacer width="10" />
+	</mx:HBox>
+
+
+
+	<!-- RemoteObjectの設定 -->
+	<mx:RemoteObject id="srv" destination="transportationService" showBusyCursor="true">
+		<mx:method name="applyTransportation"
+			result="transportApplyLogic.onResult_applyTransportation(event)"
+			fault="transportApplyLogic.onFault_applyTransportation(event)"
+			/>
+		<mx:method name="updateApplyTransportation"
+			result="transportApplyLogic.onResult_updateApplyTransportation(event)"
+			fault="transportApplyLogic.onFault_updateApplyTransportation(event)"
+			/>
+	</mx:RemoteObject>
+</cmp:PopUpWindow>

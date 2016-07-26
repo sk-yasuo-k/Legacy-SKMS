@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.logic.*"
+	>
+    
+	<!-- Logicクラスの設定 -->
+	<logic:WorkStatusLogic id="logic" />
+
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Label text="就労状況" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:VBox id="vbxShowSearchCondition" width="100%" height="100%">
+				<mx:LinkButton id="linkShowSearchCondition" label="条件を指定して検索..."
+					click="logic.onClick_linkShowSearchCondition(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideSearchCondition" width="100%" height="0">
+				<mx:VBox backgroundColor="0xECE3EE">
+					<mx:Spacer height="1" />
+					<mx:HBox>
+						<mx:Spacer width="1" />
+						<mx:LinkButton id="linkHideSearchCondition" label="閉じる"
+							click="logic.onClick_linkHideSearchCondition(event);"/>
+						<mx:Form>
+							<mx:FormItem label="社員名">
+								<mx:TextInput/>
+							</mx:FormItem>
+							<mx:FormItem label="就労状況" direction="horizontal">
+								<mx:CheckBox label="入社前"/>
+								<mx:CheckBox label="就労中"/>
+								<mx:CheckBox label="休職中"/>
+								<mx:CheckBox label="退職"/>
+							</mx:FormItem>
+						</mx:Form>
+						<mx:Button id="btnSearch" label="検索"
+							click="logic.onClick_btnSearch(event)"/>
+						<mx:Spacer width="1" />
+					</mx:HBox>
+					<mx:Spacer height="1" />
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:VBox width="30%" height="100%">
+				<mx:DataGrid width="100%" height="100%">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" dataField="col2"/>
+						<mx:DataGridColumn headerText="就労状況" dataField="col3"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VDividedBox width="70%" height="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:Label text="就労履歴" styleName="LargeBoldText"/>
+					<mx:HBox width="100%">
+						<mx:LinkButton id="linkJoin" label="追加"
+							click="logic.onClick_linkAddWorkStatus(event)"/>
+						<mx:LinkButton id="linkSuspend" label="変更"
+							click="logic.onClick_linkUpdateWorkStatus(event)"/>
+						<mx:LinkButton id="linkReinstate" label="削除"
+							click="logic.onClick_linkDeleteWorkStatus(event)"/>
+						<mx:Spacer width="1"/>
+					</mx:HBox>
+					<mx:DataGrid width="100%" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn headerText="発生日" dataField="col1"/>
+							<mx:DataGridColumn headerText="就労状況" dataField="col3"/>
+							<mx:DataGridColumn headerText="備考" dataField="col3"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:VDividedBox>
+		</mx:HDividedBox>
+	</mx:VBox>	
+</mx:Module>

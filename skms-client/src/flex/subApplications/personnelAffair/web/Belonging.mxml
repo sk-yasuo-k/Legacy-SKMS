@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	xmlns:logic="subApplications.personnelAffair.logic.*"
+	xmlns:cmp="components.*"
+	>
+    
+	<!-- Logicクラスの設定 -->
+	<logic:BelongingLogic id="logic" />
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DataGridEvent;
+			import mx.collections.ArrayCollection;
+			
+			public var viewMode:int = 0;
+			[ArrayElementType("String")]
+			private var staffArray:Array = [{staffName:"山田 太郎", place:"本社", position:"部長", department:"技術開発部"},
+											{staffName:"鈴木 花子", place:"福岡分室", department:"技術開発部"},
+											{staffName:"中村 一男", place:"広島分室", department:"技術開発部"},
+											{staffName:"高田 洋子", place:"本社", department:"総務部"},
+											];
+			[ArrayElementType("String")]
+			private var departmentArray:Array = [{date:"2008/04/01",department:"技術開発部 部長就任"},
+											{date:"2007/04/01",department:"技術開発部"}
+											];
+			[ArrayElementType("String")]
+			private var placeArray:Array = [{date:"2008/04/01",place:"本社"},
+											{date:"2007/04/01",place:"広島分室"}
+											];
+			[Bindable]
+			public var staffList:ArrayCollection = new ArrayCollection(staffArray);	
+			[Bindable]
+			public var departmentList:ArrayCollection = new ArrayCollection(departmentArray);	
+			[Bindable]
+			public var placeList:ArrayCollection = new ArrayCollection(placeArray);	
+		]]>
+	</mx:Script>
+	<mx:VBox x="5" width="95%" height="95%">
+		<mx:Label text="部署・勤務地" styleName="LargeBoldText"/>
+		<mx:HBox width="100%">
+			<mx:VBox id="vbxShowSearchCondition" width="100%" height="100%">
+				<mx:LinkButton id="linkShowSearchCondition" label="条件を指定して検索..."
+					click="logic.onClick_linkShowSearchCondition(event);"/>
+			</mx:VBox>
+			<mx:VBox id="vbxHideSearchCondition" width="100%" height="0">
+				<mx:VBox backgroundColor="0xECE3EE">
+					<mx:Spacer height="1" />
+					<mx:HBox>
+						<mx:Spacer width="1" />
+						<mx:LinkButton id="linkHideSearchCondition" label="閉じる"
+							click="logic.onClick_linkHideSearchCondition(event);"/>
+						<mx:Form>
+							<mx:FormItem label="社員名">
+								<mx:TextInput/>
+							</mx:FormItem>
+							<mx:FormItem label="部署" direction="horizontal">
+								<mx:CheckBox label="技術開発部"/>
+								<mx:CheckBox label="総務部"/>
+							</mx:FormItem>
+							<mx:FormItem label="勤務地" direction="horizontal">
+								<mx:CheckBox label="本社"/>
+								<mx:CheckBox label="広島"/>
+							</mx:FormItem>
+						</mx:Form>
+						<mx:Button id="btnSearch" label="検索"
+							click="logic.onClick_btnSearch(event)"/>
+						<mx:Spacer width="1" />
+					</mx:HBox>
+					<mx:Spacer height="1" />
+				</mx:VBox>
+			</mx:VBox>
+		</mx:HBox>
+
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:VBox width="30%" height="100%">
+				<mx:DataGrid dataProvider="{staffList}" dragEnabled="true" width="100%" height="100%">
+					<mx:columns>
+						<mx:DataGridColumn headerText="社員名" dataField="staffName"/>
+						<mx:DataGridColumn headerText="部署" dataField="department"/>
+						<mx:DataGridColumn headerText="役職" dataField="position"/>
+						<mx:DataGridColumn headerText="勤務地" dataField="place"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+			<mx:VDividedBox width="70%" height="100%">
+				<mx:VBox  width="100%" height="50%">
+					<mx:Label text = "部署の異動履歴" styleName="LargeBoldText" />
+					<mx:HBox width="100%">
+						<mx:LinkButton id="linkAddDepartmentChange" label="追加" click="logic.onClick_linkAddDepartmentChange(event)"/>
+						<mx:LinkButton id="linkUpdateDepartmentChange" label="変更" click="logic.onClick_linkUpdateDepartmentChange(event)"/>
+						<mx:LinkButton id="linkDeleteDepartmentChange" label="削除" click="logic.onClick_linkDeleteDepartmentChange(event)"/>
+					</mx:HBox>
+					<mx:DataGrid dataProvider="{departmentList}" dragEnabled="true" width="100%" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn headerText="異動日" dataField="date"/>
+							<mx:DataGridColumn headerText="部署・役職" dataField="department"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+				<mx:VBox  width="100%" height="50%">
+					<mx:Label text = "勤務地の異動履歴" styleName="LargeBoldText" />
+					<mx:HBox width="100%">
+						<mx:LinkButton id="linkAddPlaceChange" label="追加" click="logic.onClick_linkAddPlaceChange(event)"/>
+						<mx:LinkButton id="linkUpdatePlaceChange" label="変更" click="logic.onClick_linkUpdatePlaceChange(event)"/>
+						<mx:LinkButton id="linkDeletePlaceChange" label="削除" click="logic.onClick_linkDeletePlaceChange(event)"/>
+					</mx:HBox>
+					<mx:DataGrid dataProvider="{placeList}" dragEnabled="true" width="100%" height="100%">
+						<mx:columns>
+							<mx:DataGridColumn headerText="異動日" dataField="date"/>
+							<mx:DataGridColumn headerText="勤務先" dataField="place"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:VDividedBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+</mx:Module>
