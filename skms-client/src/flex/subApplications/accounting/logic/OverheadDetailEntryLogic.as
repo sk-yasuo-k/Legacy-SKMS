@@ -164,6 +164,8 @@ package subApplications.accounting.logic
 				case OverheadTypeId.NOT_MANAGEMENT_EQUIPMENT:
 				// 研修.
 				case OverheadTypeId.STUDY:
+				// 宅配料金.
+				case OverheadTypeId.DELIVERY:
 					view.currentState = "stsOther";
 					break;
 
