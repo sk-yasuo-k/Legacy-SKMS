@@ -412,8 +412,20 @@ package subApplications.generalAffair.logic
 				_renewStaffAddress.staffId          = _staffId;
 				_renewStaffAddress.addressStatusId  = newStatusID;
 				
-				if(_updateCount < _newUpdateCount){//現在の住所の履歴カウント < 新住所の履歴カウント
+				// 住所が登録されていない場合
+				if(_staffAddressText == null){
+					// 住所が登録されていないということは、新入社員登録直後の状態のはず
+					// 新入社員登録直後の場合、社員住所マスタの更新回数＝１となっているはずなので、
+					// 更新回数＝１に情報を追加する
+					// 申請状態も[0:未作成]になっているはずなので、[1:作成]に変更する
+					newStatusID = 1;
+					_renewStaffAddress.addressStatusId  = newStatusID;
+					_renewStaffAddress.updateCount = 1;
+					view.srv.getOperation("renewStaffAddress").send(_staffId, _renewStaffAddress, 1);
+				// 新住所の初回登録の場合
+				}else if(_updateCount < _newUpdateCount){//現在の住所の履歴カウント < 新住所の履歴カウント
 					view.srv.getOperation("renewStaffAddress").send(_staffId, _renewStaffAddress, _renewStaffAddress.historyUpdateCount);
+				// 新住所の更新の場合
 				}else{
 //					_renewStaffAddress.updateCount  = _renewStaffAddress.updateCount + 1;
 					_newStaffAddressText.updateCount = _staffAddressText.updateCount + 1;
